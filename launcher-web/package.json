@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "cubepath-ui": "workspace:*",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "tailwindcss": "^4.2.2",
     "@eslint/js": "^9.39.4",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
