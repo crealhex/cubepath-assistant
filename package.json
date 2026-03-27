@@ -1,0 +1,9 @@
+{
+  "name": "cubepath-launcher",
+  "private": true,
+  "workspaces": [
+    "cubepath-ui",
+    "launcher-web",
+    "mcp-server"
+  ]
+}
