@@ -83,3 +83,9 @@ export {
   SelectTrigger,
   SelectValue,
 } from "./components/select";
+export { Switch } from "./components/switch";
+export { InlineLink, type InlineLinkProps } from "./components/inline-link";
+export {
+  SegmentedControl,
+  type SegmentedControlProps,
+} from "./components/segmented-control";

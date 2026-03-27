@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { RefreshCw, Cookie, Sun, Moon } from "lucide-react";
 import {
   Button,
   Card,
@@ -38,6 +39,9 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  Switch,
+  SegmentedControl,
+  InlineLink,
   SelectValue,
 } from "cubepath-ui";
 
@@ -52,13 +56,15 @@ function ThemeToggle() {
         document.documentElement.classList.toggle("dark");
       }}
     >
-      {dark ? "☀ Light" : "● Dark"}
+      {dark ? <><Sun className="size-4" /> Light</> : <><Moon className="size-4" /> Dark</>}
     </Button>
   );
 }
 
 export default function App() {
   const [inputVal, setInputVal] = useState("");
+  const [currency, setCurrency] = useState("usd");
+  const [showAll, setShowAll] = useState(false);
 
   return (
     <TooltipProvider>
@@ -184,6 +190,29 @@ export default function App() {
                   <SelectItem value="256">256 GB</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </section>
+
+          {/* Switch & Segmented Control */}
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Switch & Segmented Control</h2>
+            <div className="flex flex-wrap items-center gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Switch checked={showAll} onCheckedChange={setShowAll} />
+                <span className="text-sm">Show All</span>
+              </label>
+              <SegmentedControl
+                value={currency}
+                onValueChange={setCurrency}
+                options={[
+                  { value: "usd", label: "$ USD" },
+                  { value: "eur", label: "\u20AC EUR" },
+                  { value: "gbp", label: "\u00A3 GBP" },
+                ]}
+              />
+              <Button variant="ghost" size="icon">
+                <RefreshCw className="size-4" />
+              </Button>
             </div>
           </section>
 
@@ -456,15 +485,13 @@ function CookieBanner() {
   return (
     <div className="fixed bottom-6 left-6 z-50 w-[280px] rounded-xl border border-border bg-card py-6 px-5 shadow-lg">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl">🍪</span>
+        <Cookie className="size-5 text-foreground" />
         <h3 className="text-lg font-semibold text-foreground">We use cookies</h3>
       </div>
       <p className="text-sm text-muted-foreground mb-5">
         We use cookies to improve your experience on our website. By continuing
         to browse, you accept our use of cookies.{" "}
-        <a href="#" className="text-foreground underline underline-offset-2">
-          Learn more
-        </a>
+        <InlineLink href="#">Learn more</InlineLink>
       </p>
       <div className="flex items-center gap-3">
         <Button size="sm" onClick={() => setVisible(false)}>Accept</Button>
