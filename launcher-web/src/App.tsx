@@ -151,29 +151,29 @@ export default function App() {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight">Select</h2>
             <div className="flex flex-wrap gap-3">
-              <Select>
+              <Select defaultValue="all">
                 <SelectTrigger>
                   <SelectValue placeholder="All Locations" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="all">All Locations</SelectItem>
                   <SelectItem value="barcelona">Barcelona, Spain</SelectItem>
                   <SelectItem value="miami">Miami, Florida</SelectItem>
                   <SelectItem value="houston">Houston, Texas</SelectItem>
                 </SelectContent>
               </Select>
-              <Select>
+              <Select defaultValue="all">
                 <SelectTrigger>
                   <SelectValue placeholder="All CPUs" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="all">All CPUs</SelectItem>
                   <SelectItem value="ryzen7">AMD Ryzen 7</SelectItem>
                   <SelectItem value="ryzen9">AMD Ryzen 9</SelectItem>
                   <SelectItem value="epyc">AMD EPYC</SelectItem>
                 </SelectContent>
               </Select>
-              <Select>
+              <Select defaultValue="all">
                 <SelectTrigger size="sm">
                   <SelectValue placeholder="RAM" />
                 </SelectTrigger>
