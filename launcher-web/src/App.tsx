@@ -166,7 +166,7 @@ export default function App() {
                 <SelectTrigger>
                   <SelectValue placeholder="All CPUs" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="item-aligned">
                   <SelectItem value="all">All CPUs</SelectItem>
                   <SelectItem value="ryzen7">AMD Ryzen 7</SelectItem>
                   <SelectItem value="ryzen9">AMD Ryzen 9</SelectItem>
@@ -177,7 +177,7 @@ export default function App() {
                 <SelectTrigger size="sm">
                   <SelectValue placeholder="RAM" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="item-aligned">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="64">64 GB</SelectItem>
                   <SelectItem value="128">128 GB</SelectItem>
