@@ -53,6 +53,9 @@ export const api = {
   createChat: (projectId: string, title?: string) => request<Chat>(`/api/projects/${projectId}/chats`, { method: "POST", body: JSON.stringify({ title }) }),
   deleteChat: (id: string) => request<void>(`/api/chats/${id}`, { method: "DELETE" }),
 
+  // Chat detail
+  getChat: (chatId: string) => request<Chat>(`/api/chats/${chatId}`),
+
   // Messages
   listMessages: (chatId: string) => request<Message[]>(`/api/chats/${chatId}/messages`),
 

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { ChatInputV2 } from "./chat-input-v2";
 import { MessageListV2, type ChatMessage } from "./message-list-v2";
-import { api } from "../../services/api-client";
+import { api, type Chat } from "../../services/api-client";
 
 let _id = 0;
 const uid = () => `msg-${Date.now()}-${++_id}`;
@@ -14,14 +14,18 @@ interface ChatPanelV2Props {
 export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const chatIdRef = useRef(chatId);
   const streamingRef = useRef(false);
 
   chatIdRef.current = chatId;
 
-  // Load messages when switching to an existing chat (not during streaming)
+  // Load messages and chat metadata when switching chats (not during streaming)
   useEffect(() => {
-    if (!chatId || streamingRef.current) return;
+    if (!chatId) { setChatMeta(null); setMessages([]); return; }
+    if (streamingRef.current) return;
+
+    api.getChat(chatId).then(setChatMeta).catch(() => setChatMeta(null));
     api.listMessages(chatId).then((msgs) =>
       setMessages(msgs.map((m) => ({ id: m.id, role: m.role, content: m.content }))),
     );
@@ -35,9 +39,11 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
       if (!currentChatId) {
         const projects = await api.listProjects();
         if (projects.length === 0) return;
-        const chat = await api.createChat(projects[0].id);
+        const title = content.length > 50 ? content.slice(0, 47) + "..." : content;
+        const chat = await api.createChat(projects[0].id, title);
         currentChatId = chat.id;
         chatIdRef.current = currentChatId;
+        setChatMeta(chat);
         onChatCreated?.(currentChatId);
       }
 
@@ -91,12 +97,20 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
       );
       setIsStreaming(false);
       streamingRef.current = false;
+
     },
     [onChatCreated],
   );
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      {chatMeta && (
+        <header className="flex h-12 shrink-0 items-center border-b border-border px-4">
+          <h1 className="mx-auto max-w-[720px] w-full text-sm font-medium truncate">
+            {chatMeta.title}
+          </h1>
+        </header>
+      )}
       <MessageListV2 messages={messages} isStreaming={isStreaming} />
       <ChatInputV2 onSend={handleSend} disabled={isStreaming} />
     </div>

@@ -21,6 +21,7 @@ createRoot(document.getElementById("root")!).render(
             </Route>
             <Route element={<AppLayoutV2 />}>
               <Route path="/v2" element={<HomeV2 />} />
+              <Route path="/v2/chat/:chatId" element={<HomeV2 />} />
             </Route>
             <Route path="/showcase" element={<Showcase />} />
           </Routes>

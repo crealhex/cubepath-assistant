@@ -32,6 +32,10 @@ export function createQueries(db: Database) {
       return db.query("SELECT * FROM chats WHERE id = ?").get(id) as Chat;
     },
 
+    getChat(id: string): Chat | null {
+      return (db.query("SELECT * FROM chats WHERE id = ?").get(id) as Chat) ?? null;
+    },
+
     updateChatTitle(id: string, title: string) {
       db.run("UPDATE chats SET title = ?, updated_at = datetime('now') WHERE id = ?", [title, id]);
     },

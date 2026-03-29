@@ -89,11 +89,39 @@ func main() {
 \`\`\``,
   };
 
+  responses.math2 = `Here's a quick overview of key formulas used in infrastructure capacity planning:
+
+**Network throughput** for $n$ servers with bandwidth $B$:
+
+$$T_{total} = \\sum_{i=1}^{n} B_i \\cdot \\eta_i$$
+
+where $\\eta_i$ is the efficiency factor for server $i$ (typically $0.85 \\leq \\eta \\leq 0.95$).
+
+**IOPS estimation** for NVMe storage:
+
+$$\\text{IOPS}_{effective} = \\frac{\\text{IOPS}_{raw}}{1 + \\frac{W}{R} \\cdot (A_f - 1)}$$
+
+where $W/R$ is the write-to-read ratio and $A_f$ is the write amplification factor.
+
+**Uptime SLA** expressed as nines:
+
+$$\\text{Downtime}_{annual} = 365.25 \\times 24 \\times 60 \\times (1 - \\frac{SLA}{100}) \\text{ minutes}$$
+
+For **99.99%** SLA: $\\Delta t = 365.25 \\times 24 \\times 60 \\times 0.0001 \\approx 52.6$ minutes/year.
+
+**Auto-scaling threshold** using exponential moving average:
+
+$$\\text{EMA}_t = \\alpha \\cdot x_t + (1 - \\alpha) \\cdot \\text{EMA}_{t-1}$$
+
+Scale up when $\\text{EMA}_t > \\theta_{up}$, scale down when $\\text{EMA}_t < \\theta_{down}$.`;
+
   function getResponse(input: string): string {
     const lower = input.toLowerCase();
     if (lower.includes("deploy") || lower.includes("create") || lower.includes("new")) return responses.deploy;
     if (lower.includes("status") || lower.includes("show") || lower.includes("list")) return responses.status;
-    if (lower.includes("cost") || lower.includes("price") || lower.includes("bill") || lower.includes("math")) return responses.cost;
+    if (lower.includes("cost") || lower.includes("price") || lower.includes("bill")) return responses.cost;
+    if (lower.includes("math2")) return responses.math2;
+    if (lower.includes("math")) return responses.cost;
     if (lower.includes("code") || lower.includes("script") || lower.includes("sdk") || lower.includes("example")) return responses.code;
     return responses.default;
   }

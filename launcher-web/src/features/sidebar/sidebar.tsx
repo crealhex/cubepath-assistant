@@ -6,7 +6,7 @@ import { api, type Project, type Chat } from "../../services/api-client";
 interface SidebarProps {
   activeChatId?: string | null;
   onSelectChat?: (chat: Chat) => void;
-  onNewChat?: (chat: Chat) => void;
+  onNewChat?: () => void;
   onOpenSettings?: () => void;
 }
 
@@ -45,9 +45,7 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
   }, [activeChatId]);
 
   const handleNewChat = useCallback(() => {
-    // Don't create a DB entry — just clear active chat.
-    // The chat gets created lazily on first message send.
-    onNewChat?.(null as unknown as Chat);
+    onNewChat?.();
   }, [onNewChat]);
 
   return (
