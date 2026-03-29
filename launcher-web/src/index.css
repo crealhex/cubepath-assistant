@@ -1,4 +1,5 @@
 @import "cubepath-ui/theme.css";
+@plugin "@tailwindcss/typography";
 
 body {
   margin: 0;

@@ -64,7 +64,7 @@ export function ChatPanel() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <MessageList messages={messages} />
+      <MessageList messages={messages} isStreaming={isStreaming} />
       <ChatInput onSend={handleSend} disabled={isStreaming} />
     </div>
   );
