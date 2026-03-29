@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/utils";
 
 const chatBubbleVariants = cva(
-  "relative max-w-[80%] px-4 py-2.5 text-sm leading-relaxed transition-colors",
+  "relative px-4 py-2.5 text-base leading-relaxed transition-colors",
   {
     variants: {
       variant: {
@@ -61,7 +61,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           <div className="flex shrink-0 items-end">{avatar}</div>
         )}
 
-        <div className={cn("flex flex-col", isUser ? "items-end" : "items-start")}>
+        <div className={cn("flex max-w-[80%] flex-col", isUser ? "items-end" : "items-start")}>
           <div
             ref={ref}
             className={cn(chatBubbleVariants({ variant, className }))}

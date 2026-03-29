@@ -72,7 +72,7 @@
   /* -- Typography ----------------------------------------------------------- */
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, "Liberation Mono", "Courier New", monospace;
 
   --font-weight-light: 300;
@@ -168,6 +168,26 @@
   50% {
     transform: translateY(-6px);
   }
+}
+
+@keyframes logo-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes logo-glow {
+  0%, 100% { filter: drop-shadow(0 0 0px #00D957); }
+  50% { filter: drop-shadow(0 0 12px #00D957); }
+}
+
+@keyframes logo-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes logo-breathe {
+  0%, 100% { transform: scale(0.6); }
+  50% { transform: scale(1.18); }
 }
 
 /* =============================================================================

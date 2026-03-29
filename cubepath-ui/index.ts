@@ -86,6 +86,11 @@ export {
 export { Switch } from "./components/switch";
 export { InlineLink, type InlineLinkProps } from "./components/inline-link";
 export {
+  CubePathLogo,
+  type CubePathLogoProps,
+  type AnimationName,
+} from "./components/cubepath-logo";
+export {
   SegmentedControl,
   type SegmentedControlProps,
 } from "./components/segmented-control";
