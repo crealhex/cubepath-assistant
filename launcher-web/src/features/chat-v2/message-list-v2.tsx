@@ -15,6 +15,13 @@ export interface ChatMessage {
   isStreaming?: boolean;
 }
 
+const PROSE_CLASSES =
+  "prose max-w-none break-words " +
+  "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 " +
+  "prose-pre:bg-transparent prose-pre:m-0 " +
+  "prose-code:bg-transparent prose-code:p-0 " +
+  "prose-code:before:content-none prose-code:after:content-none";
+
 const markdownComponents: Components = {
   code({ className, children }) {
     const match = /language-(\w+)/.exec(className || "");
@@ -33,7 +40,7 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
   if (msg.isStreaming && msg.content === "") return null;
 
   return (
-    <div className="prose max-w-none break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-pre:bg-transparent prose-pre:m-0 prose-code:bg-transparent prose-code:p-0 prose-code:before:content-none prose-code:after:content-none">
+    <div className={PROSE_CLASSES}>
       <Markdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
@@ -67,7 +74,8 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
   const spacerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Scroll: pin user message to top of container on send
+  // Pin user message to top of scroll container on send.
+  // Double rAF: first frame for React DOM commit, second for browser layout.
   useEffect(() => {
     if (scrollTrigger === 0) return;
 
@@ -75,21 +83,21 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
       requestAnimationFrame(() => {
         const container = containerRef.current;
         const userEl = lastUserRef.current;
-        if (!container || !userEl) return;
+        const content = contentRef.current;
+        if (!container || !userEl || !content) return;
 
         const elRect = userEl.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         const target = elRect.top - containerRect.top + container.scrollTop;
-        const gap = parseInt(getComputedStyle(contentRef.current!).paddingTop) || 24;
+        const gap = parseInt(getComputedStyle(content).paddingTop) || 24;
         container.scrollTo({ top: target - gap, behavior: "smooth" });
       });
     });
   }, [scrollTrigger]);
 
-  // Dynamic spacer: every render, measure content height vs last user msg position,
-  // calculate remaining space to fill below content.
-  // Uses offsetTop/offsetHeight (layout-relative, not scroll-relative) so scrolling
-  // doesn't affect the calculation.
+  // Dynamic spacer: runs every render (no deps) so it reacts to each streaming chunk.
+  // Measures content height relative to the last user message using layout properties
+  // (offsetTop/offsetHeight), which are scroll-independent — no infinite growth bug.
   useLayoutEffect(() => {
     const container = containerRef.current;
     const spacer = spacerRef.current;
@@ -97,15 +105,11 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
     const content = contentRef.current;
     if (!container || !spacer || !content) return;
 
-    // Measure content height WITHOUT collapsing spacer
-    // contentH = total wrapper scrollHeight - current spacer height
     const currentSpacerH = spacer.offsetHeight;
     const realContentH = content.scrollHeight - currentSpacerH;
     const userOffset = userEl ? userEl.offsetTop - content.offsetTop : 0;
     const belowUserH = realContentH - userOffset;
-
-    const viewportH = container.clientHeight;
-    const needed = Math.max(0, viewportH - belowUserH);
+    const needed = Math.max(0, container.clientHeight - belowUserH);
     spacer.style.minHeight = `${needed}px`;
   });
 
@@ -140,16 +144,13 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
           ),
         )}
 
-        <div>
-          <CubePathLogo
-            src={cubepathIcon}
-            size="sm"
-            streaming={isStreaming}
-            animations={["glow", "breathe", "rotate"]}
-          />
-        </div>
+        <CubePathLogo
+          src={cubepathIcon}
+          size="sm"
+          streaming={isStreaming}
+          animations={["glow", "breathe", "rotate"]}
+        />
 
-        {/* Dynamic spacer */}
         <div ref={spacerRef} />
       </div>
     </div>

@@ -3,8 +3,8 @@ import { ChatInputV2 } from "./chat-input-v2";
 import { MessageListV2, type ChatMessage } from "./message-list-v2";
 import { api, type Chat } from "../../services/api-client";
 
-let _id = 0;
-const uid = () => `msg-${Date.now()}-${++_id}`;
+let _nextId = 0;
+const uid = () => `msg-${Date.now()}-${++_nextId}`;
 
 interface ChatPanelV2Props {
   chatId: string | null;
@@ -16,12 +16,16 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
-  const chatIdRef = useRef(chatId);
-  const streamingRef = useRef(false);
 
+  // Sync prop to ref so handleSend always reads the current chatId
+  // without needing it as a useCallback dependency (avoids stale closures).
+  const chatIdRef = useRef(chatId);
   chatIdRef.current = chatId;
 
-  // Load messages and chat metadata when switching chats (not during streaming)
+  const streamingRef = useRef(false);
+
+  // Load messages and metadata when switching to a different chat.
+  // Skipped during active streaming to avoid wiping in-flight messages.
   useEffect(() => {
     if (!chatId) { setChatMeta(null); setMessages([]); return; }
     if (streamingRef.current) return;
@@ -36,7 +40,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
     async (content: string) => {
       let currentChatId = chatIdRef.current;
 
-      // Lazy chat creation
+      // Lazy chat creation — DB entry only when user actually sends
       if (!currentChatId) {
         const projects = await api.listProjects();
         if (projects.length === 0) return;
@@ -48,19 +52,9 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
         onChatCreated?.(currentChatId);
       }
 
-      const userMsg: ChatMessage = {
-        id: uid(),
-        role: "user",
-        content,
-      };
-
+      const userMsg: ChatMessage = { id: uid(), role: "user", content };
       const assistantId = uid();
-      const assistantMsg: ChatMessage = {
-        id: assistantId,
-        role: "assistant",
-        content: "",
-        isStreaming: true,
-      };
+      const assistantMsg: ChatMessage = { id: assistantId, role: "assistant", content: "", isStreaming: true };
 
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setIsStreaming(true);
@@ -75,9 +69,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
             accumulated += chunk.content;
             const snapshot = accumulated;
             setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId ? { ...m, content: snapshot } : m,
-              ),
+              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot } : m)),
             );
           }
         }
@@ -93,13 +85,10 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
       }
 
       setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId ? { ...m, isStreaming: false } : m,
-        ),
+        prev.map((m) => (m.id === assistantId ? { ...m, isStreaming: false } : m)),
       );
       setIsStreaming(false);
       streamingRef.current = false;
-
     },
     [onChatCreated],
   );
