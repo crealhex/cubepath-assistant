@@ -15,6 +15,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
   const chatIdRef = useRef(chatId);
   const streamingRef = useRef(false);
 
@@ -63,6 +64,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
 
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setIsStreaming(true);
+      setScrollTrigger((n) => n + 1);
       streamingRef.current = true;
 
       let accumulated = "";
@@ -111,7 +113,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
           </h1>
         </header>
       )}
-      <MessageListV2 messages={messages} isStreaming={isStreaming} />
+      <MessageListV2 messages={messages} isStreaming={isStreaming} scrollTrigger={scrollTrigger} />
       <ChatInputV2 onSend={handleSend} disabled={isStreaming} />
     </div>
   );
