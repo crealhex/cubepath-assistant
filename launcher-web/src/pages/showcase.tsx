@@ -438,6 +438,7 @@ export default function App() {
                   "1 TB Transfer",
                 ]}
                 ctaText="Get Started"
+                ctaHref="#"
               />
               <PricingCard
                 name="Pro"
@@ -452,6 +453,7 @@ export default function App() {
                   "DDoS Protection",
                 ]}
                 ctaText="Deploy Now"
+                ctaHref="#"
               />
               <PricingCard
                 name="Enterprise"
@@ -465,6 +467,7 @@ export default function App() {
                   "Priority Support",
                 ]}
                 ctaText="Contact Sales"
+                ctaHref="#"
               />
             </div>
           </section>
