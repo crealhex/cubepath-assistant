@@ -3,6 +3,7 @@ import { Button } from "cubepath-ui";
 import { ArrowDown } from "lucide-react";
 import { ChatInputV2 } from "./chat-input-v2";
 import { MessageListV2, type ChatMessage } from "./message-list-v2";
+import { ScrollContainer } from "./scroll-container";
 import { api, type Chat } from "../../services/api-client";
 
 let _nextId = 0;
@@ -19,10 +20,11 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Sync prop to ref so handleSend always reads the current chatId
-  // without needing it as a useCallback dependency (avoids stale closures).
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastUserRef = useRef<HTMLDivElement>(null);
+
+  // Sync prop to ref for stale closure safety in handleSend
   const chatIdRef = useRef(chatId);
   chatIdRef.current = chatId;
 
@@ -112,13 +114,24 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
           </h1>
         </header>
       )}
-      <MessageListV2
-        messages={messages}
-        isStreaming={isStreaming}
-        scrollTrigger={scrollTrigger}
-        onScrollChange={setShowScrollBtn}
-        containerRef={scrollContainerRef}
-      />
+
+      {messages.length === 0 ? (
+        <MessageListV2 messages={[]} />
+      ) : (
+        <ScrollContainer
+          scrollTrigger={scrollTrigger}
+          pinRef={lastUserRef}
+          isStreaming={isStreaming}
+          onCanScrollDown={setShowScrollBtn}
+          containerRef={scrollContainerRef}
+        >
+          <MessageListV2
+            messages={messages}
+            isStreaming={isStreaming}
+            lastUserRef={lastUserRef}
+          />
+        </ScrollContainer>
+      )}
 
       {showScrollBtn && (
         <Button

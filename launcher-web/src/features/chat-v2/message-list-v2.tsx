@@ -1,4 +1,3 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
 import { ChatBubble, CodeBlock, CubePathLogo } from "cubepath-ui";
 import cubepathIcon from "../../assets/cubepath-icon.svg";
 import type { Components } from "react-markdown";
@@ -66,87 +65,10 @@ function UserMessage({ msg, innerRef }: { msg: ChatMessage; innerRef?: React.Ref
 interface MessageListV2Props {
   messages: ChatMessage[];
   isStreaming?: boolean;
-  scrollTrigger?: number;
-  onScrollChange?: (canScrollDown: boolean) => void;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  lastUserRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0, onScrollChange, containerRef: externalContainerRef }: MessageListV2Props) {
-  const internalContainerRef = useRef<HTMLDivElement>(null);
-  const containerRef = externalContainerRef ?? internalContainerRef;
-  const lastUserRef = useRef<HTMLDivElement>(null);
-  const spacerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  function trackScrollPosition() {
-    const container = containerRef.current;
-    const spacer = spacerRef.current;
-    if (!container || !onScrollChange) return;
-    const check = () => {
-      const spacerH = spacer?.offsetHeight ?? 0;
-      const realContentBottom = container.scrollHeight - spacerH;
-      const viewBottom = container.scrollTop + container.clientHeight;
-      onScrollChange(realContentBottom - viewBottom > 100);
-    };
-    check();
-    container.addEventListener("scroll", check, { passive: true });
-    return () => container.removeEventListener("scroll", check);
-  }
-
-  function pinUserMessageToTop() {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const container = containerRef.current;
-        const userEl = lastUserRef.current;
-        const content = contentRef.current;
-        if (!container || !userEl || !content) return;
-
-        const elRect = userEl.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const target = elRect.top - containerRect.top + container.scrollTop;
-        const gap = parseInt(getComputedStyle(content).paddingTop) || 24;
-        container.scrollTo({ top: target - gap, behavior: "smooth" });
-      });
-    });
-  }
-
-  function updateDynamicSpacer() {
-    const container = containerRef.current;
-    const spacer = spacerRef.current;
-    const userEl = lastUserRef.current;
-    const content = contentRef.current;
-    if (!container || !spacer || !content) return;
-
-    const currentSpacerH = spacer.offsetHeight;
-    const realContentH = content.scrollHeight - currentSpacerH;
-    const userOffset = userEl ? userEl.offsetTop - content.offsetTop : 0;
-    const belowUserH = realContentH - userOffset;
-    const needed = Math.max(0, container.clientHeight - belowUserH);
-    spacer.style.minHeight = `${needed}px`;
-  }
-
-  useEffect(trackScrollPosition, [messages]);
-  useEffect(() => { if (scrollTrigger > 0) pinUserMessageToTop(); }, [scrollTrigger]);
-  useLayoutEffect(updateDynamicSpacer);
-
-  // Dynamic spacer: runs every render (no deps) so it reacts to each streaming chunk.
-  // Measures content height relative to the last user message using layout properties
-  // (offsetTop/offsetHeight), which are scroll-independent — no infinite growth bug.
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    const spacer = spacerRef.current;
-    const userEl = lastUserRef.current;
-    const content = contentRef.current;
-    if (!container || !spacer || !content) return;
-
-    const currentSpacerH = spacer.offsetHeight;
-    const realContentH = content.scrollHeight - currentSpacerH;
-    const userOffset = userEl ? userEl.offsetTop - content.offsetTop : 0;
-    const belowUserH = realContentH - userOffset;
-    const needed = Math.max(0, container.clientHeight - belowUserH);
-    spacer.style.minHeight = `${needed}px`;
-  });
-
+export function MessageListV2({ messages, isStreaming = false, lastUserRef }: MessageListV2Props) {
   if (messages.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
@@ -163,31 +85,25 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
   const lastUserIdx = messages.findLastIndex((m) => m.role === "user");
 
   return (
-    <div ref={containerRef} className="relative flex flex-1 flex-col overflow-y-auto">
-      <div className="flex-1" />
-      <div ref={contentRef} className="mx-auto flex w-full max-w-[720px] flex-col gap-6 px-4 py-6 md:px-0">
-        {messages.map((msg, i) =>
-          msg.role === "user" ? (
-            <UserMessage
-              key={msg.id}
-              msg={msg}
-              innerRef={i === lastUserIdx ? lastUserRef : undefined}
-            />
-          ) : (
-            <AssistantMessage key={msg.id} msg={msg} />
-          ),
-        )}
+    <>
+      {messages.map((msg, i) =>
+        msg.role === "user" ? (
+          <UserMessage
+            key={msg.id}
+            msg={msg}
+            innerRef={i === lastUserIdx ? lastUserRef : undefined}
+          />
+        ) : (
+          <AssistantMessage key={msg.id} msg={msg} />
+        ),
+      )}
 
-        <CubePathLogo
-          src={cubepathIcon}
-          size="sm"
-          streaming={isStreaming}
-          animations={["glow", "breathe", "rotate"]}
-        />
-
-        <div ref={spacerRef} />
-      </div>
-
-    </div>
+      <CubePathLogo
+        src={cubepathIcon}
+        size="sm"
+        streaming={isStreaming}
+        animations={["glow", "breathe", "rotate"]}
+      />
+    </>
   );
 }
