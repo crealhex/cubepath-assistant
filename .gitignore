@@ -41,3 +41,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 *.db-shm
 *.db-wal
 
+# Local workspace artifacts
+.codex
+scratch-files/
