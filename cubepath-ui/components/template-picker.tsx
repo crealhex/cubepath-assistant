@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 export interface TemplateOption {
   name: string;
@@ -29,15 +28,12 @@ function TemplatePicker({
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <Card className={cn("w-full max-w-lg overflow-hidden", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-semibold">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="px-0 pb-4">
-        <div
-          ref={scrollRef}
-          className="flex gap-2.5 overflow-x-auto px-6 pb-2 scrollbar-none snap-x snap-mandatory"
-        >
+    <div className={cn("flex flex-col gap-2", className)}>
+      <span className="text-sm font-semibold">{title}</span>
+      <div
+        ref={scrollRef}
+        className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory"
+      >
           {templates.map((t) => {
             const isSelected = selected === t.name;
             return (
@@ -89,8 +85,7 @@ function TemplatePicker({
             );
           })}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 
