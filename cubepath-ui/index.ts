@@ -141,3 +141,18 @@ export {
   LbPlanCard,
   type LbPlanProps,
 } from "./components/lb-plan-card";
+export {
+  BaremetalTable,
+  type BaremetalTableProps,
+  type BaremetalRow,
+} from "./components/baremetal-table";
+export {
+  CdnTable,
+  type CdnTableProps,
+  type CdnRow,
+} from "./components/cdn-table";
+export {
+  LbTable,
+  type LbTableProps,
+  type LbRow,
+} from "./components/lb-table";

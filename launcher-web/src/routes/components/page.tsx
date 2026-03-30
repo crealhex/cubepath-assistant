@@ -11,6 +11,9 @@ import {
   BaremetalCard,
   CdnPlanCard,
   LbPlanCard,
+  BaremetalTable,
+  CdnTable,
+  LbTable,
   type DeployStep,
   type LocationOption,
   type PlanRow,
@@ -218,7 +221,7 @@ export default function ComponentsPage() {
         </Section>
 
         <Section title="Baremetal Cards">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <BaremetalCard
               model_name="c1.metal.lite"
               cpu="AMD Ryzen 7 5800X"
@@ -267,7 +270,7 @@ export default function ComponentsPage() {
         </Section>
 
         <Section title="CDN Plan Cards">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <CdnPlanCard
               name="cdn.starter"
               description="Perfect for small websites and personal projects"
@@ -295,7 +298,7 @@ export default function ComponentsPage() {
         </Section>
 
         <Section title="Load Balancer Plan Cards">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <LbPlanCard
               name="lb.small"
               description="Up to 5 targets"
@@ -325,6 +328,40 @@ export default function ComponentsPage() {
               onSelect={(p) => console.log("select", p)}
             />
           </div>
+        </Section>
+        <Section title="Baremetal Table">
+          <BaremetalTable
+            models={[
+              { model_name: "c1.metal.lite", cpu: "AMD Ryzen 7 5800X", cpu_specs: "8c/16t, 3.8GHz", cpu_bench: 27845, ram_size: 64, ram_type: "DDR4", disk_size: "1 x 1TB", disk_type: "NVME", port: 1, monthly_price: 239, stock_available: 1 },
+              { model_name: "c1.metal.max", cpu: "AMD Ryzen 7 5800X", cpu_specs: "8c/16t, 3.8GHz", cpu_bench: 27845, ram_size: 128, ram_type: "DDR4", disk_size: "2 x 2TB", disk_type: "NVME", port: 1, monthly_price: 279, stock_available: 3 },
+              { model_name: "p1.metal.elite", cpu: "AMD Ryzen 9 9950X", cpu_specs: "16c/32t, 4.3GHz", cpu_bench: 66446, ram_size: 192, ram_type: "DDR5", disk_size: "2 x 2TB", disk_type: "NVME", port: 10, monthly_price: 495, stock_available: 1 },
+              { model_name: "e1.metal.prime", cpu: "AMD EPYC 7502", cpu_specs: "32c/64t, 2.5GHz", cpu_bench: 47983, ram_size: 512, ram_type: "DDR4", disk_size: "2 x 4TB", disk_type: "NVME", port: 10, monthly_price: 685, stock_available: 0 },
+            ]}
+            onSelect={(m) => console.log("select", m)}
+          />
+        </Section>
+
+        <Section title="CDN Table">
+          <CdnTable
+            plans={[
+              { name: "cdn.starter", description: "Small websites", base_price_per_hour: 0.007, price_per_gb: { europe: 0.08, north_america: 0.08 }, max_zones: 3, max_origins_per_zone: 2, max_rules_per_zone: 10, custom_ssl_allowed: true },
+              { name: "cdn.pro", description: "Growing businesses", base_price_per_hour: 0.021, price_per_gb: { europe: 0.06, north_america: 0.06 }, max_zones: 10, max_origins_per_zone: 5, max_rules_per_zone: 50, custom_ssl_allowed: true },
+              { name: "cdn.business", description: "High-performance", base_price_per_hour: 0.042, price_per_gb: { europe: 0.04, north_america: 0.04 }, max_zones: 50, max_origins_per_zone: 10, max_rules_per_zone: 200, custom_ssl_allowed: true },
+              { name: "cdn.enterprise", description: "Unlimited scale", base_price_per_hour: 0.083, price_per_gb: { europe: 0.02, north_america: 0.02 }, max_zones: -1, max_origins_per_zone: 25, max_rules_per_zone: 1000, custom_ssl_allowed: true },
+            ]}
+            onSelect={(p) => console.log("select", p)}
+          />
+        </Section>
+
+        <Section title="Load Balancer Table">
+          <LbTable
+            plans={[
+              { name: "lb.small", description: "Up to 5 targets", price_per_hour: 0.015, max_targets: 5, max_listeners: 5, connections_per_second: 10000 },
+              { name: "lb.medium", description: "Up to 15 targets", price_per_hour: 0.03, max_targets: 15, max_listeners: 10, connections_per_second: 25000 },
+              { name: "lb.large", description: "Up to 50 targets", price_per_hour: 0.06, max_targets: 50, max_listeners: 25, connections_per_second: 50000 },
+            ]}
+            onSelect={(p) => console.log("select", p)}
+          />
         </Section>
       </div>
     </div>

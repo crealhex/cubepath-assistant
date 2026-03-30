@@ -49,7 +49,7 @@ function LocationPicker({
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       {/* Region filter tabs */}
-      <div className="flex justify-center gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         {regions.map((region) => (
           <button
             key={region}
@@ -68,7 +68,7 @@ function LocationPicker({
       </div>
 
       {/* Location grid */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {visible.map((loc) => {
           const isSelected = selected === loc.location_name;
           const flagCode = countryToCode[loc.country] ?? "xx";
