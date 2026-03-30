@@ -97,6 +97,7 @@ export {
 export {
   InstanceCard,
   type InstanceCardProps,
+  type InstancePlan,
 } from "./components/instance-card";
 export {
   DeployProgress,
