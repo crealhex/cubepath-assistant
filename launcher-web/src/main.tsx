@@ -8,6 +8,7 @@ import { AppLayoutV2 } from "./routes/v2/layout";
 import Home from "./routes/v1/page";
 import PageV2 from "./routes/v2/page";
 import Showcase from "./routes/showcase/page";
+import ComponentsPage from "./routes/components/page";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/v2/chat/:chatId" element={<PageV2 />} />
             </Route>
             <Route path="/showcase" element={<Showcase />} />
+            <Route path="/components" element={<ComponentsPage />} />
           </Routes>
         </TooltipProvider>
       </AppProvider>
