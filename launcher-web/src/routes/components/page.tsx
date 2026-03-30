@@ -15,7 +15,7 @@ import {
   type SshKeyOption,
 } from "cubepath-ui";
 import { getTemplateIcon } from "@/assets/icons";
-import { useLatency } from "@/hooks/use-latency";
+import { useLatency, type LatencyTarget } from "@/hooks/use-latency";
 
 const locations: LocationOption[] = [
   { location_name: "eu-bcn-1", code: "BCN", city: "Barcelona", country: "Spain", region: "Europe", services: ["vps", "baremetal"], test_ipv4: "194.26.100.2" },
@@ -67,9 +67,14 @@ export default function ComponentsPage() {
   const [selectedKeys, setSelectedKeys] = useState<string[]>(["work-laptop"]);
   const [deployStep, setDeployStep] = useState<DeployStep>("provisioning");
 
-  const latencies = useLatency(
-    locations.filter((l) => l.test_ipv4).map((l) => ({ location_name: l.location_name, test_ipv4: l.test_ipv4! })),
-  );
+  const pingTargets: LatencyTarget[] = [
+    { location_name: "eu-bcn-1", strategy: "api", ping_code: "bcn" },
+    { location_name: "eu-ams-1", strategy: "ip", ip: "92.60.253.90" },
+    { location_name: "us-mia-1", strategy: "api", ping_code: "mia" },
+    { location_name: "us-hou-1", strategy: "api", ping_code: "hou" },
+    { location_name: "us-va-1", strategy: "ip", ip: "198.47.110.18" },
+  ];
+  const latencies = useLatency(pingTargets);
   const locationsWithPing = locations.map((l) => ({
     ...l,
     latency: latencies[l.location_name] ?? null,
@@ -92,9 +97,9 @@ export default function ComponentsPage() {
             status="running"
             project="first-project"
             ip="194.26.100.42"
-            plan="gp.nano"
-            location="eu-bcn-1"
-            template="ubuntu-24"
+            plan={{ plan_name: "gp.nano", cpu: 1, ram: 2048, storage: 40, bandwidth: 3, price_per_hour: "0.00556" }}
+            location="Barcelona, Spain"
+            template="Ubuntu 24"
             onPowerAction={(id, action) => console.log("power", id, action)}
             onDestroy={(id) => console.log("destroy", id)}
           />
@@ -103,9 +108,9 @@ export default function ComponentsPage() {
             name="api-server"
             status="deploying"
             project="first-project"
-            plan="gp.starter"
-            location="us-mia-1"
-            template="debian-12"
+            plan={{ plan_name: "gp.starter", cpu: 4, ram: 8192, storage: 100, bandwidth: 10, price_per_hour: "0.02290" }}
+            location="Miami, FL"
+            template="Debian 12"
           />
           <InstanceCard
             id={23708}
@@ -113,9 +118,9 @@ export default function ComponentsPage() {
             status="stopped"
             project="first-project"
             ip="157.254.174.88"
-            plan="gp.small"
-            location="us-hou-1"
-            template="ubuntu-24"
+            plan={{ plan_name: "gp.small", cpu: 8, ram: 16384, storage: 200, bandwidth: 20, price_per_hour: "0.04230" }}
+            location="Houston, TX"
+            template="Ubuntu 24"
             onPowerAction={(id, action) => console.log("power", id, action)}
             onDestroy={(id) => console.log("destroy", id)}
           />
