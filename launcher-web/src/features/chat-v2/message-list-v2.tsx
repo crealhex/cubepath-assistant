@@ -75,11 +75,22 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
   const spacerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Pin user message to top of scroll container on send.
-  // Double rAF: first frame for React DOM commit, second for browser layout.
-  useEffect(() => {
-    if (scrollTrigger === 0) return;
+  const prevChatId = useRef<string | undefined>(undefined);
 
+  function scrollToBottomOnChatLoad() {
+    if (messages.length === 0 || isStreaming) return;
+    const chatChanged = prevChatId.current !== messages[0]?.id;
+    if (!chatChanged && prevChatId.current !== undefined) return;
+    prevChatId.current = messages[0]?.id;
+
+    const container = containerRef.current;
+    if (!container) return;
+    requestAnimationFrame(() => {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    });
+  }
+
+  function pinUserMessageToTop() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const container = containerRef.current;
@@ -94,7 +105,26 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
         container.scrollTo({ top: target - gap, behavior: "smooth" });
       });
     });
-  }, [scrollTrigger]);
+  }
+
+  function updateDynamicSpacer() {
+    const container = containerRef.current;
+    const spacer = spacerRef.current;
+    const userEl = lastUserRef.current;
+    const content = contentRef.current;
+    if (!container || !spacer || !content) return;
+
+    const currentSpacerH = spacer.offsetHeight;
+    const realContentH = content.scrollHeight - currentSpacerH;
+    const userOffset = userEl ? userEl.offsetTop - content.offsetTop : 0;
+    const belowUserH = realContentH - userOffset;
+    const needed = Math.max(0, container.clientHeight - belowUserH);
+    spacer.style.minHeight = `${needed}px`;
+  }
+
+  useEffect(scrollToBottomOnChatLoad, [messages]);
+  useEffect(() => { if (scrollTrigger > 0) pinUserMessageToTop(); }, [scrollTrigger]);
+  useLayoutEffect(updateDynamicSpacer);
 
   // Dynamic spacer: runs every render (no deps) so it reacts to each streaming chunk.
   // Measures content height relative to the last user message using layout properties

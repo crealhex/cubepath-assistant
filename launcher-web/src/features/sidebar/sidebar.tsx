@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Button, Tooltip, TooltipTrigger, TooltipContent, Skeleton } from "cubepath-ui";
-import { Plus, FolderOpen, Settings, MessageSquare } from "lucide-react";
+import { Plus, FolderOpen, Settings } from "lucide-react";
 import { api, type Project, type Chat } from "../../services/api-client";
 
 interface SidebarProps {
@@ -17,32 +17,33 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Load projects
-  useEffect(() => {
+  function loadProjects() {
     api.listProjects().then((p) => {
       setProjects(p);
       if (p.length > 0 && !activeProject) setActiveProject(p[0]);
     });
-  }, []);
+  }
 
-  // Load chats when project changes
-  useEffect(() => {
+  function loadChatsOnProjectChange() {
     if (!activeProject) return;
     setLoading(true);
     api.listChats(activeProject.id).then((c) => {
       setChats(c);
       setLoading(false);
     });
-  }, [activeProject?.id]);
+  }
 
-  // Refresh chat list when a new chat is created externally
-  useEffect(() => {
+  function refreshChatsOnExternalCreate() {
     if (!activeProject || !activeChatId) return;
     const exists = chats.some((c) => c.id === activeChatId);
     if (!exists) {
       api.listChats(activeProject.id).then(setChats);
     }
-  }, [activeChatId]);
+  }
+
+  useEffect(loadProjects, []);
+  useEffect(loadChatsOnProjectChange, [activeProject?.id]);
+  useEffect(refreshChatsOnExternalCreate, [activeChatId]);
 
   const handleNewChat = useCallback(() => {
     onNewChat?.();
@@ -130,7 +131,6 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  <MessageSquare className="size-3.5 shrink-0" />
                   <span className="truncate">{c.title}</span>
                 </button>
               ))

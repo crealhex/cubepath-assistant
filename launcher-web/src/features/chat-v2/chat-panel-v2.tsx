@@ -24,9 +24,7 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
 
   const streamingRef = useRef(false);
 
-  // Load messages and metadata when switching to a different chat.
-  // Skipped during active streaming to avoid wiping in-flight messages.
-  useEffect(() => {
+  function loadChatOnSwitch() {
     if (!chatId) { setChatMeta(null); setMessages([]); return; }
     if (streamingRef.current) return;
 
@@ -34,7 +32,9 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
     api.listMessages(chatId).then((msgs) =>
       setMessages(msgs.map((m) => ({ id: m.id, role: m.role, content: m.content }))),
     );
-  }, [chatId]);
+  }
+
+  useEffect(loadChatOnSwitch, [chatId]);
 
   const handleSend = useCallback(
     async (content: string) => {
