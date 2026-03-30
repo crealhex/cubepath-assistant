@@ -15,13 +15,14 @@ import {
   type SshKeyOption,
 } from "cubepath-ui";
 import { getTemplateIcon } from "@/assets/icons";
+import { useLatency } from "@/hooks/use-latency";
 
 const locations: LocationOption[] = [
-  { location_name: "eu-bcn-1", code: "BCN", city: "Barcelona", country: "Spain", region: "Europe", services: ["vps", "baremetal"] },
-  { location_name: "eu-ams-1", code: "AMS", city: "Amsterdam", country: "Netherlands", region: "Europe", services: ["network"] },
-  { location_name: "us-mia-1", code: "MIA", city: "Miami", country: "United States", region: "North America", services: ["vps", "baremetal"] },
-  { location_name: "us-hou-1", code: "HOU", city: "Houston", country: "United States", region: "North America", services: ["vps", "baremetal"] },
-  { location_name: "us-va-1", code: "VA", city: "Ashburn", country: "United States", region: "North America", services: ["network"] },
+  { location_name: "eu-bcn-1", code: "BCN", city: "Barcelona", country: "Spain", region: "Europe", services: ["vps", "baremetal"], test_ipv4: "194.26.100.2" },
+  { location_name: "eu-ams-1", code: "AMS", city: "Amsterdam", country: "Netherlands", region: "Europe", services: ["network"], test_ipv4: "92.60.253.90" },
+  { location_name: "us-mia-1", code: "MIA", city: "Miami", country: "United States", region: "North America", services: ["vps", "baremetal"], test_ipv4: "157.254.174.2" },
+  { location_name: "us-hou-1", code: "HOU", city: "Houston", country: "United States", region: "North America", services: ["vps", "baremetal"], test_ipv4: "108.165.47.2" },
+  { location_name: "us-va-1", code: "VA", city: "Ashburn", country: "United States", region: "North America", services: ["network"], test_ipv4: "198.47.110.18" },
 ];
 
 const plans: PlanRow[] = [
@@ -65,6 +66,14 @@ export default function ComponentsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("ubuntu-24");
   const [selectedKeys, setSelectedKeys] = useState<string[]>(["work-laptop"]);
   const [deployStep, setDeployStep] = useState<DeployStep>("provisioning");
+
+  const latencies = useLatency(
+    locations.filter((l) => l.test_ipv4).map((l) => ({ location_name: l.location_name, test_ipv4: l.test_ipv4! })),
+  );
+  const locationsWithPing = locations.map((l) => ({
+    ...l,
+    latency: latencies[l.location_name] ?? null,
+  }));
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -120,8 +129,8 @@ export default function ComponentsPage() {
                 onClick={() => setDeployStep(step)}
                 className={`px-2.5 py-1 rounded text-xs border transition-colors ${
                   deployStep === step
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:text-foreground"
+                    ? "border-primary text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                 }`}
               >
                 {step}
@@ -165,7 +174,7 @@ export default function ComponentsPage() {
 
         <Section title="Location Picker">
           <LocationPicker
-            locations={locations}
+            locations={locationsWithPing}
             selected={selectedLocation}
             onSelect={setSelectedLocation}
           />
