@@ -1,0 +1,52 @@
+[
+  {
+    "location_name": "eu-bcn-1",
+    "city": "Barcelona",
+    "country": "Spain",
+    "region": "Europe",
+    "facility": "Templus Barcelona Datacenter",
+    "tier": "III",
+    "services": ["vps", "baremetal"],
+    "test_ipv4": "194.26.100.2"
+  },
+  {
+    "location_name": "eu-ams-1",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "region": "Europe",
+    "facility": "NIKHEF Amsterdam",
+    "tier": "III",
+    "services": ["network"],
+    "test_ipv4": "92.60.253.90"
+  },
+  {
+    "location_name": "us-mia-1",
+    "city": "Miami",
+    "country": "United States",
+    "region": "North America",
+    "facility": "DataBank Miami (MIA1)",
+    "tier": "III",
+    "services": ["vps", "baremetal"],
+    "test_ipv4": "157.254.174.2"
+  },
+  {
+    "location_name": "us-hou-1",
+    "city": "Houston",
+    "country": "United States",
+    "region": "North America",
+    "facility": "TRG Datacenters Houston",
+    "tier": "III",
+    "services": ["vps", "baremetal"],
+    "test_ipv4": "108.165.47.2"
+  },
+  {
+    "location_name": "us-va-1",
+    "city": "Ashburn",
+    "country": "United States",
+    "region": "North America",
+    "facility": "CoreSite - Reston (VA1)",
+    "tier": "III+",
+    "services": ["network"],
+    "test_ipv4": "198.47.110.18"
+  }
+]

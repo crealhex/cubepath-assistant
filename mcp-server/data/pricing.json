@@ -1,0 +1,67 @@
+{
+  "currency": "USD",
+  "vps": {
+    "note": "All plans include DDoS protection, NVMe SSD storage, 24/7 support. IPv4 included at +$1.50/mo.",
+    "general_purpose": [
+      { "plan": "gp.nano",     "vcpu": 1,  "ram_gb": 2,   "storage_gb": 40,   "bandwidth_tb": 3,   "price_monthly": 5.56,   "price_hourly": 0.0076 },
+      { "plan": "gp.micro",    "vcpu": 2,  "ram_gb": 4,   "storage_gb": 80,   "bandwidth_tb": 5,   "price_monthly": 9.61,   "price_hourly": 0.0132 },
+      { "plan": "gp.starter",  "vcpu": 4,  "ram_gb": 8,   "storage_gb": 100,  "bandwidth_tb": 10,  "price_monthly": 16.71,  "price_hourly": 0.0229 },
+      { "plan": "gp.small",    "vcpu": 8,  "ram_gb": 16,  "storage_gb": 200,  "bandwidth_tb": 20,  "price_monthly": 30.90,  "price_hourly": 0.0423 },
+      { "plan": "gp.medium",   "vcpu": 12, "ram_gb": 32,  "storage_gb": 300,  "bandwidth_tb": 40,  "price_monthly": 57.26,  "price_hourly": 0.0784 },
+      { "plan": "gp.pro",      "vcpu": 16, "ram_gb": 48,  "storage_gb": 350,  "bandwidth_tb": 60,  "price_monthly": 80.58,  "price_hourly": 0.1104 },
+      { "plan": "gp.large",    "vcpu": 24, "ram_gb": 64,  "storage_gb": 400,  "bandwidth_tb": 80,  "price_monthly": 101.88, "price_hourly": 0.1396 },
+      { "plan": "gp.xlarge",   "vcpu": 32, "ram_gb": 96,  "storage_gb": 500,  "bandwidth_tb": 120, "price_monthly": 128.24, "price_hourly": 0.1757 },
+      { "plan": "gp.xxlarge",  "vcpu": 40, "ram_gb": 128, "storage_gb": 800,  "bandwidth_tb": 160, "price_monthly": 158.65, "price_hourly": 0.2173 },
+      { "plan": "gp.xxxlarge", "vcpu": 48, "ram_gb": 192, "storage_gb": 1000, "bandwidth_tb": 200, "price_monthly": 214.42, "price_hourly": 0.2937 }
+    ],
+    "high_frequency": [
+      { "plan": "rz.nano",    "vcpu": 1,  "ram_gb": 1,  "storage_gb": 25,  "bandwidth_tb": 1,  "price_monthly": 5.56,   "price_hourly": 0.0076 },
+      { "plan": "rz.micro",   "vcpu": 1,  "ram_gb": 2,  "storage_gb": 40,  "bandwidth_tb": 2,  "price_monthly": 9.61,   "price_hourly": 0.0132 },
+      { "plan": "rz.starter", "vcpu": 2,  "ram_gb": 4,  "storage_gb": 80,  "bandwidth_tb": 4,  "price_monthly": 17.72,  "price_hourly": 0.0243 },
+      { "plan": "rz.small",   "vcpu": 4,  "ram_gb": 8,  "storage_gb": 160, "bandwidth_tb": 8,  "price_monthly": 33.94,  "price_hourly": 0.0465 },
+      { "plan": "rz.medium",  "vcpu": 8,  "ram_gb": 16, "storage_gb": 250, "bandwidth_tb": 16, "price_monthly": 66.39,  "price_hourly": 0.0909 },
+      { "plan": "rz.pro",     "vcpu": 8,  "ram_gb": 24, "storage_gb": 300, "bandwidth_tb": 24, "price_monthly": 95.79,  "price_hourly": 0.1312 },
+      { "plan": "rz.large",   "vcpu": 10, "ram_gb": 32, "storage_gb": 400, "bandwidth_tb": 32, "price_monthly": 123.17, "price_hourly": 0.1687 },
+      { "plan": "rz.xlarge",  "vcpu": 12, "ram_gb": 48, "storage_gb": 500, "bandwidth_tb": 48, "price_monthly": 173.86, "price_hourly": 0.2382 }
+    ],
+    "dedicated_cpu": [
+      { "plan": "dc.starter",  "vcpu": 4,  "ram_gb": 8,   "storage_gb": 100,  "bandwidth_tb": 10,  "price_monthly": 31.92,  "price_hourly": 0.0437 },
+      { "plan": "dc.small",    "vcpu": 8,  "ram_gb": 16,  "storage_gb": 200,  "bandwidth_tb": 20,  "price_monthly": 60.31,  "price_hourly": 0.0826 },
+      { "plan": "dc.medium",   "vcpu": 12, "ram_gb": 32,  "storage_gb": 300,  "bandwidth_tb": 40,  "price_monthly": 113.03, "price_hourly": 0.1548 },
+      { "plan": "dc.pro",      "vcpu": 16, "ram_gb": 48,  "storage_gb": 350,  "bandwidth_tb": 60,  "price_monthly": 159.67, "price_hourly": 0.2187 },
+      { "plan": "dc.large",    "vcpu": 24, "ram_gb": 64,  "storage_gb": 400,  "bandwidth_tb": 80,  "price_monthly": 202.25, "price_hourly": 0.2771 },
+      { "plan": "dc.xlarge",   "vcpu": 32, "ram_gb": 96,  "storage_gb": 500,  "bandwidth_tb": 120, "price_monthly": 254.97, "price_hourly": 0.3493 },
+      { "plan": "dc.xxlarge",  "vcpu": 40, "ram_gb": 128, "storage_gb": 800,  "bandwidth_tb": 160, "price_monthly": 315.81, "price_hourly": 0.4326 },
+      { "plan": "dc.xxxlarge", "vcpu": 48, "ram_gb": 192, "storage_gb": 1000, "bandwidth_tb": 200, "price_monthly": 427.33, "price_hourly": 0.5854 }
+    ]
+  },
+  "baremetal": {
+    "note": "AMD EPYC & Ryzen processors, unmetered bandwidth, enterprise DDoS protection. Annual contract available at -30%.",
+    "servers": [
+      { "model": "c1.metal.max",      "cpu": "AMD Ryzen 7 5800X",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "128 GB DDR4", "storage": "2 x 2TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 279.00 },
+      { "model": "c1.metal.ultra",     "cpu": "AMD Ryzen 7 5800X",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "128 GB DDR4", "storage": "2 x 1TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 265.00 },
+      { "model": "c1.metal.plus",      "cpu": "AMD Ryzen 7 5700G",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "64 GB DDR4",  "storage": "2 x 1TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 255.00 },
+      { "model": "c1.metal.lite",      "cpu": "AMD Ryzen 7 5800X",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "64 GB DDR4",  "storage": "1 x 1TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 239.00 },
+      { "model": "c1.metal.standard",  "cpu": "AMD Ryzen 7 5800X",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "64 GB DDR4",  "storage": "1 x 2TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 249.00 },
+      { "model": "c1.metal.apex",      "cpu": "AMD Ryzen 7 5800X",  "cores": 8,  "threads": 16, "base_ghz": 3.8, "ram": "128 GB DDR4", "storage": "2 x 4TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 309.00 },
+      { "model": "p1.metal.standard",  "cpu": "AMD Ryzen 9 7900",   "cores": 12, "threads": 24, "base_ghz": 3.7, "ram": "128 GB DDR5", "storage": "2 x 2TB NVME", "port": "1 Gbps",  "bandwidth": "Unmetered", "price_monthly": 295.00 },
+      { "model": "p1.metal.elite",     "cpu": "AMD Ryzen 9 9950X",  "cores": 16, "threads": 32, "base_ghz": 4.3, "ram": "192 GB DDR5", "storage": "2 x 2TB NVME", "port": "10 Gbps", "bandwidth": "Unmetered", "price_monthly": 495.00 },
+      { "model": "p1.metal.lite",      "cpu": "AMD Ryzen 9 7900",   "cores": 12, "threads": 24, "base_ghz": 3.7, "ram": "64 GB DDR5",  "storage": "1 x 1TB NVME", "port": "10 Gbps", "bandwidth": "Unmetered", "price_monthly": 249.00 }
+    ]
+  },
+  "cdn": {
+    "plans": [
+      { "plan": "cdn.starter",    "zones": 3,    "origins_per_zone": 2,  "rules_per_zone": 10,   "ssl": true, "price_monthly": 5.11,  "price_hourly": 0.0070 },
+      { "plan": "cdn.pro",        "zones": 10,   "origins_per_zone": 5,  "rules_per_zone": 50,   "ssl": true, "price_monthly": 15.33, "price_hourly": 0.0210 },
+      { "plan": "cdn.business",   "zones": 50,   "origins_per_zone": 10, "rules_per_zone": 200,  "ssl": true, "price_monthly": 30.66, "price_hourly": 0.0420 },
+      { "plan": "cdn.enterprise", "zones": -1,   "origins_per_zone": 25, "rules_per_zone": 1000, "ssl": true, "price_monthly": 60.59, "price_hourly": 0.0830 }
+    ]
+  },
+  "load_balancers": {
+    "plans": [
+      { "plan": "lb.small",  "targets": 5,  "listeners": 5,  "connections_per_sec": 10000, "price_monthly": 10.95, "price_hourly": 0.0150 },
+      { "plan": "lb.medium", "targets": 15, "listeners": 10, "connections_per_sec": 25000, "price_monthly": 21.90, "price_hourly": 0.0300 },
+      { "plan": "lb.large",  "targets": 50, "listeners": 25, "connections_per_sec": 50000, "price_monthly": 43.80, "price_hourly": 0.0600 }
+    ]
+  }
+}
