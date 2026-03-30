@@ -1,0 +1,18 @@
+{
+  "name": "mcp-server",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch index.ts",
+    "start": "bun index.ts"
+  },
+  "dependencies": {
+    "@cubepath/sdk": "latest",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^6.0.2"
+  }
+}
