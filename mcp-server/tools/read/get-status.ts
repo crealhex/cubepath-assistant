@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../../sdk/client";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ProjectEntry } from "../../types/api";
 
 export function registerGetStatus(server: McpServer) {
   server.registerTool(
@@ -14,10 +15,7 @@ export function registerGetStatus(server: McpServer) {
     },
     async ({ instanceId }) => {
       const client = getCubePathClient();
-      const projects = await client.vps.list() as unknown as Array<{
-        project: { name: string };
-        vps: Array<Record<string, unknown>>;
-      }>;
+      const projects = await client.vps.list() as unknown as ProjectEntry[];
 
       const numId = Number(instanceId);
       for (const p of projects) {

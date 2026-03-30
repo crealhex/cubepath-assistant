@@ -3,9 +3,26 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+const LbPlan = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  description: z.string(),
+  price_per_hour: z.number(),
+  max_targets: z.number(),
+  max_listeners: z.number(),
+  connections_per_second: z.number(),
+});
+
+const Location = z.object({
+  location_name: z.string(),
+  location_description: z.string(),
+  plans: z.array(LbPlan),
+});
+
 const pricing = JSON.parse(
   readFileSync(resolve(import.meta.dirname, "../../data/pricing.json"), "utf-8"),
 );
+const lbLocations = z.array(Location).parse(pricing.loadbalancer?.locations ?? []);
 
 export function registerListLbPlans(server: McpServer) {
   server.registerTool(
@@ -18,10 +35,9 @@ export function registerListLbPlans(server: McpServer) {
       }),
     },
     async ({ location }) => {
-      const locations = pricing.loadbalancer?.locations ?? [];
       const filtered = location
-        ? locations.filter((l: Record<string, unknown>) => l.location_name === location)
-        : locations;
+        ? lbLocations.filter((l) => l.location_name === location)
+        : lbLocations;
 
       return {
         content: [{

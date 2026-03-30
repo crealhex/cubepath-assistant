@@ -2,6 +2,17 @@ import { z } from "zod/v4";
 import { getCubePathClient } from "../../sdk/client";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+interface SshKeysResponse {
+  sshkeys: Array<{
+    id: number;
+    name: string;
+    ssh_key: string;
+    fingerprint: string;
+    key_type: string;
+    created_at: string;
+  }>;
+}
+
 export function registerListSshKeys(server: McpServer) {
   server.registerTool(
     "list-ssh-keys",
@@ -12,7 +23,8 @@ export function registerListSshKeys(server: McpServer) {
     },
     async () => {
       const client = getCubePathClient();
-      const keys = await client.sshKeys.list();
+      const response = await client.sshKeys.list() as unknown as SshKeysResponse;
+      const keys = response.sshkeys;
 
       return {
         content: [{

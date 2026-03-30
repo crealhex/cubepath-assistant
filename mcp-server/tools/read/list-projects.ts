@@ -1,14 +1,7 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../../sdk/client";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-
-/** The SDK types are flat, but the API actually nests project data under a `project` key */
-interface ProjectEntry {
-  project: { id: number; name: string; description: string; created_at: string };
-  networks: unknown[];
-  baremetals: unknown[];
-  vps: unknown[];
-}
+import type { ProjectEntry } from "../../types/api";
 
 export function registerListProjects(server: McpServer) {
   server.registerTool(
