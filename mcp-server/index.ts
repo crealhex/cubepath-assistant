@@ -5,7 +5,10 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { registerListInstances } from "./tools/read/list-instances";
 import { registerGetStatus } from "./tools/read/get-status";
 import { registerListTemplates } from "./tools/read/list-templates";
-import { registerListPricing } from "./tools/read/list-pricing";
+import { registerListVpsPlans } from "./tools/read/list-vps-plans";
+import { registerListBaremetalModels } from "./tools/read/list-baremetal-models";
+import { registerListCdnPlans } from "./tools/read/list-cdn-plans";
+import { registerListLbPlans } from "./tools/read/list-lb-plans";
 import { registerListLocations } from "./tools/read/list-locations";
 import { registerListProjects } from "./tools/read/list-projects";
 import { registerListSshKeys } from "./tools/read/list-ssh-keys";
@@ -29,7 +32,10 @@ const server = new McpServer({
 registerListInstances(server);
 registerGetStatus(server);
 registerListTemplates(server);
-registerListPricing(server);
+registerListVpsPlans(server);
+registerListBaremetalModels(server);
+registerListCdnPlans(server);
+registerListLbPlans(server);
 registerListLocations(server);
 
 registerListProjects(server);
