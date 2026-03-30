@@ -1,11 +1,33 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-interface LatencyTarget {
+interface ApiTarget {
   location_name: string;
-  test_ipv4: string;
+  strategy: "api";
+  ping_code: string;
 }
 
-async function measureLatency(ip: string): Promise<number> {
+interface IpTarget {
+  location_name: string;
+  strategy: "ip";
+  ip: string;
+}
+
+export type LatencyTarget = ApiTarget | IpTarget;
+
+async function pingApi(code: string): Promise<number> {
+  const start = performance.now();
+  try {
+    await fetch(`https://${code}.ping.cubepath.com/ping`, {
+      cache: "no-cache",
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch {
+    return -1;
+  }
+  return Math.round(performance.now() - start);
+}
+
+async function pingIp(ip: string): Promise<number> {
   const start = performance.now();
   try {
     await fetch(`http://${ip}:80`, {
@@ -13,40 +35,63 @@ async function measureLatency(ip: string): Promise<number> {
       signal: AbortSignal.timeout(3000),
     });
   } catch {
-    // Even on failure, the TCP handshake time is captured
+    // TCP handshake time still captured
   }
   return Math.round(performance.now() - start);
 }
 
-export function useLatency(targets: LatencyTarget[], intervalMs = 3000) {
+interface UseLatencyOptions {
+  intervalMs?: number;
+  enableFallback?: boolean;
+}
+
+export function useLatency(targets: LatencyTarget[], options: UseLatencyOptions = {}) {
+  const { intervalMs = 3000, enableFallback = true } = options;
   const [latencies, setLatencies] = useState<Record<string, number>>({});
   const targetsRef = useRef(targets);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
   targetsRef.current = targets;
 
+  const ping = useCallback(async () => {
+    if (document.hidden) return;
+
+    const results = await Promise.all(
+      targetsRef.current.map(async (t) => {
+        let ms: number;
+        if (t.strategy === "api") {
+          ms = await pingApi(t.ping_code);
+        } else if (enableFallback) {
+          ms = await pingIp(t.ip);
+        } else {
+          ms = -1;
+        }
+        return [t.location_name, ms] as const;
+      }),
+    );
+
+    setLatencies(Object.fromEntries(results.filter(([, ms]) => ms >= 0)));
+  }, [enableFallback]);
+
   useEffect(() => {
-    let active = true;
+    ping();
+    intervalRef.current = setInterval(ping, intervalMs);
 
-    async function ping() {
-      const results = await Promise.all(
-        targetsRef.current.map(async (t) => {
-          const ms = await measureLatency(t.test_ipv4);
-          return [t.location_name, ms] as const;
-        }),
-      );
-
-      if (active) {
-        setLatencies(Object.fromEntries(results));
+    function handleVisibility() {
+      if (document.hidden) {
+        clearInterval(intervalRef.current);
+      } else {
+        ping();
+        intervalRef.current = setInterval(ping, intervalMs);
       }
     }
 
-    ping();
-    const id = setInterval(ping, intervalMs);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
-      active = false;
-      clearInterval(id);
+      clearInterval(intervalRef.current);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [intervalMs]);
+  }, [ping, intervalMs]);
 
   return latencies;
 }

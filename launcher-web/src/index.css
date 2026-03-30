@@ -17,12 +17,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*:not(.scrollbar-none) {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-*::-webkit-scrollbar {
+*:not(.scrollbar-none)::-webkit-scrollbar {
   width: var(--scrollbar-size);
   height: var(--scrollbar-size);
 }
