@@ -44,3 +44,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Local workspace artifacts
 .codex
 scratch-files/
+
+# MCP config
+.mcp.json

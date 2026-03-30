@@ -4,6 +4,7 @@
   "workspaces": [
     "cubepath-ui",
     "launcher-web",
-    "launcher-api"
+    "launcher-api",
+    "mcp-server"
   ]
 }
