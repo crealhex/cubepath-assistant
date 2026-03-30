@@ -94,3 +94,37 @@ export {
   SegmentedControl,
   type SegmentedControlProps,
 } from "./components/segmented-control";
+export {
+  InstanceCard,
+  type InstanceCardProps,
+} from "./components/instance-card";
+export {
+  DeployProgress,
+  type DeployProgressProps,
+  type DeployStep,
+} from "./components/deploy-progress";
+export { ErrorCard, type ErrorCardProps } from "./components/error-card";
+export {
+  LocationPicker,
+  type LocationPickerProps,
+  type LocationOption,
+} from "./components/location-picker";
+export {
+  PricingTable,
+  type PricingTableProps,
+  type PlanRow,
+} from "./components/pricing-table";
+export {
+  ProjectCard,
+  type ProjectCardProps,
+} from "./components/project-card";
+export {
+  TemplatePicker,
+  type TemplatePickerProps,
+  type TemplateOption,
+} from "./components/template-picker";
+export {
+  SshKeyPicker,
+  type SshKeyPickerProps,
+  type SshKeyOption,
+} from "./components/ssh-key-picker";

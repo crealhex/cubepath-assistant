@@ -317,3 +317,12 @@
 
   --shadow-card-hover: 0 8px 16px rgb(0 0 0 / 0.4);
 }
+
+/* Utility: hide scrollbar but keep scroll functionality */
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
