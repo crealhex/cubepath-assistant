@@ -91,7 +91,7 @@ function PricingCard({
         <a
           href={ctaHref}
           className={cn(
-            "inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all active:scale-[0.98] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-hidden h-10 px-6 text-base shadow-xs",
+            "inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all active:scale-[0.98] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-hidden h-10 px-6 text-lg shadow-xs",
             featured
               ? "bg-brand text-white hover:bg-brand/90"
               : "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",

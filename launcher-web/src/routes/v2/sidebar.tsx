@@ -87,7 +87,7 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
         <div className="flex flex-1 flex-col min-h-0 overflow-hidden">
           {/* Project selector */}
           <div className="mb-2">
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-3">Project</span>
+            <span className="text-2xs font-medium text-muted-foreground uppercase tracking-wide px-3">Project</span>
             <div className="mt-1 px-2">
               <div className="flex flex-col gap-0.5">
                 {projects.map((p) => (
@@ -111,7 +111,7 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
 
           {/* Chat list */}
           <div className="flex items-center justify-between mb-1 px-3">
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Chats</span>
+            <span className="text-2xs font-medium text-muted-foreground uppercase tracking-wide">Chats</span>
           </div>
 
           <div className="flex flex-1 flex-col min-h-0 overflow-y-auto">

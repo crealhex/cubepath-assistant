@@ -49,9 +49,9 @@ function SshKeyPicker({
               onClick={() => onToggle?.(k.name)}
               className={cn(
                 "flex items-center gap-3 rounded-lg border px-3 py-2 text-left transition-all",
-                "hover:border-brand/50 hover:bg-brand/5",
+                "hover:border-primary/40",
                 isSelected
-                  ? "border-brand bg-brand/10"
+                  ? "border-primary"
                   : "border-border",
               )}
             >
@@ -59,7 +59,7 @@ function SshKeyPicker({
                 className={cn(
                   "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
                   isSelected
-                    ? "border-brand bg-brand text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-muted-foreground/40",
                 )}
               >
@@ -72,7 +72,7 @@ function SshKeyPicker({
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span className="text-xs font-medium truncate">{k.name}</span>
                 {k.fingerprint && (
-                  <span className="text-[10px] text-muted-foreground font-mono truncate">
+                  <span className="text-2xs text-muted-foreground font-mono truncate">
                     {k.fingerprint}
                   </span>
                 )}

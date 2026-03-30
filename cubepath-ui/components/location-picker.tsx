@@ -48,7 +48,7 @@ function LocationPicker({
       <CardContent className="flex flex-col gap-3">
         {Object.entries(grouped).map(([region, locs]) => (
           <div key={region} className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
               {region}
             </span>
             <div className="flex flex-wrap gap-2">
@@ -59,23 +59,23 @@ function LocationPicker({
                   onClick={() => onSelect?.(loc.location_name)}
                   className={cn(
                     "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-all",
-                    "hover:border-brand/50 hover:bg-brand/5",
+                    "hover:border-primary/40",
                     selected === loc.location_name
-                      ? "border-brand bg-brand/10 text-brand font-medium"
+                      ? "border-primary font-medium"
                       : "border-border text-foreground",
                   )}
                 >
-                  <span className="text-base leading-none">
+                  <span className="text-lg leading-none">
                     {flagEmoji[loc.country] ?? "\uD83C\uDF10"}
                   </span>
                   <div className="flex flex-col items-start gap-0.5">
                     <div className="flex items-center gap-1.5">
                       <span>{loc.city}</span>
-                      <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1 rounded">
+                      <span className="text-2xs font-mono text-muted-foreground bg-muted px-1 rounded">
                         {loc.code}
                       </span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-2xs text-muted-foreground">
                       {loc.country}
                     </span>
                   </div>

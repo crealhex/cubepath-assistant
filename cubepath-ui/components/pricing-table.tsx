@@ -57,13 +57,13 @@ function PricingTable({
                     onClick={() => onSelect?.(p.plan)}
                     className={cn(
                       "border-b border-border last:border-0 transition-colors",
-                      onSelect && "cursor-pointer hover:bg-brand/5",
-                      isSel && "bg-brand/10",
+                      onSelect && "cursor-pointer hover:bg-primary/10",
+                      isSel && "bg-primary/5",
                     )}
                   >
                     <td className="px-4 py-2.5 font-mono font-medium flex items-center gap-2">
                       {p.plan}
-                      {isRec && <Badge variant="brand" className="text-[10px] px-1.5 py-0">rec</Badge>}
+                      {isRec && <Badge variant="brand" className="text-2xs px-1.5 py-0">rec</Badge>}
                     </td>
                     <td className="px-3 py-2.5 text-right">{p.vcpu}</td>
                     <td className="px-3 py-2.5 text-right">{p.ram_gb} GB</td>

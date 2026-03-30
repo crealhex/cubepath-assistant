@@ -18,7 +18,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
       <CardHeader className="p-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">{resource.name}</CardTitle>
-          <Badge variant={STATUS_VARIANT[resource.status] ?? "outline"} className="text-[10px]">
+          <Badge variant={STATUS_VARIANT[resource.status] ?? "outline"} className="text-2xs">
             {resource.status}
           </Badge>
         </div>

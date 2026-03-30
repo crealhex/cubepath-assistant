@@ -120,7 +120,7 @@ export default function ComponentsPage() {
                 onClick={() => setDeployStep(step)}
                 className={`px-2.5 py-1 rounded text-xs border transition-colors ${
                   deployStep === step
-                    ? "border-brand bg-brand/10 text-brand"
+                    ? "border-primary bg-primary/10 text-primary"
                     : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >

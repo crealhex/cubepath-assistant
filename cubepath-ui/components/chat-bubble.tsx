@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/utils";
 
 const chatBubbleVariants = cva(
-  "relative px-4 py-2.5 text-base leading-relaxed transition-colors",
+  "relative px-4 py-2.5 text-lg leading-relaxed transition-colors",
   {
     variants: {
       variant: {

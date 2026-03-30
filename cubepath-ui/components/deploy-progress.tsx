@@ -84,7 +84,7 @@ function DeployProgress({
                   />
                   <span
                     className={cn(
-                      "text-[10px] leading-none whitespace-nowrap transition-colors duration-300",
+                      "text-2xs leading-none whitespace-nowrap transition-colors duration-300",
                       isDone && "text-status-operational",
                       isActive && "text-foreground font-medium",
                       isPending && "text-muted-foreground",

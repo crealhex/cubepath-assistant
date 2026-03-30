@@ -47,9 +47,9 @@ function TemplatePicker({
                 onClick={() => onSelect?.(t.name)}
                 className={cn(
                   "flex flex-col rounded-xl border overflow-hidden transition-all snap-start shrink-0 w-20",
-                  "hover:border-brand/50 hover:bg-brand/5",
+                  "hover:border-primary/40",
                   isSelected
-                    ? "border-brand bg-brand/10 shadow-sm"
+                    ? "border-primary shadow-sm"
                     : "border-border",
                 )}
               >
@@ -73,14 +73,14 @@ function TemplatePicker({
                       {(t.os ?? t.name).charAt(0)}
                     </span>
                   )}
-                  <span className="text-[11px] font-medium leading-tight text-center line-clamp-2 w-full">
+                  <span className="text-xs font-medium leading-tight text-center line-clamp-2 w-full">
                     {t.os ?? t.name}
                   </span>
                 </div>
                 {t.version && (
                   <>
                     <div className="h-px bg-border" />
-                    <div className="py-1.5 text-center text-[10px] font-mono text-muted-foreground">
+                    <div className="py-1.5 text-center text-2xs font-mono text-muted-foreground">
                       {t.version}
                     </div>
                   </>
