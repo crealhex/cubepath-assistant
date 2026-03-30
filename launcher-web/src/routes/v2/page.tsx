@@ -5,7 +5,7 @@ import { ArrowDown } from "lucide-react";
 import { ChatInputV2 } from "./chat-input";
 import { MessageListV2, type ChatMessage } from "./message-list";
 import { ScrollContainer } from "./scroll-container";
-import { api, type Chat } from "@/services/api-client";
+import { api, type Chat, type ComponentBlock } from "@/services/api-client";
 import type { V2Context } from "./layout";
 
 let _nextId = 0;
@@ -34,7 +34,16 @@ export default function PageV2() {
 
     api.getChat(chatId).then(setChatMeta).catch(() => setChatMeta(null));
     api.listMessages(chatId).then((msgs) =>
-      setMessages(msgs.map((m) => ({ id: m.id, role: m.role, content: m.content }))),
+      setMessages(msgs.map((m) => {
+        // Persisted assistant messages with components are stored as JSON
+        if (m.role === "assistant" && m.content.startsWith("{")) {
+          try {
+            const parsed = JSON.parse(m.content) as { text: string; components: ComponentBlock[] };
+            return { id: m.id, role: m.role, content: parsed.text, components: parsed.components };
+          } catch { /* not JSON, treat as plain text */ }
+        }
+        return { id: m.id, role: m.role, content: m.content };
+      })),
     );
   }
 
@@ -66,14 +75,23 @@ export default function PageV2() {
       streamingRef.current = true;
 
       let accumulated = "";
+      const components: ComponentBlock[] = [];
 
       try {
         for await (const chunk of api.streamMessage(currentChatId, content)) {
           if (chunk.type === "text") {
             accumulated += chunk.content;
             const snapshot = accumulated;
+            const compSnapshot = [...components];
             setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot } : m)),
+              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot, components: compSnapshot } : m)),
+            );
+          } else if (chunk.type === "component") {
+            components.push(chunk.block);
+            const snapshot = accumulated;
+            const compSnapshot = [...components];
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot, components: compSnapshot } : m)),
             );
           }
         }

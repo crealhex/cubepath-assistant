@@ -1,5 +1,5 @@
 import type { Queries } from "../db/queries";
-import type { AiProvider, ChatChunk } from "../types";
+import type { AiProvider, ChatChunk, ComponentBlock } from "../types";
 import { resolveGateway } from "./ai-gateway";
 
 export function createChatService(queries: Queries) {
@@ -20,20 +20,26 @@ export function createChatService(queries: Queries) {
       const provider = (settings.ai_provider || "mock") as AiProvider;
       const gateway = resolveGateway(provider, settings);
 
-      // Stream AI response
-      let accumulated = "";
+      // Stream AI response — accumulate text + components for persistence
+      let accumulatedText = "";
+      const components: ComponentBlock[] = [];
 
       for await (const chunk of gateway.stream(history)) {
         if (chunk.type === "text") {
-          accumulated += chunk.content;
+          accumulatedText += chunk.content;
+        } else if (chunk.type === "component") {
+          components.push(chunk.block);
         }
         yield chunk;
       }
 
-      // Save assistant message
-      if (accumulated) {
+      // Save assistant message with embedded components
+      if (accumulatedText || components.length > 0) {
         const assistantMsgId = crypto.randomUUID();
-        queries.createMessage(assistantMsgId, chatId, "assistant", accumulated);
+        const savedContent = components.length > 0
+          ? JSON.stringify({ text: accumulatedText, components })
+          : accumulatedText;
+        queries.createMessage(assistantMsgId, chatId, "assistant", savedContent);
       }
 
       // Auto-title the chat if it's the first message

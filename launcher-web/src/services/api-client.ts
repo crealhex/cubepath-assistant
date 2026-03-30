@@ -34,8 +34,14 @@ export interface Message {
   created_at: string;
 }
 
+export interface ComponentBlock {
+  component: string;
+  props: Record<string, unknown>;
+}
+
 export type ChatChunk =
   | { type: "text"; content: string }
+  | { type: "component"; block: ComponentBlock }
   | { type: "done" };
 
 export type Settings = Record<string, string>;

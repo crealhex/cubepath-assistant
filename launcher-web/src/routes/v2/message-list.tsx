@@ -6,12 +6,19 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { highlight } from "sugar-high";
+import { ComponentRenderer } from "./component-renderer";
 import "katex/dist/katex.min.css";
+
+export interface ComponentBlock {
+  component: string;
+  props: Record<string, unknown>;
+}
 
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
+  components?: ComponentBlock[];
   isStreaming?: boolean;
 }
 
@@ -37,17 +44,24 @@ const markdownComponents: Components = {
 };
 
 function AssistantMessage({ msg }: { msg: ChatMessage }) {
-  if (msg.isStreaming && msg.content === "") return null;
+  if (msg.isStreaming && msg.content === "" && !msg.components?.length) return null;
 
   return (
-    <div className={PROSE_CLASSES}>
-      <Markdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
-        components={markdownComponents}
-      >
-        {msg.content}
-      </Markdown>
+    <div>
+      {msg.content && (
+        <div className={PROSE_CLASSES}>
+          <Markdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            components={markdownComponents}
+          >
+            {msg.content}
+          </Markdown>
+        </div>
+      )}
+      {msg.components && msg.components.length > 0 && (
+        <ComponentRenderer blocks={msg.components} />
+      )}
     </div>
   );
 }

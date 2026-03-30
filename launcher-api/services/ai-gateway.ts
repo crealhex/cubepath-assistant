@@ -1,4 +1,4 @@
-import type { AiGateway, ChatChunk, Message, AiProvider } from "../types";
+import type { AiGateway, ChatChunk, Message, AiProvider, ComponentBlock } from "../types";
 
 // --- Mock Strategy ---
 
@@ -115,28 +115,94 @@ $$\\text{EMA}_t = \\alpha \\cdot x_t + (1 - \\alpha) \\cdot \\text{EMA}_{t-1}$$
 
 Scale up when $\\text{EMA}_t > \\theta_{up}$, scale down when $\\text{EMA}_t < \\theta_{down}$.`;
 
-  function getResponse(input: string): string {
+  interface MockResponse {
+    text: string;
+    components?: ComponentBlock[];
+  }
+
+  function getResponse(input: string): MockResponse {
     const lower = input.toLowerCase();
-    if (lower.includes("deploy") || lower.includes("create") || lower.includes("new")) return responses.deploy;
-    if (lower.includes("status") || lower.includes("show") || lower.includes("list")) return responses.status;
-    if (lower.includes("cost") || lower.includes("price") || lower.includes("bill")) return responses.cost;
-    if (lower.includes("math2")) return responses.math2;
-    if (lower.includes("math")) return responses.cost;
-    if (lower.includes("code") || lower.includes("script") || lower.includes("sdk") || lower.includes("example")) return responses.code;
-    return responses.default;
+
+    if (lower.includes("price") || lower.includes("plan") || lower.includes("cost")) {
+      return {
+        text: "Here are the **General Purpose** VPS plans:",
+        components: [
+          { component: "pricing-table", props: { plans: [
+            { plan: "gp.nano", vcpu: 1, ram_gb: 2, storage_gb: 40, bandwidth_tb: 3, price_monthly: 4.06, price_hourly: 0.00556 },
+            { plan: "gp.micro", vcpu: 2, ram_gb: 4, storage_gb: 80, bandwidth_tb: 5, price_monthly: 8.11, price_hourly: 0.01111 },
+            { plan: "gp.starter", vcpu: 4, ram_gb: 8, storage_gb: 100, bandwidth_tb: 10, price_monthly: 15.21, price_hourly: 0.02083 },
+            { plan: "gp.small", vcpu: 8, ram_gb: 16, storage_gb: 200, bandwidth_tb: 20, price_monthly: 29.40, price_hourly: 0.04028 },
+          ], recommended: "gp.starter" } },
+        ],
+      };
+    }
+
+    if (lower.includes("deploy") || lower.includes("create") || lower.includes("new")) {
+      return {
+        text: "Deploying your new VPS instance...",
+        components: [
+          { component: "deploy-progress", props: { name: "hackathon-test", plan: "gp.nano", location: "eu-bcn-1", currentStep: "provisioning" } },
+        ],
+      };
+    }
+
+    if (lower.includes("instance") || lower.includes("server")) {
+      return {
+        text: "Here are your instances in **first-project**:",
+        components: [
+          { component: "instance-card", props: { id: 23706, name: "web-server", status: "running", project: "first-project", ip: "194.26.100.42", plan: { plan_name: "gp.nano", cpu: 1, ram: 2048, storage: 40, bandwidth: 3, price_per_hour: "0.00556" }, location: "Barcelona, Spain", template: "Ubuntu 24" } },
+          { component: "instance-card", props: { id: 23707, name: "api-gateway", status: "running", project: "first-project", ip: "157.254.174.88", plan: { plan_name: "gp.starter", cpu: 4, ram: 8192, storage: 100, bandwidth: 10, price_per_hour: "0.02290" }, location: "Miami, FL", template: "Debian 12" } },
+          { component: "instance-card", props: { id: 23708, name: "db-primary", status: "stopped", project: "first-project", ip: "108.165.47.12", plan: { plan_name: "gp.small", cpu: 8, ram: 16384, storage: 200, bandwidth: 20, price_per_hour: "0.04230" }, location: "Houston, TX", template: "Ubuntu 24" } },
+        ],
+      };
+    }
+
+    if (lower.includes("project")) {
+      return {
+        text: "Here are your projects:",
+        components: [
+          { component: "project-card", props: { id: 3065, name: "first-project", description: "Default project", vpsCount: 3 } },
+          { component: "project-card", props: { id: 3066, name: "staging", description: "Staging environment", vpsCount: 0 } },
+        ],
+      };
+    }
+
+    if (lower.includes("error") || lower.includes("fail")) {
+      return {
+        text: "Something went wrong while processing your request:",
+        components: [
+          { component: "error-card", props: { title: "Deployment failed", message: "Location 'eu-barcelona' does not exist.", suggestion: "Try using 'eu-bcn-1' instead." } },
+        ],
+      };
+    }
+
+    // Default — text only
+    return {
+      text: responses.default,
+    };
   }
 
   return {
     async *stream(messages: Message[]): AsyncIterable<ChatChunk> {
       const last = messages[messages.length - 1]?.content ?? "";
-      const response = getResponse(last);
-      const words = response.split(/(\s+)/);
+      const { text, components } = getResponse(last);
+      const words = text.split(/(\s+)/);
 
       await Bun.sleep(300);
       for (const word of words) {
         yield { type: "text", content: word };
         await Bun.sleep(20 + Math.random() * 30);
       }
+
+      // Yield components after text is done streaming
+      if (components) {
+        await Bun.sleep(200);
+        for (const block of components) {
+          yield { type: "component", block };
+          await Bun.sleep(150);
+        }
+      }
+
       yield { type: "done" };
     },
   };

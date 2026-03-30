@@ -57,7 +57,8 @@ export function ScrollContainer({
     const realContentH = content.scrollHeight - currentSpacerH;
     const userOffset = el ? el.offsetTop - content.offsetTop : 0;
     const belowUserH = realContentH - userOffset;
-    const needed = Math.max(0, container.clientHeight - belowUserH);
+    const gap = parseInt(getComputedStyle(content).paddingTop) || 24;
+    const needed = Math.max(0, container.clientHeight - belowUserH - gap);
     spacer.style.minHeight = `${needed}px`;
   }
 
