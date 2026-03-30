@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "cubepath-ui";
-import { useMcpClient } from "../../providers/app-provider";
-import type { Resource } from "../../services/mcp-client";
+import { useMcpClient } from "@/providers/app-provider";
+import type { Resource } from "@/services/mcp-client";
 import { ResourceCard } from "./resource-card";
 
 export function InfraSidebar() {

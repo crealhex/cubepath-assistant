@@ -1,20 +1,18 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
 import { Button } from "cubepath-ui";
 import { ArrowDown } from "lucide-react";
-import { ChatInputV2 } from "./chat-input-v2";
-import { MessageListV2, type ChatMessage } from "./message-list-v2";
+import { ChatInputV2 } from "./chat-input";
+import { MessageListV2, type ChatMessage } from "./message-list";
 import { ScrollContainer } from "./scroll-container";
-import { api, type Chat } from "../../services/api-client";
+import { api, type Chat } from "@/services/api-client";
+import type { V2Context } from "./layout";
 
 let _nextId = 0;
 const uid = () => `msg-${Date.now()}-${++_nextId}`;
 
-interface ChatPanelV2Props {
-  chatId: string | null;
-  onChatCreated?: (chatId: string) => void;
-}
-
-export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
+export default function PageV2() {
+  const { activeChatId: chatId, setActiveChatId: onChatCreated } = useOutletContext<V2Context>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import { Badge, Button } from "cubepath-ui";
 import { Settings } from "lucide-react";
-import { useMcpClient } from "../providers/app-provider";
+import { useMcpClient } from "@/providers/app-provider";
 
 export function AppLayout() {
   const mcpClient = useMcpClient();

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useMcpClient } from "../../providers/app-provider";
+import { useMcpClient } from "@/providers/app-provider";
 import { ChatInput } from "./chat-input";
 import { MessageList, type ChatMessage } from "./message-list";
 

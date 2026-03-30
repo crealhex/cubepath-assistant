@@ -1,9 +1,13 @@
 import { useCallback } from "react";
 import { Outlet, useParams, useNavigate } from "react-router";
 import { TooltipProvider } from "cubepath-ui";
-import { Sidebar } from "../features/sidebar/sidebar";
-import type { Chat } from "../services/api-client";
-import type { V2Context } from "../pages/home-v2";
+import { Sidebar } from "./sidebar";
+import type { Chat } from "@/services/api-client";
+
+export interface V2Context {
+  activeChatId: string | null;
+  setActiveChatId: (id: string) => void;
+}
 
 export function AppLayoutV2() {
   const { chatId } = useParams<{ chatId?: string }>();

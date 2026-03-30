@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, Badge } from "cubepath-ui";
-import type { Resource } from "../../services/mcp-client";
+import type { Resource } from "@/services/mcp-client";
 
 const STATUS_VARIANT: Record<string, "operational" | "degraded" | "maintenance" | "outage"> = {
   operational: "operational",

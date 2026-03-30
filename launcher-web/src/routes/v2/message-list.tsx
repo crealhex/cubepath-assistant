@@ -1,5 +1,5 @@
 import { ChatBubble, CodeBlock, CubePathLogo } from "cubepath-ui";
-import cubepathIcon from "../../assets/cubepath-icon.svg";
+import cubepathIcon from "@/assets/cubepath-icon.svg";
 import type { Components } from "react-markdown";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";

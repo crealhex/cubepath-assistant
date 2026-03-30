@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
-import type { McpClient } from "../services/mcp-client";
-import { createMockClient } from "../services/mcp-mock";
+import type { McpClient } from "@/services/mcp-client";
+import { createMockClient } from "@/services/mcp-mock";
 
 interface AppContextValue {
   mcpClient: McpClient;

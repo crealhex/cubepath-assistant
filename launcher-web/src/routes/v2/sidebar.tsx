@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Button, Tooltip, TooltipTrigger, TooltipContent, Skeleton } from "cubepath-ui";
 import { Plus, FolderOpen, Settings } from "lucide-react";
-import { api, type Project, type Chat } from "../../services/api-client";
+import { api, type Project, type Chat } from "@/services/api-client";
 
 interface SidebarProps {
   activeChatId?: string | null;
