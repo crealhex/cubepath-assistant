@@ -5,12 +5,15 @@ export type CodeBlockProps = React.HTMLAttributes<HTMLDivElement> & {
   code: string;
   language?: string;
   copyable?: boolean;
+  /** Pre-highlighted HTML to render instead of plain code text */
+  highlightedHtml?: string;
 };
 
 function CodeBlock({
   code,
   language,
   copyable = true,
+  highlightedHtml,
   className,
   ...props
 }: CodeBlockProps) {
@@ -83,7 +86,14 @@ function CodeBlock({
         </div>
       )}
       <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-        <code className="font-mono text-[var(--foreground)]">{code}</code>
+        {highlightedHtml ? (
+          <code
+            className="font-mono"
+            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          />
+        ) : (
+          <code className="font-mono text-[var(--foreground)]">{code}</code>
+        )}
       </pre>
     </div>
   );

@@ -6,6 +6,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import { highlight } from "sugar-high";
 import "katex/dist/katex.min.css";
 
 export interface ChatMessage {
@@ -29,7 +30,7 @@ const markdownComponents: Components = {
     if (!match) {
       return <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">{children}</code>;
     }
-    return <CodeBlock code={code} language={match[1]} />;
+    return <CodeBlock code={code} language={match[1]} highlightedHtml={highlight(code)} />;
   },
   pre({ children }) {
     return <>{children}</>;
