@@ -8,6 +8,7 @@ import { registerListTemplates } from "./tools/read/list-templates";
 import { registerListPricing } from "./tools/read/list-pricing";
 import { registerListLocations } from "./tools/read/list-locations";
 import { registerListProjects } from "./tools/read/list-projects";
+import { registerListSshKeys } from "./tools/read/list-ssh-keys";
 
 // Write tools (SDK-direct, simple mode)
 import { registerDeployVps } from "./tools/write/deploy-vps";
@@ -32,6 +33,7 @@ registerListPricing(server);
 registerListLocations(server);
 
 registerListProjects(server);
+registerListSshKeys(server);
 
 registerDeployVps(server);
 registerDestroyInstance(server);

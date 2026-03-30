@@ -1,0 +1,27 @@
+import { z } from "zod/v4";
+import { getCubePathClient } from "../../sdk/client";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+export function registerListSshKeys(server: McpServer) {
+  server.registerTool(
+    "list-ssh-keys",
+    {
+      title: "List SSH Keys",
+      description: "List all SSH keys stored in the CubePath account",
+      inputSchema: z.object({}),
+    },
+    async () => {
+      const client = getCubePathClient();
+      const keys = await client.sshKeys.list();
+
+      return {
+        content: [{
+          type: "text" as const,
+          text: keys.length === 0
+            ? "No SSH keys found."
+            : JSON.stringify(keys, null, 2),
+        }],
+      };
+    },
+  );
+}

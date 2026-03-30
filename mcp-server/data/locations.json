@@ -1,6 +1,7 @@
 [
   {
     "location_name": "eu-bcn-1",
+    "code": "BCN",
     "city": "Barcelona",
     "country": "Spain",
     "region": "Europe",
@@ -11,6 +12,7 @@
   },
   {
     "location_name": "eu-ams-1",
+    "code": "AMS",
     "city": "Amsterdam",
     "country": "Netherlands",
     "region": "Europe",
@@ -21,6 +23,7 @@
   },
   {
     "location_name": "us-mia-1",
+    "code": "MIA",
     "city": "Miami",
     "country": "United States",
     "region": "North America",
@@ -31,6 +34,7 @@
   },
   {
     "location_name": "us-hou-1",
+    "code": "HOU",
     "city": "Houston",
     "country": "United States",
     "region": "North America",
@@ -41,6 +45,7 @@
   },
   {
     "location_name": "us-va-1",
+    "code": "VA",
     "city": "Ashburn",
     "country": "United States",
     "region": "North America",
