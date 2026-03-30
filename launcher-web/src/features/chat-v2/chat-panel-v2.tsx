@@ -1,4 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { Button } from "cubepath-ui";
+import { ArrowDown } from "lucide-react";
 import { ChatInputV2 } from "./chat-input-v2";
 import { MessageListV2, type ChatMessage } from "./message-list-v2";
 import { api, type Chat } from "../../services/api-client";
@@ -16,6 +18,8 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync prop to ref so handleSend always reads the current chatId
   // without needing it as a useCallback dependency (avoids stale closures).
@@ -93,8 +97,14 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
     [onChatCreated],
   );
 
+  function handleJumpToBottom() {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+  }
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="relative flex flex-1 flex-col overflow-hidden">
       {chatMeta && (
         <header className="flex h-12 shrink-0 items-center border-b border-border px-4">
           <h1 className="mx-auto max-w-[720px] w-full text-sm font-medium truncate">
@@ -102,7 +112,25 @@ export function ChatPanelV2({ chatId, onChatCreated }: ChatPanelV2Props) {
           </h1>
         </header>
       )}
-      <MessageListV2 messages={messages} isStreaming={isStreaming} scrollTrigger={scrollTrigger} />
+      <MessageListV2
+        messages={messages}
+        isStreaming={isStreaming}
+        scrollTrigger={scrollTrigger}
+        onScrollChange={setShowScrollBtn}
+        containerRef={scrollContainerRef}
+      />
+
+      {showScrollBtn && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-background shadow-md z-10"
+          onClick={handleJumpToBottom}
+        >
+          <ArrowDown className="size-4" />
+        </Button>
+      )}
+
       <ChatInputV2 onSend={handleSend} disabled={isStreaming} />
     </div>
   );

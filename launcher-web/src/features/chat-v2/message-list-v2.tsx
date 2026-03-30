@@ -67,27 +67,30 @@ interface MessageListV2Props {
   messages: ChatMessage[];
   isStreaming?: boolean;
   scrollTrigger?: number;
+  onScrollChange?: (canScrollDown: boolean) => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0 }: MessageListV2Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0, onScrollChange, containerRef: externalContainerRef }: MessageListV2Props) {
+  const internalContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = externalContainerRef ?? internalContainerRef;
   const lastUserRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const prevChatId = useRef<string | undefined>(undefined);
-
-  function scrollToBottomOnChatLoad() {
-    if (messages.length === 0 || isStreaming) return;
-    const chatChanged = prevChatId.current !== messages[0]?.id;
-    if (!chatChanged && prevChatId.current !== undefined) return;
-    prevChatId.current = messages[0]?.id;
-
+  function trackScrollPosition() {
     const container = containerRef.current;
-    if (!container) return;
-    requestAnimationFrame(() => {
-      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-    });
+    const spacer = spacerRef.current;
+    if (!container || !onScrollChange) return;
+    const check = () => {
+      const spacerH = spacer?.offsetHeight ?? 0;
+      const realContentBottom = container.scrollHeight - spacerH;
+      const viewBottom = container.scrollTop + container.clientHeight;
+      onScrollChange(realContentBottom - viewBottom > 100);
+    };
+    check();
+    container.addEventListener("scroll", check, { passive: true });
+    return () => container.removeEventListener("scroll", check);
   }
 
   function pinUserMessageToTop() {
@@ -122,7 +125,7 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
     spacer.style.minHeight = `${needed}px`;
   }
 
-  useEffect(scrollToBottomOnChatLoad, [messages]);
+  useEffect(trackScrollPosition, [messages]);
   useEffect(() => { if (scrollTrigger > 0) pinUserMessageToTop(); }, [scrollTrigger]);
   useLayoutEffect(updateDynamicSpacer);
 
@@ -160,7 +163,7 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
   const lastUserIdx = messages.findLastIndex((m) => m.role === "user");
 
   return (
-    <div ref={containerRef} className="flex flex-1 flex-col overflow-y-auto">
+    <div ref={containerRef} className="relative flex flex-1 flex-col overflow-y-auto">
       <div className="flex-1" />
       <div ref={contentRef} className="mx-auto flex w-full max-w-[720px] flex-col gap-6 px-4 py-6 md:px-0">
         {messages.map((msg, i) =>
@@ -184,6 +187,7 @@ export function MessageListV2({ messages, isStreaming = false, scrollTrigger = 0
 
         <div ref={spacerRef} />
       </div>
+
     </div>
   );
 }
