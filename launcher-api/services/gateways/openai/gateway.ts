@@ -63,8 +63,10 @@ async function* streamRound(
   const reader = res.body?.getReader();
   if (!reader) { yield { type: "done" }; return; }
 
+  let roundText = "";
   for await (const event of parseOpenAiStream(reader)) {
     if (event.type === "text") {
+      roundText += event.content;
       yield event;
       continue;
     }
@@ -76,8 +78,8 @@ async function* streamRound(
       continue;
     }
 
-    // done
     if (event.type === "done") {
+      debug("text output: %s", roundText.slice(0, 500));
       return;
     }
   }
