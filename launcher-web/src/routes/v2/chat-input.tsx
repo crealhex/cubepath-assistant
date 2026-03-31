@@ -21,7 +21,7 @@ export function ChatInputV2({ onSend, disabled }: ChatInputV2Props) {
   }
 
   return (
-    <div className="border-t border-border p-4">
+    <div className="border-t border-border p-4 relative">
       <form onSubmit={handleSubmit} className="mx-auto flex max-w-[720px] gap-2">
         <Input
           ref={inputRef}
@@ -34,6 +34,7 @@ export function ChatInputV2({ onSend, disabled }: ChatInputV2Props) {
           <ArrowUp className="size-4" />
         </Button>
       </form>
+      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xs text-muted-foreground/30 font-mono">{__APP_VERSION__}</span>
     </div>
   );
 }
