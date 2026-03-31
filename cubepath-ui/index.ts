@@ -130,6 +130,11 @@ export {
   type SshKeyOption,
 } from "./components/ssh-key-picker";
 export {
+  ApprovalCard,
+  type ApprovalCardProps,
+  type ApprovalStatus,
+} from "./components/approval-card";
+export {
   BaremetalCard,
   type BaremetalModelProps,
 } from "./components/baremetal-card";

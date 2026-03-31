@@ -14,6 +14,7 @@ import {
   BaremetalTable,
   CdnTable,
   LbTable,
+  ApprovalCard,
   type DeployStep,
   type LocationOption,
   type PlanRow,
@@ -362,6 +363,43 @@ export default function ComponentsPage() {
             ]}
             onSelect={(p) => console.log("select", p)}
           />
+        </Section>
+
+        <Section title="Approval Card">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <ApprovalCard
+              title="Deploy VPS"
+              description="Node.js app server with cloud-init setup"
+              details={[
+                { label: "Plan", value: "gp.micro" },
+                { label: "Location", value: "Barcelona, Spain" },
+                { label: "Template", value: "Ubuntu 24" },
+                { label: "Cloud-init", value: "Node.js 22 + PM2" },
+              ]}
+              cost="$8.11/mo"
+              onAccept={() => console.log("accepted")}
+              onReject={() => console.log("rejected")}
+            />
+            <ApprovalCard
+              title="Destroy Instance"
+              description="This will permanently delete db-replica and release its IP"
+              details={[
+                { label: "Instance", value: "db-replica" },
+                { label: "IP", value: "157.254.174.88" },
+              ]}
+              status="accepted"
+            />
+            <ApprovalCard
+              title="Resize VPS"
+              description="Upgrade web-server from gp.nano to gp.starter"
+              details={[
+                { label: "Current", value: "gp.nano ($4.06/mo)" },
+                { label: "New", value: "gp.starter ($15.21/mo)" },
+              ]}
+              cost="+$11.15/mo"
+              status="rejected"
+            />
+          </div>
         </Section>
       </div>
     </div>

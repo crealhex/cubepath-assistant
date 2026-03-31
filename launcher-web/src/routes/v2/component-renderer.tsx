@@ -13,6 +13,7 @@ import {
   CdnTable,
   LbPlanCard,
   LbTable,
+  ApprovalCard,
 } from "cubepath-ui";
 import type { ComponentData } from "./message-list";
 
@@ -33,6 +34,7 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   "cdn-table": CdnTable,
   "lb-plan-card": LbPlanCard,
   "lb-table": LbTable,
+  "approval-card": ApprovalCard,
 };
 
 function renderBlock(block: ComponentData, key: number) {
