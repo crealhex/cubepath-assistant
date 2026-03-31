@@ -5,7 +5,12 @@ type Mapper = (data: unknown) => Array<Record<string, unknown>>;
 const mappers: Record<string, Mapper> = {
   "location-picker": (data) => {
     const locations = data as Array<Record<string, unknown>>;
-    return [{ locations }];
+    const hasPingEndpoint = new Set(["bcn", "hou"]);
+    const enriched = locations.map((loc) => ({
+      ...loc,
+      skipPingUrl: !hasPingEndpoint.has((loc.code as string).toLowerCase()),
+    }));
+    return [{ locations: enriched, pingUrl: "https://{code}.ping.cubepath.com/ping" }];
   },
 
   "template-picker": (data) => {

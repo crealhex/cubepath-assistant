@@ -16,6 +16,7 @@ import {
   LbTable,
   ApprovalCard,
   DeployCard,
+  InlineError,
   type DeployStep,
   type LocationOption,
   type PlanRow,
@@ -23,7 +24,6 @@ import {
   type SshKeyOption,
 } from "cubepath-ui";
 import { getTemplateIcon } from "@/assets/icons";
-import { useLatency, type LatencyTarget } from "@/hooks/use-latency";
 
 const locations: LocationOption[] = [
   { location_name: "eu-bcn-1", code: "BCN", city: "Barcelona", country: "Spain", region: "Europe", services: ["vps", "baremetal"], test_ipv4: "194.26.100.2" },
@@ -74,19 +74,6 @@ export default function ComponentsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("ubuntu-24");
   const [selectedKeys, setSelectedKeys] = useState<string[]>(["work-laptop"]);
   const [deployStep, setDeployStep] = useState<DeployStep>("deploying");
-
-  const pingTargets: LatencyTarget[] = [
-    { location_name: "eu-bcn-1", strategy: "api", ping_code: "bcn" },
-    { location_name: "eu-ams-1", strategy: "ip", ip: "92.60.253.90" },
-    { location_name: "us-mia-1", strategy: "api", ping_code: "mia" },
-    { location_name: "us-hou-1", strategy: "api", ping_code: "hou" },
-    { location_name: "us-va-1", strategy: "ip", ip: "198.47.110.18" },
-  ];
-  const latencies = useLatency(pingTargets);
-  const locationsWithPing = locations.map((l) => ({
-    ...l,
-    latency: latencies[l.location_name] ?? null,
-  }));
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -179,6 +166,11 @@ export default function ComponentsPage() {
           />
         </Section>
 
+        <Section title="Inline Error (chat)">
+          <InlineError />
+          <InlineError message="Tool execution timed out" />
+        </Section>
+
         <Section title="Project Card">
           <ProjectCard
             id={3065}
@@ -196,9 +188,10 @@ export default function ComponentsPage() {
 
         <Section title="Location Picker">
           <LocationPicker
-            locations={locationsWithPing}
+            locations={locations}
             selected={selectedLocation}
             onSelect={setSelectedLocation}
+            pingUrl="https://{code}.ping.cubepath.com/ping"
           />
         </Section>
 

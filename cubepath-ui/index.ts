@@ -110,6 +110,7 @@ export {
   type DeployState,
 } from "./components/deploy-card";
 export { ErrorCard, type ErrorCardProps } from "./components/error-card";
+export { InlineError, type InlineErrorProps } from "./components/inline-error";
 export {
   LocationPicker,
   type LocationPickerProps,

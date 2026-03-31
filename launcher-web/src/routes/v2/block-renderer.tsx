@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { InlineError } from "cubepath-ui";
 import { ComponentRenderer } from "./component-renderer";
 import { mapToolResult } from "./tool-mappers";
 import type { RenderSegment } from "./block-parser";
@@ -31,12 +32,7 @@ export function GroupSkeleton({ count }: { count: number }) {
 }
 
 export function FailedBlock() {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-status-outage/30 px-4 py-3 text-xs text-muted-foreground">
-      <span className="text-status-outage font-bold">!</span>
-      Failed to load component
-    </div>
-  );
+  return <InlineError />;
 }
 
 function ToolBlock({ component, reference }: { component: string; reference: ToolReference }) {
