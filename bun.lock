@@ -33,6 +33,11 @@
     },
     "launcher-api": {
       "name": "launcher-api",
+      "dependencies": {
+        "@types/debug": "^4.1.13",
+        "debug": "^4.4.3",
+        "mathjs": "^15.1.1",
+      },
       "devDependencies": {
         "@types/bun": "latest",
       },

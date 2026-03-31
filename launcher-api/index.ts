@@ -53,6 +53,7 @@ const HOST = process.env.HOST || "0.0.0.0";
 Bun.serve({
   port: PORT,
   hostname: HOST,
+  idleTimeout: 120,
   async fetch(req) {
     // CORS
     if (req.method === "OPTIONS") {

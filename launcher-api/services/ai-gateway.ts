@@ -1,6 +1,6 @@
 import type { AiGateway, AiProvider } from "../types";
 import { createMockGateway } from "./gateways/mock";
-import { createOpenAiGateway } from "./gateways/openai";
+import { createOpenAiGateway } from "./gateways/openai/gateway";
 import { createClaudeCliGateway } from "./gateways/claude-cli";
 
 export function resolveGateway(

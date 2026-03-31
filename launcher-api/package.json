@@ -8,5 +8,10 @@
   },
   "devDependencies": {
     "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@types/debug": "^4.1.13",
+    "debug": "^4.4.3",
+    "mathjs": "^15.1.1"
   }
 }

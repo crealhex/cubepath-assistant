@@ -7,7 +7,7 @@ export function registerCalculate(server: McpServer) {
     "calculate",
     {
       title: "Calculate",
-      description: "Evaluate a mathematical expression safely. Use for cost projections, comparisons, unit conversions, and any arithmetic. Supports +, -, *, /, ^, %, sqrt, round, ceil, floor, and more.",
+      description: "Evaluate a mathematical expression safely. Use for cost projections, comparisons, unit conversions, and any arithmetic. Use ^ for power (not **), sqrt() for square root, log() for logarithm. Examples: '4.06 * 12', 'sqrt(144) + 2^10', 'round(495 * 0.7, 2)'",
       inputSchema: z.object({
         expression: z.string().describe("Math expression to evaluate (e.g. '4.06 * 12 + 8.11 * 12')"),
       }),
