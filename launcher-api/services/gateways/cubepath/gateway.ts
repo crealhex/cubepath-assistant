@@ -124,8 +124,8 @@ async function* streamRound(
   }
 }
 
-export function createOpenAiGateway(apiKey: string, model: string, baseUrl?: string): AiGateway {
-  const url = `${baseUrl || "https://api.openai.com/v1"}/chat/completions`;
+export function createCubePathGateway(apiKey: string, model: string, baseUrl?: string): AiGateway {
+  const url = `${baseUrl || "https://ai-gateway.cubepath.com"}/chat/completions`;
   const tools = getDefinitions();
 
   return {

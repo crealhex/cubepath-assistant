@@ -36,4 +36,4 @@ export interface AiGateway {
   stream(messages: Message[], tools?: unknown[]): AsyncIterable<ChatChunk>;
 }
 
-export type AiProvider = "openai" | "claude-cli" | "mock";
+export type AiProvider = "cubepath" | "claude-cli" | "mock";

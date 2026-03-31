@@ -1,15 +1,23 @@
 import type { Database } from "bun:sqlite";
 import type { Project, Chat, Message } from "../types";
 
+const DEFAULT_SETTINGS: Record<string, string> = {
+  ai_provider: "cubepath",
+  ai_model: "deepseek/deepseek-chat",
+  cubepath_api_key: "",
+  cubepath_gateway_url: "https://ai-gateway.cubepath.com",
+  claude_cli_path: "claude",
+};
+
 export function createQueries(db: Database) {
   return {
     // Projects
-    listProjects(): Project[] {
-      return db.query("SELECT * FROM projects ORDER BY created_at DESC").all() as Project[];
+    listProjects(userId: string): Project[] {
+      return db.query("SELECT * FROM projects WHERE user_id = ? ORDER BY created_at DESC").all(userId) as Project[];
     },
 
-    createProject(id: string, name: string): Project {
-      db.run("INSERT INTO projects (id, name) VALUES (?, ?)", [id, name]);
+    createProject(id: string, userId: string, name: string): Project {
+      db.run("INSERT INTO projects (id, user_id, name) VALUES (?, ?, ?)", [id, userId, name]);
       return db.query("SELECT * FROM projects WHERE id = ?").get(id) as Project;
     },
 
@@ -18,16 +26,16 @@ export function createQueries(db: Database) {
     },
 
     // Chats
-    listChats(projectId: string): Chat[] {
+    listChats(projectId: string, userId: string): Chat[] {
       return db.query(
-        "SELECT * FROM chats WHERE project_id = ? ORDER BY updated_at DESC"
-      ).all(projectId) as Chat[];
+        "SELECT * FROM chats WHERE project_id = ? AND user_id = ? ORDER BY updated_at DESC"
+      ).all(projectId, userId) as Chat[];
     },
 
-    createChat(id: string, projectId: string, title?: string): Chat {
+    createChat(id: string, userId: string, projectId: string, title?: string): Chat {
       db.run(
-        "INSERT INTO chats (id, project_id, title) VALUES (?, ?, ?)",
-        [id, projectId, title ?? "New Chat"],
+        "INSERT INTO chats (id, user_id, project_id, title) VALUES (?, ?, ?, ?)",
+        [id, userId, projectId, title ?? "New Chat"],
       );
       return db.query("SELECT * FROM chats WHERE id = ?").get(id) as Chat;
     },
@@ -60,20 +68,30 @@ export function createQueries(db: Database) {
       return db.query("SELECT * FROM messages WHERE id = ?").get(id) as Message;
     },
 
-    // Settings
-    getSettings(): Record<string, string> {
-      const rows = db.query("SELECT key, value FROM settings").all() as { key: string; value: string }[];
-      return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+    // Settings (per user, with defaults)
+    getSettings(userId: string): Record<string, string> {
+      const rows = db.query("SELECT key, value FROM settings WHERE user_id = ?").all(userId) as { key: string; value: string }[];
+      const saved = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+      return { ...DEFAULT_SETTINGS, ...saved };
     },
 
-    setSetting(key: string, value: string) {
-      db.run("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", [key, value]);
+    setSetting(userId: string, key: string, value: string) {
+      db.run("INSERT OR REPLACE INTO settings (user_id, key, value) VALUES (?, ?, ?)", [userId, key, value]);
     },
 
-    setSettings(entries: Record<string, string>) {
-      const stmt = db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)");
+    setSettings(userId: string, entries: Record<string, string>) {
+      const stmt = db.prepare("INSERT OR REPLACE INTO settings (user_id, key, value) VALUES (?, ?, ?)");
       for (const [key, value] of Object.entries(entries)) {
-        stmt.run(key, value);
+        stmt.run(userId, key, value);
+      }
+    },
+
+    // Bootstrap — ensure default project for new users
+    ensureUser(userId: string) {
+      const count = db.query("SELECT COUNT(*) as c FROM projects WHERE user_id = ?").get(userId) as { c: number };
+      if (count.c === 0) {
+        const id = crypto.randomUUID();
+        db.run("INSERT INTO projects (id, user_id, name) VALUES (?, ?, ?)", [id, userId, "Default"]);
       }
     },
   };

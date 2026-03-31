@@ -4,7 +4,7 @@ import { ComponentRenderer } from "./component-renderer";
 import { mapToolResult } from "./tool-mappers";
 import type { RenderSegment } from "./block-parser";
 
-const API_BASE = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:3001`;
+import { API_BASE_URL_V1 } from "@/services/api-client";
 
 interface ToolReference {
   tool: string;
@@ -41,7 +41,7 @@ function ToolBlock({ component, reference }: { component: string; reference: Too
 
   useEffect(() => {
     const params = new URLSearchParams(reference.args ?? {});
-    fetch(`${API_BASE}/api/tools/${reference.tool}?${params}`)
+    fetch(`${API_BASE_URL_V1}/api/tools/${reference.tool}?${params}`)
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status}`);
         return res.json();
@@ -66,9 +66,10 @@ export function BlockRenderer({ segment }: { segment: RenderSegment & { type: "c
     const parsed = JSON.parse(segment.jsonBuffer.trim()) as Array<Record<string, unknown>>;
 
     if (isToolReference(parsed)) {
+      const refs = parsed as ToolReference[];
       return (
         <>
-          {parsed.map((ref, i) => (
+          {refs.map((ref, i) => (
             <ToolBlock key={i} component={segment.component} reference={ref} />
           ))}
         </>

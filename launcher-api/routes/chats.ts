@@ -2,13 +2,13 @@ import type { Queries } from "../db/queries";
 
 export function chatRoutes(queries: Queries) {
   return {
-    "GET /api/projects/:projectId/chats": (_req: Request, params: { projectId: string }) => {
-      return Response.json(queries.listChats(params.projectId));
+    "GET /api/projects/:projectId/chats": (_req: Request, params: { projectId: string; _userId: string }) => {
+      return Response.json(queries.listChats(params.projectId, params._userId));
     },
 
-    "POST /api/projects/:projectId/chats": async (req: Request, params: { projectId: string }) => {
+    "POST /api/projects/:projectId/chats": async (req: Request, params: { projectId: string; _userId: string }) => {
       const body = (await req.json().catch(() => ({}))) as { title?: string };
-      const chat = queries.createChat(crypto.randomUUID(), params.projectId, body.title);
+      const chat = queries.createChat(crypto.randomUUID(), params._userId, params.projectId, body.title);
       return Response.json(chat, { status: 201 });
     },
 

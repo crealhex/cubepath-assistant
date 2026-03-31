@@ -11,7 +11,7 @@ export type OpenAiEvent =
   | { type: "tool_calls"; calls: ToolCallChunk[] }
   | { type: "done" };
 
-/** Interprets OpenAI streamed deltas into text and tool call events */
+/** Interprets AI streamed deltas into text and tool call events */
 export async function* parseOpenAiStream(
   reader: ReadableStreamDefaultReader<Uint8Array>,
 ): AsyncIterable<OpenAiEvent> {

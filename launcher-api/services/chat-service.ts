@@ -11,6 +11,7 @@ export function createChatService(queries: Queries) {
     async *sendMessage(
       chatId: string,
       content: string,
+      userId: string,
     ): AsyncIterable<ChatChunk> {
       // Save user message
       const userMsgId = crypto.randomUUID();
@@ -20,7 +21,7 @@ export function createChatService(queries: Queries) {
       const history = queries.listMessages(chatId);
 
       // Resolve AI provider
-      const settings = queries.getSettings();
+      const settings = queries.getSettings(userId);
       const provider = (settings.ai_provider || "mock") as AiProvider;
       const gateway = resolveGateway(provider, settings);
 

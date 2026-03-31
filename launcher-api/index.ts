@@ -63,7 +63,7 @@ Bun.serve({
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Headers": "Content-Type, X-User-Id",
         },
       });
     }
@@ -75,8 +75,12 @@ Bun.serve({
       return new Response("Not Found", { status: 404 });
     }
 
+    // Extract user ID from header — anonymous UUID from frontend
+    const userId = req.headers.get("X-User-Id") || "default";
+    queries.ensureUser(userId);
+
     try {
-      const response = await matched.handler(req, matched.params);
+      const response = await matched.handler(req, { ...matched.params, _userId: userId });
       // Add CORS headers to all responses
       response.headers.set("Access-Control-Allow-Origin", "*");
       return response;

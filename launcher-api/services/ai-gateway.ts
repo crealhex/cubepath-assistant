@@ -1,6 +1,6 @@
 import type { AiGateway, AiProvider } from "../types";
 import { createMockGateway } from "./gateways/mock";
-import { createOpenAiGateway } from "./gateways/openai/gateway";
+import { createCubePathGateway } from "./gateways/cubepath/gateway";
 import { createClaudeCliGateway } from "./gateways/claude-cli";
 
 export function resolveGateway(
@@ -8,11 +8,11 @@ export function resolveGateway(
   settings: Record<string, string>,
 ): AiGateway {
   switch (provider) {
-    case "openai":
-      return createOpenAiGateway(
-        settings.openai_api_key,
-        settings.ai_model || "gpt-4o",
-        settings.openai_base_url,
+    case "cubepath":
+      return createCubePathGateway(
+        settings.cubepath_api_key,
+        settings.ai_model || "deepseek/deepseek-chat",
+        settings.cubepath_gateway_url,
       );
     case "claude-cli":
       return createClaudeCliGateway(settings.claude_cli_path);

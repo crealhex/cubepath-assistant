@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Outlet, useParams, useNavigate } from "react-router";
 import { TooltipProvider } from "cubepath-ui";
 import { Sidebar } from "./sidebar";
+import { SettingsModal } from "./settings-modal";
 import type { Chat } from "@/services/api-client";
 
 export interface V2Context {
@@ -27,6 +28,7 @@ export function AppLayoutV2() {
     navigate(`/v2/chat/${id}`, { replace: true });
   }, [navigate]);
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const context: V2Context = { activeChatId, setActiveChatId };
 
   return (
@@ -36,11 +38,12 @@ export function AppLayoutV2() {
           activeChatId={activeChatId}
           onSelectChat={handleSelectChat}
           onNewChat={handleNewChat}
-          onOpenSettings={() => {}}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
         <main className="flex flex-1 flex-col overflow-hidden">
           <Outlet context={context} />
         </main>
+        <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       </div>
     </TooltipProvider>
   );

@@ -1,9 +1,22 @@
-const BASE = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:3001`;
+export const API_BASE_URL_V1 = import.meta.env.VITE_API_URL || "";
+
+function getUserId(): string {
+  let id = localStorage.getItem("cubepath_user_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("cubepath_user_id", id);
+  }
+  return id;
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+  const res = await fetch(`${API_BASE_URL_V1}${path}`, {
     ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "X-User-Id": getUserId(),
+      ...options?.headers,
+    },
   });
   if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
   return res.json();
@@ -68,9 +81,9 @@ export const api = {
 
   // Streaming
   async *streamMessage(chatId: string, content: string): AsyncIterable<ChatChunk> {
-    const res = await fetch(`${BASE}/api/chats/${chatId}/stream`, {
+    const res = await fetch(`${API_BASE_URL_V1}/api/chats/${chatId}/stream`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-User-Id": getUserId() },
       body: JSON.stringify({ content }),
     });
 
