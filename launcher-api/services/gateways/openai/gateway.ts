@@ -5,6 +5,7 @@ import { parseOpenAiStream, type ToolCallChunk } from "./stream";
 
 const debug = createDebug("launcher:openai");
 const MAX_TOOL_ROUNDS = 5;
+const DISPLAY_TOOL = "display";
 
 function buildRequest(url: string, apiKey: string, model: string, tools: unknown[], messages: Array<Record<string, unknown>>) {
   const body: Record<string, unknown> = { model, stream: true, messages };
@@ -32,24 +33,53 @@ function appendToolCalls(conversation: Array<Record<string, unknown>>, calls: To
   });
 }
 
-async function executeToolCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[]) {
+function parseToolArgs(tc: ToolCallChunk): Record<string, unknown> {
+  try { return JSON.parse(tc.arguments); } catch { return {}; }
+}
+
+/** Split tool calls into display calls (→ component chunks) and regular calls (→ execute + feed back) */
+function splitToolCalls(calls: ToolCallChunk[]): { displayCalls: ToolCallChunk[]; regularCalls: ToolCallChunk[] } {
+  const displayCalls: ToolCallChunk[] = [];
+  const regularCalls: ToolCallChunk[] = [];
   for (const tc of calls) {
-    let args: Record<string, unknown> = {};
-    try { args = JSON.parse(tc.arguments); } catch {}
+    (tc.name === DISPLAY_TOOL ? displayCalls : regularCalls).push(tc);
+  }
+  return { displayCalls, regularCalls };
+}
+
+async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[]) {
+  for (const tc of calls) {
+    const args = parseToolArgs(tc);
     const result = await execute(tc.name, args);
     debug("tool result: %s", result);
     conversation.push({ role: "tool", tool_call_id: tc.id, content: result });
   }
 }
 
-/** Streams one round, yields text chunks, returns whether tool calls were made */
+function emitDisplayCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[]): ChatChunk[] {
+  const chunks: ChatChunk[] = [];
+  for (const tc of calls) {
+    const args = parseToolArgs(tc);
+    const id = args.id as string;
+    const component = args.component as string;
+    const props = (args.props ?? {}) as Record<string, unknown>;
+
+    debug("display: %s → %s", id, component);
+    chunks.push({ type: "component", block: { id, component, props } });
+
+    // Feed back a simple acknowledgment so the API doesn't complain about missing tool results
+    conversation.push({ role: "tool", tool_call_id: tc.id, content: "displayed" });
+  }
+  return chunks;
+}
+
 async function* streamRound(
   url: string,
   apiKey: string,
   model: string,
   tools: unknown[],
   conversation: Array<Record<string, unknown>>,
-): AsyncIterable<ChatChunk | { type: "needs_followup" }> {
+): AsyncIterable<ChatChunk> {
   const res = await buildRequest(url, apiKey, model, tools, conversation);
 
   if (!res.ok) {
@@ -74,7 +104,16 @@ async function* streamRound(
     if (event.type === "tool_calls") {
       debug("tool calls: %o", event.calls.map((c) => `${c.name}(${c.arguments})`));
       appendToolCalls(conversation, event.calls);
-      await executeToolCalls(conversation, event.calls);
+
+      const { displayCalls, regularCalls } = splitToolCalls(event.calls);
+
+      // Emit component chunks for display calls
+      for (const chunk of emitDisplayCalls(conversation, displayCalls)) {
+        yield chunk;
+      }
+
+      // Execute regular tool calls
+      await executeRegularCalls(conversation, regularCalls);
       continue;
     }
 
@@ -99,11 +138,10 @@ export function createOpenAiGateway(apiKey: string, model: string, baseUrl?: str
         const prevLength = conversation.length;
 
         for await (const chunk of streamRound(url, apiKey, model, tools, conversation)) {
-          if (chunk.type === "text" || chunk.type === "done") yield chunk;
+          yield chunk;
           if (chunk.type === "done") return;
         }
 
-        // If no tool calls were made (conversation didn't grow), we're done
         if (conversation.length === prevLength) {
           debug("done, no tool calls");
           yield { type: "done" };
