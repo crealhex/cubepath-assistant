@@ -9,7 +9,7 @@ import { highlight } from "sugar-high";
 import { ComponentRenderer } from "./component-renderer";
 import "katex/dist/katex.min.css";
 
-export interface ComponentBlock {
+export interface ComponentData {
   component: string;
   props: Record<string, unknown>;
 }
@@ -18,7 +18,7 @@ export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  components?: ComponentBlock[];
+  componentData?: Record<string, ComponentData>;
   isStreaming?: boolean;
 }
 
@@ -43,25 +43,115 @@ const markdownComponents: Components = {
   },
 };
 
+/**
+ * Token protocol:
+ *   {{begin:component-type}}   — opens a group
+ *   {{component-type:index}}   — item within a group (or standalone if no begin/end)
+ *   {{end:component-type}}     — closes the group, triggers render
+ */
+const TOKEN_REGEX = /(\{\{(?:begin|end):[\w-]+\}\}|\{\{[\w-]+:\d+\}\})/g;
+const ITEM_PARSE = /^\{\{([\w-]+):(\d+)\}\}$/;
+const BEGIN_PARSE = /^\{\{begin:([\w-]+)\}\}$/;
+const END_PARSE = /^\{\{end:([\w-]+)\}\}$/;
+
+type RenderSegment =
+  | { type: "text"; content: string }
+  | { type: "components"; blocks: ComponentData[]; complete: boolean };
+
+function parseSegments(
+  content: string,
+  data: Record<string, ComponentData>,
+  isStreaming: boolean,
+): RenderSegment[] {
+  const parts = content.split(TOKEN_REGEX);
+  const result: RenderSegment[] = [];
+  let activeGroup: RenderSegment | null = null;
+
+  for (const part of parts) {
+    if (BEGIN_PARSE.test(part)) {
+      activeGroup = { type: "components", blocks: [], complete: false };
+      result.push(activeGroup);
+      continue;
+    }
+
+    if (END_PARSE.test(part)) {
+      if (activeGroup) activeGroup.complete = true;
+      activeGroup = null;
+      continue;
+    }
+
+    const itemMatch = ITEM_PARSE.exec(part);
+    if (itemMatch) {
+      const tokenId = `${itemMatch[1]}:${itemMatch[2]}`;
+      const block = data[tokenId];
+
+      if (activeGroup) {
+        if (block) activeGroup.blocks.push(block);
+      } else {
+        // Standalone — complete as soon as data arrives
+        result.push({
+          type: "components",
+          blocks: block ? [block] : [],
+          complete: !isStreaming || !!block,
+        });
+      }
+      continue;
+    }
+
+    if (part.trim()) {
+      result.push({ type: "text", content: part });
+    }
+  }
+
+  if (!isStreaming) {
+    for (const seg of result) {
+      if (seg.type === "components") seg.complete = true;
+    }
+  }
+
+  return result;
+}
+
+function GroupSkeleton() {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border/60 px-4 py-4 animate-pulse">
+      <div className="h-4 w-4 rounded-full bg-muted" />
+      <div className="flex flex-col gap-1.5 flex-1">
+        <div className="h-3 w-32 rounded bg-muted" />
+        <div className="h-2.5 w-20 rounded bg-muted" />
+      </div>
+    </div>
+  );
+}
+
 function AssistantMessage({ msg }: { msg: ChatMessage }) {
-  if (msg.isStreaming && msg.content === "" && !msg.components?.length) return null;
+  if (msg.isStreaming && msg.content === "" && !msg.componentData) return null;
+
+  const data = msg.componentData ?? {};
+  const segments = parseSegments(msg.content, data, msg.isStreaming ?? false);
 
   return (
-    <div>
-      {msg.content && (
-        <div className={PROSE_CLASSES}>
-          <Markdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-            components={markdownComponents}
-          >
-            {msg.content}
-          </Markdown>
-        </div>
-      )}
-      {msg.components && msg.components.length > 0 && (
-        <ComponentRenderer blocks={msg.components} />
-      )}
+    <div className="flex flex-col gap-2">
+      {segments.map((segment, i) => {
+        if (segment.type === "components") {
+          if (!segment.complete || segment.blocks.length === 0) {
+            return <GroupSkeleton key={i} />;
+          }
+          return <ComponentRenderer key={i} blocks={segment.blocks} />;
+        }
+
+        return (
+          <div key={i} className={PROSE_CLASSES}>
+            <Markdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={markdownComponents}
+            >
+              {segment.content}
+            </Markdown>
+          </div>
+        );
+      })}
     </div>
   );
 }

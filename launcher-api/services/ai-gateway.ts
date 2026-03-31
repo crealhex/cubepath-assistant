@@ -1,4 +1,4 @@
-import type { AiGateway, ChatChunk, Message, AiProvider, ComponentBlock } from "../types";
+import type { AiGateway, ChatChunk, Message, AiProvider } from "../types";
 
 // --- Mock Strategy ---
 
@@ -117,7 +117,7 @@ Scale up when $\\text{EMA}_t > \\theta_{up}$, scale down when $\\text{EMA}_t < \
 
   interface MockResponse {
     text: string;
-    components?: ComponentBlock[];
+    componentData?: Record<string, { component: string; props: Record<string, unknown> }>;
   }
 
   function getResponse(input: string): MockResponse {
@@ -125,81 +125,117 @@ Scale up when $\\text{EMA}_t > \\theta_{up}$, scale down when $\\text{EMA}_t < \
 
     if (lower.includes("price") || lower.includes("plan") || lower.includes("cost")) {
       return {
-        text: "Here are the **General Purpose** VPS plans:",
-        components: [
-          { component: "pricing-table", props: { plans: [
+        text: `Sure! Let me grab the latest pricing for you. Here's a breakdown of the **General Purpose** VPS plans — these are the most popular ones and cover most use cases from hobby projects to production workloads.
+
+{{pricing-table:0}}
+
+The **gp.starter** is our most recommended plan — great balance of performance and price. All plans include DDoS protection, NVMe storage, and IPv6. Need help picking the right one for your workload?`,
+        componentData: {
+          "pricing-table:0": { component: "pricing-table", props: { plans: [
             { plan: "gp.nano", vcpu: 1, ram_gb: 2, storage_gb: 40, bandwidth_tb: 3, price_monthly: 4.06, price_hourly: 0.00556 },
             { plan: "gp.micro", vcpu: 2, ram_gb: 4, storage_gb: 80, bandwidth_tb: 5, price_monthly: 8.11, price_hourly: 0.01111 },
             { plan: "gp.starter", vcpu: 4, ram_gb: 8, storage_gb: 100, bandwidth_tb: 10, price_monthly: 15.21, price_hourly: 0.02083 },
             { plan: "gp.small", vcpu: 8, ram_gb: 16, storage_gb: 200, bandwidth_tb: 20, price_monthly: 29.40, price_hourly: 0.04028 },
           ], recommended: "gp.starter" } },
-        ],
+        },
       };
     }
 
     if (lower.includes("deploy") || lower.includes("create") || lower.includes("new")) {
       return {
-        text: "Deploying your new VPS instance...",
-        components: [
-          { component: "deploy-progress", props: { name: "hackathon-test", plan: "gp.nano", location: "eu-bcn-1", currentStep: "provisioning" } },
-        ],
+        text: `Alright, let's spin up a new server! I'm setting up a **gp.nano** instance in Barcelona for you. This should only take a minute or so.
+
+{{deploy-progress:0}}
+
+I'll keep an eye on this for you. Once it's ready, you'll be able to SSH in right away. Want me to add any SSH keys to it, or would you prefer a root password?`,
+        componentData: {
+          "deploy-progress:0": { component: "deploy-progress", props: { name: "hackathon-test", plan: "gp.nano", location: "eu-bcn-1", currentStep: "provisioning" } },
+        },
       };
     }
 
     if (lower.includes("instance") || lower.includes("server")) {
       return {
-        text: "Here are your instances in **first-project**:",
-        components: [
-          { component: "instance-card", props: { id: 23706, name: "web-server", status: "running", project: "first-project", ip: "194.26.100.42", plan: { plan_name: "gp.nano", cpu: 1, ram: 2048, storage: 40, bandwidth: 3, price_per_hour: "0.00556" }, location: "Barcelona, Spain", template: "Ubuntu 24" } },
-          { component: "instance-card", props: { id: 23707, name: "api-gateway", status: "running", project: "first-project", ip: "157.254.174.88", plan: { plan_name: "gp.starter", cpu: 4, ram: 8192, storage: 100, bandwidth: 10, price_per_hour: "0.02290" }, location: "Miami, FL", template: "Debian 12" } },
-          { component: "instance-card", props: { id: 23708, name: "db-primary", status: "stopped", project: "first-project", ip: "108.165.47.12", plan: { plan_name: "gp.small", cpu: 8, ram: 16384, storage: 200, bandwidth: 20, price_per_hour: "0.04230" }, location: "Houston, TX", template: "Ubuntu 24" } },
-        ],
+        text: `Let me check what's running in your **first-project**. Pulling up all your instances now...
+
+{{begin:instance-card}}
+{{instance-card:0}}
+{{instance-card:1}}
+{{instance-card:2}}
+{{end:instance-card}}
+
+Looks like **db-primary** is currently stopped. Your other two instances are running smoothly. Want me to start the database server back up, or is there anything else you'd like to do?`,
+        componentData: {
+          "instance-card:0": { component: "instance-card", props: { id: 23706, name: "web-server", status: "running", project: "first-project", ip: "194.26.100.42", plan: { plan_name: "gp.nano", cpu: 1, ram: 2048, storage: 40, bandwidth: 3, price_per_hour: "0.00556" }, location: "Barcelona, Spain", template: "Ubuntu 24" } },
+          "instance-card:1": { component: "instance-card", props: { id: 23707, name: "api-gateway", status: "running", project: "first-project", ip: "157.254.174.88", plan: { plan_name: "gp.starter", cpu: 4, ram: 8192, storage: 100, bandwidth: 10, price_per_hour: "0.02290" }, location: "Miami, FL", template: "Debian 12" } },
+          "instance-card:2": { component: "instance-card", props: { id: 23708, name: "db-primary", status: "stopped", project: "first-project", ip: "108.165.47.12", plan: { plan_name: "gp.small", cpu: 8, ram: 16384, storage: 200, bandwidth: 20, price_per_hour: "0.04230" }, location: "Houston, TX", template: "Ubuntu 24" } },
+        },
       };
     }
 
     if (lower.includes("project")) {
       return {
-        text: "Here are your projects:",
-        components: [
-          { component: "project-card", props: { id: 3065, name: "first-project", description: "Default project", vpsCount: 3 } },
-          { component: "project-card", props: { id: 3066, name: "staging", description: "Staging environment", vpsCount: 0 } },
-        ],
+        text: `Here's an overview of your projects. Each project acts as a container for your servers, networks, and other resources.
+
+{{begin:project-card}}
+{{project-card:0}}
+{{project-card:1}}
+{{end:project-card}}
+
+Your **first-project** has 3 active instances, while **staging** is empty and ready for new deployments. Would you like to create a new project, or dive into one of these?`,
+        componentData: {
+          "project-card:0": { component: "project-card", props: { id: 3065, name: "first-project", description: "Default project", vpsCount: 3 } },
+          "project-card:1": { component: "project-card", props: { id: 3066, name: "staging", description: "Staging environment", vpsCount: 0 } },
+        },
       };
     }
 
     if (lower.includes("error") || lower.includes("fail")) {
       return {
-        text: "Something went wrong while processing your request:",
-        components: [
-          { component: "error-card", props: { title: "Deployment failed", message: "Location 'eu-barcelona' does not exist.", suggestion: "Try using 'eu-bcn-1' instead." } },
-        ],
+        text: `Hmm, looks like something didn't go as planned. Here's what happened:
+
+{{error-card:0}}
+
+The location name was slightly off — CubePath uses short codes like \`eu-bcn-1\` for Barcelona. Want me to retry with the correct location?`,
+        componentData: {
+          "error-card:0": { component: "error-card", props: { title: "Deployment failed", message: "Location 'eu-barcelona' does not exist.", suggestion: "Try using 'eu-bcn-1' instead." } },
+        },
       };
     }
 
-    // Default — text only
-    return {
-      text: responses.default,
-    };
+    return { text: responses.default };
+  }
+
+  async function* streamWords(text: string): AsyncIterable<ChatChunk> {
+    const words = text.split(/(\s+)/);
+    for (const word of words) {
+      yield { type: "text", content: word };
+      await Bun.sleep(18 + Math.random() * 25);
+    }
   }
 
   return {
     async *stream(messages: Message[]): AsyncIterable<ChatChunk> {
       const last = messages[messages.length - 1]?.content ?? "";
-      const { text, components } = getResponse(last);
-      const words = text.split(/(\s+)/);
+      const { text, componentData } = getResponse(last);
 
+      // Stream text word by word, emit component data when tokens are encountered
+      const parts = text.split(/(\{\{[\w-]+:\d+\}\})/);
       await Bun.sleep(300);
-      for (const word of words) {
-        yield { type: "text", content: word };
-        await Bun.sleep(20 + Math.random() * 30);
-      }
 
-      // Yield components after text is done streaming
-      if (components) {
-        await Bun.sleep(200);
-        for (const block of components) {
-          yield { type: "component", block };
-          await Bun.sleep(150);
+      for (const part of parts) {
+        const tokenMatch = /^\{\{([\w-]+:\d+)\}\}$/.exec(part);
+        if (tokenMatch && componentData?.[tokenMatch[1]]) {
+          // Emit the token as text so the frontend can place the skeleton
+          yield { type: "text", content: part };
+          // Then emit the component data to hydrate it
+          await Bun.sleep(300);
+          const id = tokenMatch[1];
+          const { component, props } = componentData[id];
+          yield { type: "component", block: { id, component, props } };
+          await Bun.sleep(100);
+        } else if (part) {
+          yield* streamWords(part);
         }
       }
 

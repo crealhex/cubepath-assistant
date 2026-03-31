@@ -1,5 +1,5 @@
 import type { Queries } from "../db/queries";
-import type { AiProvider, ChatChunk, ComponentBlock } from "../types";
+import type { AiProvider, ChatChunk } from "../types";
 import { resolveGateway } from "./ai-gateway";
 
 export function createChatService(queries: Queries) {
@@ -20,24 +20,25 @@ export function createChatService(queries: Queries) {
       const provider = (settings.ai_provider || "mock") as AiProvider;
       const gateway = resolveGateway(provider, settings);
 
-      // Stream AI response — accumulate text + components for persistence
+      // Stream AI response — accumulate text + component data for persistence
       let accumulatedText = "";
-      const components: ComponentBlock[] = [];
+      const componentData: Record<string, { component: string; props: Record<string, unknown> }> = {};
 
       for await (const chunk of gateway.stream(history)) {
         if (chunk.type === "text") {
           accumulatedText += chunk.content;
         } else if (chunk.type === "component") {
-          components.push(chunk.block);
+          const { id, component, props } = chunk.block;
+          componentData[id] = { component, props };
         }
         yield chunk;
       }
 
-      // Save assistant message with embedded components
-      if (accumulatedText || components.length > 0) {
+      // Save assistant message — JSON format if components present
+      if (accumulatedText || Object.keys(componentData).length > 0) {
         const assistantMsgId = crypto.randomUUID();
-        const savedContent = components.length > 0
-          ? JSON.stringify({ text: accumulatedText, components })
+        const savedContent = Object.keys(componentData).length > 0
+          ? JSON.stringify({ text: accumulatedText, componentData })
           : accumulatedText;
         queries.createMessage(assistantMsgId, chatId, "assistant", savedContent);
       }

@@ -14,7 +14,7 @@ import {
   LbPlanCard,
   LbTable,
 } from "cubepath-ui";
-import type { ComponentBlock } from "./message-list";
+import type { ComponentData } from "./message-list";
 
 // Dynamic lookup by string key — each component validates its own props at runtime
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,49 +35,53 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   "lb-table": LbTable,
 };
 
-/** Group consecutive same-type blocks */
-function groupBlocks(blocks: ComponentBlock[]): ComponentBlock[][] {
-  const groups: ComponentBlock[][] = [];
-  for (const block of blocks) {
-    const last = groups[groups.length - 1];
-    if (last && last[0].component === block.component) {
-      last.push(block);
-    } else {
-      groups.push([block]);
-    }
-  }
-  return groups;
+function renderBlock(block: ComponentData, key: number) {
+  const Component = componentMap[block.component];
+  if (!Component) return null;
+  return <Component key={key} {...block.props} />;
 }
 
-function gridClass(count: number): string {
-  if (count === 1) return "";
-  if (count === 2) return "grid grid-cols-1 sm:grid-cols-2 gap-3";
-  return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3";
-}
-
-export function ComponentRenderer({ blocks }: { blocks: ComponentBlock[] }) {
+/**
+ * Layout breakpoints:
+ * - 1 block: centered, max-width constrained
+ * - 2-3 blocks: horizontal row (desktop), stacked (mobile)
+ * - 4+ blocks: horizontal carousel
+ */
+export function ComponentRenderer({ blocks }: { blocks: ComponentData[] }) {
   if (blocks.length === 0) return null;
 
-  const groups = groupBlocks(blocks);
+  // Single component — centered
+  if (blocks.length === 1) {
+    return (
+      <div className="flex justify-center">
+        {renderBlock(blocks[0], 0)}
+      </div>
+    );
+  }
 
+  // 2-3 components — responsive row
+  if (blocks.length <= 3) {
+    const cols = blocks.length === 2
+      ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
+      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3";
+
+    return (
+      <div className={cols}>
+        {blocks.map((block, i) => renderBlock(block, i))}
+      </div>
+    );
+  }
+
+  // 4+ components — horizontal carousel
   return (
-    <div className="flex flex-col gap-3 my-2">
-      {groups.map((group, gi) => {
-        const Component = componentMap[group[0].component];
-        if (!Component) return null;
-
-        if (group.length === 1) {
-          return <Component key={gi} {...group[0].props} />;
-        }
-
-        return (
-          <div key={gi} className={gridClass(group.length)}>
-            {group.map((block, bi) => (
-              <Component key={bi} {...block.props} />
-            ))}
+    <div className="relative group/carousel">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory">
+        {blocks.map((block, i) => (
+          <div key={i} className="snap-start shrink-0 w-[280px]">
+            {renderBlock(block, i)}
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }

@@ -22,6 +22,7 @@ export interface Message {
 }
 
 export interface ComponentBlock {
+  id: string;
   component: string;
   props: Record<string, unknown>;
 }

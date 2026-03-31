@@ -5,7 +5,8 @@ import { ArrowDown } from "lucide-react";
 import { ChatInputV2 } from "./chat-input";
 import { MessageListV2, type ChatMessage } from "./message-list";
 import { ScrollContainer } from "./scroll-container";
-import { api, type Chat, type ComponentBlock } from "@/services/api-client";
+import { api, type Chat } from "@/services/api-client";
+import type { ComponentData } from "./message-list";
 import type { V2Context } from "./layout";
 
 let _nextId = 0;
@@ -38,8 +39,8 @@ export default function PageV2() {
         // Persisted assistant messages with components are stored as JSON
         if (m.role === "assistant" && m.content.startsWith("{")) {
           try {
-            const parsed = JSON.parse(m.content) as { text: string; components: ComponentBlock[] };
-            return { id: m.id, role: m.role, content: parsed.text, components: parsed.components };
+            const parsed = JSON.parse(m.content) as { text: string; componentData: Record<string, ComponentData> };
+            return { id: m.id, role: m.role, content: parsed.text, componentData: parsed.componentData };
           } catch { /* not JSON, treat as plain text */ }
         }
         return { id: m.id, role: m.role, content: m.content };
@@ -75,23 +76,24 @@ export default function PageV2() {
       streamingRef.current = true;
 
       let accumulated = "";
-      const components: ComponentBlock[] = [];
+      const componentData: Record<string, ComponentData> = {};
 
       try {
         for await (const chunk of api.streamMessage(currentChatId, content)) {
           if (chunk.type === "text") {
             accumulated += chunk.content;
-            const snapshot = accumulated;
-            const compSnapshot = [...components];
+            const textSnap = accumulated;
+            const dataSnap = { ...componentData };
             setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot, components: compSnapshot } : m)),
+              prev.map((m) => (m.id === assistantId ? { ...m, content: textSnap, componentData: dataSnap } : m)),
             );
           } else if (chunk.type === "component") {
-            components.push(chunk.block);
-            const snapshot = accumulated;
-            const compSnapshot = [...components];
+            const { id, component, props } = chunk.block;
+            componentData[id] = { component, props };
+            const textSnap = accumulated;
+            const dataSnap = { ...componentData };
             setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot, components: compSnapshot } : m)),
+              prev.map((m) => (m.id === assistantId ? { ...m, content: textSnap, componentData: dataSnap } : m)),
             );
           }
         }
