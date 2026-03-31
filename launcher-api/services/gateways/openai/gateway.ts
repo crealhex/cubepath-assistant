@@ -118,7 +118,7 @@ async function* streamRound(
     }
 
     if (event.type === "done") {
-      debug("text output: %s", roundText.slice(0, 500));
+      debug("text output: %s", roundText);
       return;
     }
   }
