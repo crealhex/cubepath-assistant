@@ -16,7 +16,7 @@ export interface Chat {
 export interface Message {
   id: string;
   chat_id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
   created_at: string;
 }

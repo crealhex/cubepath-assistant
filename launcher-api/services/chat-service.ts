@@ -2,6 +2,10 @@ import type { Queries } from "../db/queries";
 import type { AiProvider, ChatChunk } from "../types";
 import { resolveGateway } from "./ai-gateway";
 
+const systemPrompt = await Bun.file(
+  new URL("../prompts/system.md", import.meta.url).pathname,
+).text();
+
 export function createChatService(queries: Queries) {
   return {
     async *sendMessage(
@@ -20,11 +24,17 @@ export function createChatService(queries: Queries) {
       const provider = (settings.ai_provider || "mock") as AiProvider;
       const gateway = resolveGateway(provider, settings);
 
+      // Prepend system prompt to conversation
+      const messagesWithSystem = [
+        { id: "system", chat_id: chatId, role: "system" as const, content: systemPrompt, created_at: "" },
+        ...history,
+      ];
+
       // Stream AI response — accumulate text + component data for persistence
       let accumulatedText = "";
       const componentData: Record<string, { component: string; props: Record<string, unknown> }> = {};
 
-      for await (const chunk of gateway.stream(history)) {
+      for await (const chunk of gateway.stream(messagesWithSystem)) {
         if (chunk.type === "text") {
           accumulatedText += chunk.content;
         } else if (chunk.type === "component") {

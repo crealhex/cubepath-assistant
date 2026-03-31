@@ -9,6 +9,6 @@ export const response: MockResponse = {
 
 I'll keep an eye on this for you. Once it's ready, you'll be able to SSH in right away. Want me to add any SSH keys to it, or would you prefer a root password?`,
   componentData: {
-    "deploy-progress:0": { component: "deploy-progress", props: { name: "hackathon-test", plan: "gp.nano", location: "eu-bcn-1", currentStep: "provisioning" } },
+    "deploy-progress:0": { component: "deploy-progress", props: { name: "hackathon-test", plan: "gp.nano", location: "eu-bcn-1", currentStep: "deploying" } },
   },
 };
