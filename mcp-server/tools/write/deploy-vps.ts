@@ -11,15 +11,20 @@ export function registerDeployVps(server: McpServer) {
       inputSchema: z.object({
         projectId: z.string().describe("The project ID to deploy into"),
         name: z.string().describe("Hostname for the VPS instance"),
-        label: z.string().describe("Display label for the VPS instance"),
+        label: z.string().optional().describe("Display label for the VPS instance"),
         plan: z.string().describe("Plan name (e.g. 'gp.nano', 'gp.small')"),
         template: z.string().describe("Template name (e.g. 'ubuntu-24', 'debian-12')"),
-        location: z.string().describe("Location name (e.g. 'eu-barcelona', 'us-mia-1')"),
-        sshKeyNames: z.array(z.string()).optional().describe("SSH key names to add"),
+        location: z.string().describe("Location name (e.g. 'eu-bcn-1', 'us-mia-1')"),
+        sshKeyNames: z.array(z.string()).optional().describe("SSH key names to add for passwordless access"),
         password: z.string().optional().describe("Root password (required if no SSH keys provided)"),
+        user: z.string().optional().describe("Custom username instead of root"),
+        networkId: z.string().optional().describe("Private network ID to attach"),
+        ipv4: z.boolean().optional().describe("Request a public IPv4 address"),
+        enableBackups: z.boolean().optional().describe("Enable automatic backups"),
+        customCloudInit: z.string().optional().describe("Cloud-init script for first-boot automation"),
       }),
     },
-    async ({ projectId, name, label, plan, template, location, sshKeyNames, password }) => {
+    async ({ projectId, name, label, plan, template, location, sshKeyNames, password, user, ipv4, enableBackups, customCloudInit }) => {
       const client = getCubePathClient();
       const task = await client.vps.create(projectId, {
         name,
@@ -29,6 +34,10 @@ export function registerDeployVps(server: McpServer) {
         location_name: location,
         ssh_key_names: sshKeyNames,
         password,
+        user,
+        ipv4,
+        enable_backups: enableBackups,
+        custom_cloud_init: customCloudInit,
       });
 
       return {
