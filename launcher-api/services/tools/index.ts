@@ -1,10 +1,16 @@
-import { register, getDefinitions, execute } from "./registry";
-import { tool as calculate } from "./calculate";
-// import { tool as display } from "./display";
-import { tool as listLocations } from "./list-locations";
+import { registerQuery, registerCommand, getDefinitions, execute, getQueryTool } from "./registry";
 
-register(calculate);
-// register(display);
-register(listLocations);
+// Queries — safe for frontend exposure
+import { tool as calculate } from "./queries/calculate";
+import { tool as listLocations } from "./queries/list-locations";
+import { tool as listVpsPlans } from "./queries/list-vps-plans";
 
-export { getDefinitions, execute };
+registerQuery(calculate);
+registerQuery(listLocations);
+registerQuery(listVpsPlans);
+
+// Commands — AI-only, behind approval flow
+// import { tool as display } from "./commands/display";
+// registerCommand(display);
+
+export { getDefinitions, execute, getQueryTool };

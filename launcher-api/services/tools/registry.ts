@@ -1,8 +1,14 @@
 import { toJSONSchema, type Tool } from "cubepath-tools";
 
 const tools = new Map<string, Tool>();
+const queryTools = new Set<string>();
 
-export function register(tool: Tool) {
+export function registerQuery(tool: Tool) {
+  tools.set(tool.name, tool);
+  queryTools.add(tool.name);
+}
+
+export function registerCommand(tool: Tool) {
   tools.set(tool.name, tool);
 }
 
@@ -22,4 +28,13 @@ export async function execute(name: string, args: Record<string, unknown>): Prom
   const tool = tools.get(name);
   if (!tool) return `Unknown tool: ${name}`;
   return tool.execute(args);
+}
+
+export function isQuery(name: string): boolean {
+  return queryTools.has(name);
+}
+
+export function getQueryTool(name: string): Tool | undefined {
+  if (!queryTools.has(name)) return undefined;
+  return tools.get(name);
 }

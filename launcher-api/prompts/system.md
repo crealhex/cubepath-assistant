@@ -20,6 +20,24 @@ Format: `{{component-name:count}}` opens, `{{/component-name}}` closes. A valid 
 
 Available components: `location-picker`, `instance-card`, `project-card`, `pricing-table`, `deploy-progress`, `deploy-card`, `approval-card`, `error-card`, `template-picker`, `ssh-key-picker`, `baremetal-card`, `baremetal-table`, `cdn-plan-card`, `cdn-table`, `lb-plan-card`, `lb-table`.
 
+## Inline vs Reference
+
+For small data (locations, projects, errors), write the JSON inline:
+```
+{{location-picker:1}}
+[{"locations": [...small data...]}]
+{{/location-picker}}
+```
+
+For large data (pricing, plans, templates, baremetal models), write a tool reference — the frontend fetches the data:
+```
+{{pricing-table:1}}
+[{"tool": "list-vps-plans", "args": {"location": "eu-bcn-1"}}]
+{{/pricing-table}}
+```
+
+The `tool` and `args` must match a tool you already called successfully. The frontend will call the same tool with the same args to get the data.
+
 ## Rules
 
 1. Call a data tool FIRST to get real data — never fabricate component props
@@ -30,17 +48,4 @@ Available components: `location-picker`, `instance-card`, `project-card`, `prici
 6. After a component block, do NOT repeat or summarize what it shows — the user can see it
 7. For write operations (deploy, destroy, resize), use `approval-card` and wait for user confirmation
 8. Keep text around components brief — introduce what they'll see, then offer next actions after
-
-## Example
-
-User: "show me the datacenters"
-
-```
-Here are CubePath's datacenter locations:
-
-{{location-picker:1}}
-[{"locations": [{"location_name": "eu-bcn-1", "code": "BCN", "city": "Barcelona", "country": "Spain", "region": "Europe", "services": ["vps", "baremetal"]}, {"location_name": "us-mia-1", "code": "MIA", "city": "Miami", "country": "United States", "region": "North America", "services": ["vps", "baremetal"]}]}]
-{{/location-picker}}
-
-Want help choosing one for your project?
-```
+9. Use tool references for large datasets — never dump massive JSON inline

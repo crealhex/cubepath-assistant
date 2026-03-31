@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { ChatBubble, CodeBlock, CubePathLogo } from "cubepath-ui";
 import cubepathIcon from "@/assets/cubepath-icon.svg";
 import type { Components } from "react-markdown";
@@ -7,6 +8,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { highlight } from "sugar-high";
 import { ComponentRenderer } from "./component-renderer";
+import { mapToolResult } from "./tool-mappers";
 import "katex/dist/katex.min.css";
 
 export interface ChatMessage {
@@ -125,12 +127,57 @@ function FailedBlock() {
   );
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:3001`;
+
+interface ToolReference {
+  tool: string;
+  args?: Record<string, string>;
+}
+
+function isToolReference(data: unknown[]): data is ToolReference[] {
+  return data.length > 0 && typeof data[0] === "object" && data[0] !== null && "tool" in data[0];
+}
+
+function ToolBlock({ component, reference }: { component: string; reference: ToolReference }) {
+  const [blocks, setBlocks] = useState<Array<{ component: string; props: Record<string, unknown> }> | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(reference.args ?? {});
+    fetch(`${API_BASE}/api/tools/${reference.tool}?${params}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status}`);
+        return res.json();
+      })
+      .then((result) => {
+        const items = mapToolResult(component, result);
+        setBlocks(items.map((props) => ({ component, props })));
+      })
+      .catch(() => setError(true));
+  }, [component, reference.tool, JSON.stringify(reference.args)]);
+
+  if (error) return <FailedBlock />;
+  if (!blocks) return <GroupSkeleton count={1} />;
+  return <ComponentRenderer blocks={blocks} />;
+}
+
 function parseAndRenderBlock(segment: RenderSegment & { type: "component-block" }) {
   if (segment.failed) return <FailedBlock />;
   if (!segment.closed) return <GroupSkeleton count={segment.count} />;
 
   try {
     const parsed = JSON.parse(segment.jsonBuffer.trim()) as Array<Record<string, unknown>>;
+
+    if (isToolReference(parsed)) {
+      return (
+        <>
+          {parsed.map((ref, i) => (
+            <ToolBlock key={i} component={segment.component} reference={ref} />
+          ))}
+        </>
+      );
+    }
+
     const blocks = parsed.map((props) => ({ component: segment.component, props }));
     return <ComponentRenderer blocks={blocks} />;
   } catch {

@@ -5,6 +5,7 @@ import { projectRoutes } from "./routes/projects";
 import { chatRoutes } from "./routes/chats";
 import { aiRoutes } from "./routes/ai";
 import { settingsRoutes } from "./routes/settings";
+import { toolRoutes } from "./routes/tools";
 
 const db = initDb();
 const queries = createQueries(db);
@@ -16,6 +17,7 @@ const routes = {
   ...chatRoutes(queries),
   ...aiRoutes(chatService),
   ...settingsRoutes(queries),
+  ...toolRoutes(),
 };
 
 type RouteKey = keyof typeof routes;
