@@ -9,6 +9,7 @@
   "dependencies": {
     "@cubepath/sdk": "latest",
     "@modelcontextprotocol/sdk": "^1.12.1",
+    "mathjs": "^15.1.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

@@ -13,6 +13,9 @@ import { registerListLocations } from "./tools/read/list-locations";
 import { registerListProjects } from "./tools/read/list-projects";
 import { registerListSshKeys } from "./tools/read/list-ssh-keys";
 
+// Utility tools
+import { registerCalculate } from "./tools/utility/calculate";
+
 // Write tools (SDK-direct, simple mode)
 import { registerDeployVps } from "./tools/write/deploy-vps";
 import { registerDestroyInstance } from "./tools/write/destroy-instance";
@@ -40,6 +43,8 @@ registerListLocations(server);
 
 registerListProjects(server);
 registerListSshKeys(server);
+
+registerCalculate(server);
 
 registerDeployVps(server);
 registerDestroyInstance(server);
