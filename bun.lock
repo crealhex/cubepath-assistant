@@ -5,6 +5,10 @@
     "": {
       "name": "cubepath-launcher",
     },
+    "cubepath-tools": {
+      "name": "cubepath-tools",
+      "version": "0.1.0",
+    },
     "cubepath-ui": {
       "name": "cubepath-ui",
       "dependencies": {
@@ -453,6 +457,8 @@
     "cssesc": ["cssesc@3.0.0", "", { "bin": { "cssesc": "bin/cssesc" } }, "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="],
 
     "csstype": ["csstype@3.2.3", "", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
+
+    "cubepath-tools": ["cubepath-tools@workspace:cubepath-tools"],
 
     "cubepath-ui": ["cubepath-ui@workspace:cubepath-ui"],
 

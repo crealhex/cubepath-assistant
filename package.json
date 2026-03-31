@@ -2,6 +2,7 @@
   "name": "cubepath-launcher",
   "private": true,
   "workspaces": [
+    "cubepath-tools",
     "cubepath-ui",
     "launcher-web",
     "launcher-api",
