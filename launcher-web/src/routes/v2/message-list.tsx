@@ -6,7 +6,8 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { PROSE_CLASSES, markdownComponents } from "./markdown";
 import { parseSegments } from "./block-parser";
-import { BlockRenderer } from "./block-renderer";
+import { BlockRenderer, FailedBlock } from "./block-renderer";
+import { BlockErrorBoundary } from "./error-boundary";
 import "katex/dist/katex.min.css";
 
 export interface ChatMessage {
@@ -25,7 +26,11 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
     <div className="flex flex-col gap-2">
       {segments.map((segment, i) => {
         if (segment.type === "component-block") {
-          return <div key={i}><BlockRenderer segment={segment} /></div>;
+          return (
+            <BlockErrorBoundary key={i} fallback={<FailedBlock />}>
+              <BlockRenderer segment={segment} />
+            </BlockErrorBoundary>
+          );
         }
 
         return (

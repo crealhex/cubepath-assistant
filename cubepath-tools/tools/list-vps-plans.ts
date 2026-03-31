@@ -17,7 +17,7 @@ export const listVpsPlans: Tool = {
   async execute(args) {
     const location = args.location as string;
     const filtered = vpsLocations.filter((l: Record<string, unknown>) => l.location_name === location);
-    if (filtered.length === 0) return `No VPS plans found for location '${location}'.`;
+    if (filtered.length === 0) return JSON.stringify([]);
     return JSON.stringify(filtered, null, 2);
   },
 };

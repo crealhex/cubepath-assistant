@@ -1,12 +1,13 @@
 {
   "name": "cubepath-tools",
   "version": "0.1.0",
-  "private": true,
-  "type": "module",
   "main": "index.ts",
-  "types": "index.ts",
   "dependencies": {
+    "@cubepath/sdk": "^0.2.1",
     "mathjs": "^15.1.1",
     "zod": "4"
-  }
+  },
+  "private": true,
+  "type": "module",
+  "types": "index.ts"
 }

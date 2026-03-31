@@ -9,6 +9,7 @@
       "name": "cubepath-tools",
       "version": "0.1.0",
       "dependencies": {
+        "@cubepath/sdk": "^0.2.1",
         "mathjs": "^15.1.1",
         "zod": "4",
       },
