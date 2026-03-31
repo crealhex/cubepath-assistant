@@ -6,7 +6,6 @@ import { ChatInputV2 } from "./chat-input";
 import { MessageListV2, type ChatMessage } from "./message-list";
 import { ScrollContainer } from "./scroll-container";
 import { api, type Chat } from "@/services/api-client";
-import type { ComponentData } from "./message-list";
 import type { V2Context } from "./layout";
 
 let _nextId = 0;
@@ -35,16 +34,7 @@ export default function PageV2() {
 
     api.getChat(chatId).then(setChatMeta).catch(() => setChatMeta(null));
     api.listMessages(chatId).then((msgs) =>
-      setMessages(msgs.map((m) => {
-        // Persisted assistant messages with components are stored as JSON
-        if (m.role === "assistant" && m.content.startsWith("{")) {
-          try {
-            const parsed = JSON.parse(m.content) as { text: string; componentData: Record<string, ComponentData> };
-            return { id: m.id, role: m.role, content: parsed.text, componentData: parsed.componentData };
-          } catch { /* not JSON, treat as plain text */ }
-        }
-        return { id: m.id, role: m.role, content: m.content };
-      })),
+      setMessages(msgs.map((m) => ({ id: m.id, role: m.role, content: m.content }))),
     );
   }
 
@@ -76,24 +66,14 @@ export default function PageV2() {
       streamingRef.current = true;
 
       let accumulated = "";
-      const componentData: Record<string, ComponentData> = {};
 
       try {
         for await (const chunk of api.streamMessage(currentChatId, content)) {
           if (chunk.type === "text") {
             accumulated += chunk.content;
-            const textSnap = accumulated;
-            const dataSnap = { ...componentData };
+            const snapshot = accumulated;
             setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: textSnap, componentData: dataSnap } : m)),
-            );
-          } else if (chunk.type === "component") {
-            const { id, component, props } = chunk.block;
-            componentData[id] = { component, props };
-            const textSnap = accumulated;
-            const dataSnap = { ...componentData };
-            setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: textSnap, componentData: dataSnap } : m)),
+              prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot } : m)),
             );
           }
         }

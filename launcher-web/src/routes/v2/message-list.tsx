@@ -9,16 +9,10 @@ import { highlight } from "sugar-high";
 import { ComponentRenderer } from "./component-renderer";
 import "katex/dist/katex.min.css";
 
-export interface ComponentData {
-  component: string;
-  props: Record<string, unknown>;
-}
-
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  componentData?: Record<string, ComponentData>;
   isStreaming?: boolean;
 }
 
@@ -44,57 +38,48 @@ const markdownComponents: Components = {
 };
 
 /**
- * Token protocol:
- *   {{begin:component-type}}   — opens a group
- *   {{component-type:index}}   — item within a group (or standalone if no begin/end)
- *   {{end:component-type}}     — closes the group, triggers render
+ * Inline JSON component protocol:
+ *   {{component-name:count}} — opens a block, count = number of items (for skeleton layout)
+ *   [... JSON array ...]     — props for each component item
+ *   {{/component-name}}      — closes the block, triggers parse + render
  */
-const TOKEN_REGEX = /(\{\{(?:begin|end):[\w-]+\}\}|\{\{[\w-]+:\d+\}\})/g;
-const ITEM_PARSE = /^\{\{([\w-]+):(\d+)\}\}$/;
-const BEGIN_PARSE = /^\{\{begin:([\w-]+)\}\}$/;
-const END_PARSE = /^\{\{end:([\w-]+)\}\}$/;
+const BLOCK_REGEX = /(\{\{[\w-]+:\d+\}\}|\{\{\/[\w-]+\}\})/g;
+const OPEN_PARSE = /^\{\{([\w-]+):(\d+)\}\}$/;
+const CLOSE_PARSE = /^\{\{\/([\w-]+)\}\}$/;
 
 type RenderSegment =
   | { type: "text"; content: string }
-  | { type: "components"; blocks: ComponentData[]; complete: boolean };
+  | { type: "component-block"; component: string; count: number; jsonBuffer: string; closed: boolean; failed: boolean };
 
-function parseSegments(
-  content: string,
-  data: Record<string, ComponentData>,
-  isStreaming: boolean,
-): RenderSegment[] {
-  const parts = content.split(TOKEN_REGEX);
+function parseSegments(content: string, isStreaming: boolean): RenderSegment[] {
+  const parts = content.split(BLOCK_REGEX);
   const result: RenderSegment[] = [];
-  let activeGroup: RenderSegment | null = null;
+  let active: RenderSegment | null = null;
 
   for (const part of parts) {
-    if (BEGIN_PARSE.test(part)) {
-      activeGroup = { type: "components", blocks: [], complete: false };
-      result.push(activeGroup);
+    const openMatch = OPEN_PARSE.exec(part);
+    if (openMatch) {
+      active = {
+        type: "component-block",
+        component: openMatch[1],
+        count: Number(openMatch[2]),
+        jsonBuffer: "",
+        closed: false,
+        failed: false,
+      };
+      result.push(active);
       continue;
     }
 
-    if (END_PARSE.test(part)) {
-      if (activeGroup) activeGroup.complete = true;
-      activeGroup = null;
+    const closeMatch = CLOSE_PARSE.exec(part);
+    if (closeMatch && active?.type === "component-block" && active.component === closeMatch[1]) {
+      active.closed = true;
+      active = null;
       continue;
     }
 
-    const itemMatch = ITEM_PARSE.exec(part);
-    if (itemMatch) {
-      const tokenId = `${itemMatch[1]}:${itemMatch[2]}`;
-      const block = data[tokenId];
-
-      if (activeGroup) {
-        if (block) activeGroup.blocks.push(block);
-      } else {
-        // Standalone — complete as soon as data arrives
-        result.push({
-          type: "components",
-          blocks: block ? [block] : [],
-          complete: !isStreaming || !!block,
-        });
-      }
+    if (active?.type === "component-block") {
+      active.jsonBuffer += part;
       continue;
     }
 
@@ -103,41 +88,66 @@ function parseSegments(
     }
   }
 
+  // If stream ended with unclosed block, mark as failed
   if (!isStreaming) {
     for (const seg of result) {
-      if (seg.type === "components") seg.complete = true;
+      if (seg.type === "component-block" && !seg.closed) {
+        seg.failed = true;
+      }
     }
   }
 
   return result;
 }
 
-function GroupSkeleton() {
+function GroupSkeleton({ count }: { count: number }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/60 px-4 py-4 animate-pulse">
-      <div className="h-4 w-4 rounded-full bg-muted" />
-      <div className="flex flex-col gap-1.5 flex-1">
-        <div className="h-3 w-32 rounded bg-muted" />
-        <div className="h-2.5 w-20 rounded bg-muted" />
-      </div>
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: Math.max(1, count) }, (_, i) => (
+        <div key={i} className="flex items-center gap-3 rounded-xl border border-border/60 px-4 py-4 animate-pulse">
+          <div className="h-4 w-4 rounded-full bg-muted" />
+          <div className="flex flex-col gap-1.5 flex-1">
+            <div className="h-3 w-32 rounded bg-muted" />
+            <div className="h-2.5 w-20 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-function AssistantMessage({ msg }: { msg: ChatMessage }) {
-  if (msg.isStreaming && msg.content === "" && !msg.componentData) return null;
+function FailedBlock() {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-status-outage/30 px-4 py-3 text-xs text-muted-foreground">
+      <span className="text-status-outage font-bold">!</span>
+      Failed to load component
+    </div>
+  );
+}
 
-  const data = msg.componentData ?? {};
-  const segments = parseSegments(msg.content, data, msg.isStreaming ?? false);
+function parseAndRenderBlock(segment: RenderSegment & { type: "component-block" }) {
+  if (segment.failed) return <FailedBlock />;
+  if (!segment.closed) return <GroupSkeleton count={segment.count} />;
+
+  try {
+    const parsed = JSON.parse(segment.jsonBuffer.trim()) as Array<Record<string, unknown>>;
+    const blocks = parsed.map((props) => ({ component: segment.component, props }));
+    return <ComponentRenderer blocks={blocks} />;
+  } catch {
+    return <FailedBlock />;
+  }
+}
+
+function AssistantMessage({ msg }: { msg: ChatMessage }) {
+  if (msg.isStreaming && msg.content === "") return null;
+
+  const segments = parseSegments(msg.content, msg.isStreaming ?? false);
 
   return (
     <div className="flex flex-col gap-2">
       {segments.map((segment, i) => {
-        if (segment.type === "components") {
-          if (!segment.complete || segment.blocks.length === 0) {
-            return <GroupSkeleton key={i} />;
-          }
-          return <ComponentRenderer key={i} blocks={segment.blocks} />;
+        if (segment.type === "component-block") {
+          return <div key={i}>{parseAndRenderBlock(segment)}</div>;
         }
 
         return (

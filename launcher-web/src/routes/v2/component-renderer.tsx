@@ -15,7 +15,10 @@ import {
   LbTable,
   ApprovalCard,
 } from "cubepath-ui";
-import type { ComponentData } from "./message-list";
+export interface ComponentData {
+  component: string;
+  props: Record<string, unknown>;
+}
 
 // Dynamic lookup by string key — each component validates its own props at runtime
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
