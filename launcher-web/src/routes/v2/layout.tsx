@@ -17,15 +17,15 @@ export function AppLayoutV2() {
   const activeChatId = chatId ?? null;
 
   const handleSelectChat = useCallback((chat: Chat) => {
-    navigate(`/v2/chat/${chat.id}`);
+    navigate(`/chat/${chat.id}`);
   }, [navigate]);
 
   const handleNewChat = useCallback(() => {
-    navigate("/v2");
+    navigate("/");
   }, [navigate]);
 
   const setActiveChatId = useCallback((id: string) => {
-    navigate(`/v2/chat/${id}`, { replace: true });
+    navigate(`/chat/${id}`, { replace: true });
   }, [navigate]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
