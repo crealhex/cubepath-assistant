@@ -15,6 +15,7 @@ import {
   CdnTable,
   LbTable,
   ApprovalCard,
+  DeployCard,
   type DeployStep,
   type LocationOption,
   type PlanRow,
@@ -56,7 +57,7 @@ const sshKeys: SshKeyOption[] = [
   { id: 2, name: "deploy-key", fingerprint: "SHA256:pQ7w2...nB4x" },
 ];
 
-const deploySteps: DeployStep[] = ["initiated", "provisioning", "configuring", "ready", "error"];
+const deploySteps: DeployStep[] = ["requested", "deploying", "active", "error"];
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -72,7 +73,7 @@ export default function ComponentsPage() {
   const [selectedPlan, setSelectedPlan] = useState("gp.nano");
   const [selectedTemplate, setSelectedTemplate] = useState("ubuntu-24");
   const [selectedKeys, setSelectedKeys] = useState<string[]>(["work-laptop"]);
-  const [deployStep, setDeployStep] = useState<DeployStep>("provisioning");
+  const [deployStep, setDeployStep] = useState<DeployStep>("deploying");
 
   const pingTargets: LatencyTarget[] = [
     { location_name: "eu-bcn-1", strategy: "api", ping_code: "bcn" },
@@ -131,6 +132,15 @@ export default function ComponentsPage() {
             onPowerAction={(id, action) => console.log("power", id, action)}
             onDestroy={(id) => console.log("destroy", id)}
           />
+        </Section>
+
+        <Section title="Deploy Card">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <DeployCard name="web-server" state="requested" plan="gp.nano" cpu={1} ram={2048} storage={40} bandwidth={3} location="Barcelona, Spain" template="Ubuntu 24" />
+            <DeployCard name="web-server" state="deploying" plan="gp.nano" cpu={1} ram={2048} storage={40} bandwidth={3} location="Barcelona, Spain" template="Ubuntu 24" ip="45.90.237.204" />
+            <DeployCard name="web-server" state="active" plan="gp.nano" cpu={1} ram={2048} storage={40} bandwidth={3} location="Barcelona, Spain" template="Ubuntu 24" ip="45.90.237.204" />
+            <DeployCard name="web-server" state="error" plan="gp.nano" cpu={1} ram={2048} storage={40} bandwidth={3} location="Barcelona, Spain" template="Ubuntu 24" />
+          </div>
         </Section>
 
         <Section title="Deploy Progress">

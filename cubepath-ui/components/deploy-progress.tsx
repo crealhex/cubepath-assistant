@@ -2,13 +2,12 @@ import * as React from "react";
 import { cn } from "../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
-type DeployStep = "initiated" | "provisioning" | "configuring" | "ready" | "error";
+type DeployStep = "requested" | "deploying" | "active" | "error";
 
 const steps: { key: DeployStep; label: string }[] = [
-  { key: "initiated", label: "Initiated" },
-  { key: "provisioning", label: "Provisioning" },
-  { key: "configuring", label: "Configuring" },
-  { key: "ready", label: "Ready" },
+  { key: "requested", label: "Requested" },
+  { key: "deploying", label: "Deploying" },
+  { key: "active", label: "Active" },
 ];
 
 function stepIndex(step: DeployStep): number {
@@ -33,7 +32,7 @@ function DeployProgress({
 }: DeployProgressProps) {
   const current = stepIndex(currentStep);
   const isError = currentStep === "error";
-  const isComplete = currentStep === "ready";
+  const isComplete = currentStep === "active";
 
   return (
     <Card className={cn("w-full max-w-md", className)}>

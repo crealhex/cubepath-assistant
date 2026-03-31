@@ -104,6 +104,11 @@ export {
   type DeployProgressProps,
   type DeployStep,
 } from "./components/deploy-progress";
+export {
+  DeployCard,
+  type DeployCardProps,
+  type DeployState,
+} from "./components/deploy-card";
 export { ErrorCard, type ErrorCardProps } from "./components/error-card";
 export {
   LocationPicker,
