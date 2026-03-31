@@ -22,10 +22,10 @@ jobs:
             git pull origin main
             bun install
             cd launcher-web && bunx vite build && cd ..
-            pkill -f "bun.*serve.ts" 2>/dev/null; true
-            pkill -f "bun.*launcher-api" 2>/dev/null; true
-            sleep 2
-            CUBEPATH_API_KEY=${{ secrets.CUBEPATH_API_KEY }} nohup /root/.bun/bin/bun run launcher-api/index.ts > /tmp/api.log 2>&1 &
-            nohup /root/.bun/bin/bun serve.ts > /tmp/web.log 2>&1 &
+            kill $(cat /tmp/api.pid 2>/dev/null) 2>/dev/null; true
+            kill $(cat /tmp/web.pid 2>/dev/null) 2>/dev/null; true
+            sleep 1
+            CUBEPATH_API_KEY=${{ secrets.CUBEPATH_API_KEY }} nohup /root/.bun/bin/bun run launcher-api/index.ts > /tmp/api.log 2>&1 & echo $! > /tmp/api.pid
+            nohup /root/.bun/bin/bun serve.ts > /tmp/web.log 2>&1 & echo $! > /tmp/web.pid
             sleep 1
             echo "Deploy complete"
