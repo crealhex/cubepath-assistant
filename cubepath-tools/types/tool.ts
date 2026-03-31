@@ -1,14 +1,12 @@
-export interface ToolSpec {
-  name: string;
-  description: string;
-  parameters: {
-    type: "object";
-    properties: Record<string, { type: string; description?: string; items?: unknown; enum?: string[] }>;
-    required?: string[];
-  };
-}
+import { z, type z as Z } from "zod/v4";
 
 export interface Tool {
-  spec: ToolSpec;
+  name: string;
+  description: string;
+  schema: Z.ZodObject<Z.ZodRawShape>;
   execute(args: Record<string, unknown>): Promise<string>;
+}
+
+export function toJSONSchema(tool: Tool) {
+  return z.toJSONSchema(tool.schema);
 }

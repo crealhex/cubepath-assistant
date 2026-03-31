@@ -7,6 +7,7 @@
     "start": "bun index.ts"
   },
   "dependencies": {
+    "cubepath-tools": "workspace:*",
     "@cubepath/sdk": "latest",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "mathjs": "^15.1.1",

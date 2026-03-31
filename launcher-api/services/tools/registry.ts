@@ -1,13 +1,8 @@
-export interface ToolDefinition {
-  name: string;
-  description: string;
-  parameters: Record<string, unknown>;
-  execute(args: Record<string, unknown>): Promise<string>;
-}
+import { toJSONSchema, type Tool } from "cubepath-tools";
 
-const tools = new Map<string, ToolDefinition>();
+const tools = new Map<string, Tool>();
 
-export function register(tool: ToolDefinition) {
+export function register(tool: Tool) {
   tools.set(tool.name, tool);
 }
 
@@ -18,7 +13,7 @@ export function getDefinitions() {
     function: {
       name: t.name,
       description: t.description,
-      parameters: t.parameters,
+      parameters: toJSONSchema(t),
     },
   }));
 }

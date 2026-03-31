@@ -8,6 +8,10 @@
     "cubepath-tools": {
       "name": "cubepath-tools",
       "version": "0.1.0",
+      "dependencies": {
+        "mathjs": "^15.1.1",
+        "zod": "4",
+      },
     },
     "cubepath-ui": {
       "name": "cubepath-ui",
@@ -39,8 +43,8 @@
       "name": "launcher-api",
       "dependencies": {
         "@types/debug": "^4.1.13",
+        "cubepath-tools": "workspace:*",
         "debug": "^4.4.3",
-        "mathjs": "^15.1.1",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -86,6 +90,7 @@
       "dependencies": {
         "@cubepath/sdk": "latest",
         "@modelcontextprotocol/sdk": "^1.12.1",
+        "cubepath-tools": "workspace:*",
         "mathjs": "^15.1.1",
         "zod": "^4.3.6",
       },

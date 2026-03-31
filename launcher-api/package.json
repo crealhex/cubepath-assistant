@@ -10,8 +10,8 @@
     "@types/bun": "latest"
   },
   "dependencies": {
+    "cubepath-tools": "workspace:*",
     "@types/debug": "^4.1.13",
-    "debug": "^4.4.3",
-    "mathjs": "^15.1.1"
+    "debug": "^4.4.3"
   }
 }

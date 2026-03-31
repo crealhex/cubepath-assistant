@@ -1,2 +1,2 @@
-export type { Tool, ToolSpec } from "./types";
+export { toJSONSchema, type Tool } from "./types";
 export * from "./tools";
