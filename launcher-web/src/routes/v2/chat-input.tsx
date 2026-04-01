@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Input, Button } from "cubepath-ui";
+import { useState, useRef, useCallback } from "react";
+import { Button } from "cubepath-ui";
 import { ArrowUp } from "lucide-react";
 import { VersionBadge } from "@/components/version-badge";
 
@@ -10,32 +10,78 @@ interface ChatInputV2Props {
 
 export function ChatInputV2({ onSend, disabled }: ChatInputV2Props) {
   const [value, setValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function resetHeight() {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    requestAnimationFrame(resetHeight);
+  }, []);
+
+  function handleSubmit() {
     const trimmed = value.trim();
     if (!trimmed || disabled) return;
     onSend(trimmed);
     setValue("");
-    inputRef.current?.focus();
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+    });
+    textareaRef.current?.focus();
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
   }
 
   return (
     <div className="border-t border-border p-4 relative">
-      <form onSubmit={handleSubmit} className="mx-auto flex max-w-[720px] gap-2">
-        <Input
-          ref={inputRef}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Ask CubePath anything..."
-          className="flex-1"
-        />
-        <Button type="submit" size="icon" disabled={disabled || !value.trim()}>
-          <ArrowUp className="size-4" />
-        </Button>
-      </form>
-      <VersionBadge className="absolute right-4 top-1/2 -translate-y-1/2" />
+      <div className="mx-auto max-w-[720px]">
+        <div
+          className={`rounded-xl border bg-muted/30 transition-shadow ${
+            focused
+              ? "border-ring ring-[3px] ring-ring/50"
+              : "border-border"
+          }`}
+        >
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="Ask CubePath anything..."
+            rows={1}
+            className="block w-full resize-none overflow-hidden bg-transparent px-4 pt-3 pb-2 text-lg placeholder:text-muted-foreground focus:outline-none min-h-[36px] max-h-[200px]"
+          />
+          <div className="flex items-center justify-between px-3 pb-3">
+            <div className="flex items-center gap-1">
+              {/* future: attachment button, model picker, etc. */}
+            </div>
+            <Button
+              size="icon"
+              disabled={disabled || !value.trim()}
+              onClick={handleSubmit}
+              className="size-8 rounded-lg"
+            >
+              <ArrowUp className="size-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+      <VersionBadge className="absolute right-4 bottom-5" />
     </div>
   );
 }

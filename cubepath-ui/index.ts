@@ -10,6 +10,7 @@ export {
   CardFooter,
 } from "./components/card";
 export { Input, type InputProps } from "./components/input";
+export { Textarea, type TextareaProps } from "./components/textarea";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge";
 export {
   Dialog,

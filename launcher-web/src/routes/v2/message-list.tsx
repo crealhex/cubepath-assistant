@@ -28,7 +28,9 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
         if (segment.type === "component-block") {
           return (
             <BlockErrorBoundary key={i} fallback={<FailedBlock />}>
-              <BlockRenderer segment={segment} />
+              <div className="my-4">
+                <BlockRenderer segment={segment} />
+              </div>
             </BlockErrorBoundary>
           );
         }
