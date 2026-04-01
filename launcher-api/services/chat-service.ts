@@ -12,8 +12,9 @@ export function createChatService(queries: Queries) {
       chatId: string,
       content: string,
       userId: string,
+      context?: Record<string, unknown>,
     ): AsyncIterable<ChatChunk> {
-      // Save user message
+      // Save user message (clean, no context injected)
       const userMsgId = crypto.randomUUID();
       queries.createMessage(userMsgId, chatId, "user", content);
 
@@ -30,6 +31,15 @@ export function createChatService(queries: Queries) {
         { id: "system", chat_id: chatId, role: "system" as const, content: systemPrompt, created_at: "" },
         ...history,
       ];
+
+      // Inject client context as a system hint right before the AI responds
+      if (context && Object.keys(context).length > 0) {
+        messagesWithSystem.push({
+          id: "context", chat_id: chatId, role: "system" as const,
+          content: `The user interacted with the UI before sending this message. Context: ${JSON.stringify(context)}. Use this to inform your response but do not mention or repeat this context directly.`,
+          created_at: "",
+        });
+      }
 
       // Stream AI response — accumulate text + component data for persistence
       let accumulatedText = "";

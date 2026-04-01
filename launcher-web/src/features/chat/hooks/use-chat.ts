@@ -16,6 +16,7 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const contextRef = useRef<Record<string, unknown>>({});
 
   const chatIdRef = useRef(chatId);
   chatIdRef.current = chatId;
@@ -65,7 +66,9 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
       let accumulated = "";
 
       try {
-        for await (const chunk of api.streamMessage(currentChatId, content)) {
+        const ctx = Object.keys(contextRef.current).length > 0 ? contextRef.current : undefined;
+        contextRef.current = {};
+        for await (const chunk of api.streamMessage(currentChatId, content, ctx)) {
           if (chunk.type === "text") {
             accumulated += chunk.content;
             const snapshot = accumulated;
@@ -94,5 +97,9 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
     [onChatCreated],
   );
 
-  return { messages, isStreaming, chatMeta, scrollTrigger, handleSend, notFound };
+  function addContext(key: string, value: unknown) {
+    contextRef.current = { ...contextRef.current, [key]: value };
+  }
+
+  return { messages, isStreaming, chatMeta, scrollTrigger, handleSend, notFound, addContext };
 }

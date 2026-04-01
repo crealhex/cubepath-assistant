@@ -80,11 +80,14 @@ export const api = {
   listMessages: (chatId: string) => request<Message[]>(`/api/chats/${chatId}/messages`),
 
   // Streaming
-  async *streamMessage(chatId: string, content: string): AsyncIterable<ChatChunk> {
+  async *streamMessage(chatId: string, content: string, context?: Record<string, unknown>): AsyncIterable<ChatChunk> {
+    const body: Record<string, unknown> = { content };
+    if (context && Object.keys(context).length > 0) body.context = context;
+
     const res = await fetch(`${API_BASE_URL_V1}/api/chats/${chatId}/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-User-Id": getUserId() },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
