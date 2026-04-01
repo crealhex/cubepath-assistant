@@ -3,12 +3,12 @@ import { Button } from "cubepath-ui";
 import { ArrowUp } from "lucide-react";
 import { VersionBadge } from "@/features/shared/components/version-badge";
 
-interface ChatInputV2Props {
+interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
 }
 
-export function ChatInputV2({ onSend, disabled }: ChatInputV2Props) {
+export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

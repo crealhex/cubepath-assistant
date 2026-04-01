@@ -63,13 +63,13 @@ function UserMessage({ msg, innerRef }: { msg: ChatMessage; innerRef?: React.Ref
   );
 }
 
-interface MessageListV2Props {
+interface MessageListProps {
   messages: ChatMessage[];
   isStreaming?: boolean;
   lastUserRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export function MessageListV2({ messages, isStreaming = false, lastUserRef }: MessageListV2Props) {
+export function MessageList({ messages, isStreaming = false, lastUserRef }: MessageListProps) {
   if (messages.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">

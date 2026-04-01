@@ -6,12 +6,12 @@ import { SettingsModal } from "@/features/settings/components/settings-modal";
 import { Onboarding } from "@/features/onboarding/screens/onboarding-screen";
 import { api, type Chat } from "@/core/api-client";
 
-export interface V2Context {
+export interface AppContext {
   activeChatId: string | null;
   setActiveChatId: (id: string) => void;
 }
 
-export function AppLayoutV2() {
+export function AppLayout() {
   const { chatId } = useParams<{ chatId?: string }>();
   const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ export function AppLayoutV2() {
   }, [navigate]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const context: V2Context = { activeChatId, setActiveChatId };
+  const context: AppContext = { activeChatId, setActiveChatId };
 
   // Loading state while checking settings
   if (needsOnboarding === null) {

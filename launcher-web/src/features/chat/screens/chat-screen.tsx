@@ -2,14 +2,14 @@ import { useState, useRef } from "react";
 import { useOutletContext } from "react-router";
 import { Button } from "cubepath-ui";
 import { ArrowDown } from "lucide-react";
-import { ChatInputV2 } from "../components/chat-input";
-import { MessageListV2 } from "../components/message-list";
+import { ChatInput } from "../components/chat-input";
+import { MessageList } from "../components/message-list";
 import { ScrollContainer } from "../components/scroll-container";
 import { useChat } from "../hooks/use-chat";
-import type { V2Context } from "@/core/layout/app-layout";
+import type { AppContext } from "@/core/layout/app-layout";
 
 export default function ChatScreen() {
-  const { activeChatId: chatId, setActiveChatId: onChatCreated } = useOutletContext<V2Context>();
+  const { activeChatId: chatId, setActiveChatId: onChatCreated } = useOutletContext<AppContext>();
   const { messages, isStreaming, chatMeta, scrollTrigger, handleSend } = useChat({ chatId, onChatCreated });
 
   const [showScrollBtn, setShowScrollBtn] = useState(false);
@@ -33,7 +33,7 @@ export default function ChatScreen() {
       )}
 
       {messages.length === 0 ? (
-        <MessageListV2 messages={[]} />
+        <MessageList messages={[]} />
       ) : (
         <ScrollContainer
           scrollTrigger={scrollTrigger}
@@ -42,7 +42,7 @@ export default function ChatScreen() {
           onCanScrollDown={setShowScrollBtn}
           containerRef={scrollContainerRef}
         >
-          <MessageListV2
+          <MessageList
             messages={messages}
             isStreaming={isStreaming}
             lastUserRef={lastUserRef}
@@ -61,7 +61,7 @@ export default function ChatScreen() {
         </Button>
       )}
 
-      <ChatInputV2 onSend={handleSend} disabled={isStreaming} />
+      <ChatInput onSend={handleSend} disabled={isStreaming} />
     </div>
   );
 }
