@@ -33,7 +33,7 @@ function AssistantMessage({ msg, onQuestionnaire }: { msg: ChatMessage; onQuesti
   );
 
   useEffect(() => {
-    if (!questionnaireData || firedRef.current || !onQuestionnaire) return;
+    if (!questionnaireData || firedRef.current || !onQuestionnaire || !msg.isStreaming) return;
     if (questionnaireData.type !== "component-block") return;
     try {
       const parsed = JSON.parse(questionnaireData.jsonBuffer.trim()) as Array<{ questions: Question[] }>;
