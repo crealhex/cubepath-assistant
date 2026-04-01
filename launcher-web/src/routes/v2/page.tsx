@@ -40,6 +40,11 @@ export default function PageV2() {
 
   useEffect(loadChatOnSwitch, [chatId]);
 
+  useEffect(() => {
+    document.title = chatMeta?.title ?? "CubePath Assistant";
+    return () => { document.title = "CubePath Assistant"; };
+  }, [chatMeta?.title]);
+
   const handleSend = useCallback(
     async (content: string) => {
       let currentChatId = chatIdRef.current;
