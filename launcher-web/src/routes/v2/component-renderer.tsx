@@ -79,7 +79,7 @@ export function ComponentRenderer({ blocks }: { blocks: ComponentData[] }) {
 
   // 4+ components — horizontal carousel
   return (
-    <div className="relative group/carousel">
+    <div className="relative group/carousel max-w-full">
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory">
         {blocks.map((block, i) => (
           <div key={i} className="snap-start shrink-0 w-[280px]">

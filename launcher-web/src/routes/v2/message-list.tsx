@@ -23,7 +23,7 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
   const segments = parseSegments(msg.content, msg.isStreaming ?? false);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 min-w-full">
       {segments.map((segment, i) => {
         if (segment.type === "component-block") {
           return (

@@ -32,6 +32,15 @@ const mappers: Record<string, Mapper> = {
     return [{ templates }];
   },
 
+  "project-card": (data) => {
+    const projects = data as Array<Record<string, unknown>>;
+    return projects.map((p) => ({
+      name: p.name,
+      description: p.description,
+      vpsCount: p.vps_count,
+    }));
+  },
+
   "pricing-table": (data) => {
     const locations = data as Array<{ clusters: Array<{ plans: Array<Record<string, unknown>> }> }>;
     const plans = locations.flatMap((loc) =>

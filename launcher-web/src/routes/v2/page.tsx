@@ -112,7 +112,7 @@ export default function PageV2() {
     <div className="relative flex flex-1 flex-col overflow-hidden">
       {chatMeta && (
         <header className="flex h-12 shrink-0 items-center border-b border-border px-4">
-          <h1 className="mx-auto max-w-[720px] w-full text-sm font-medium truncate">
+          <h1 className="mx-auto max-w-[720px] w-full text-base font-medium truncate">
             {chatMeta.title}
           </h1>
         </header>

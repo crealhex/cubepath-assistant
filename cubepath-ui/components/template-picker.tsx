@@ -118,6 +118,7 @@ function TemplatePicker({
   }
 
   return (
+    <div className="min-w-full">
     <div className={cn("flex flex-col gap-2", className)}>
       <span className="text-sm font-semibold">{title}</span>
       <div
@@ -135,6 +136,7 @@ function TemplatePicker({
         ))}
       </div>
     </div>
+</div>
   );
 }
 

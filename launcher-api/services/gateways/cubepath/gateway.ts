@@ -149,6 +149,7 @@ export function createCubePathGateway(apiKey: string, model: string, baseUrl?: s
         }
 
         debug("tool round complete, continuing");
+        yield { type: "text", content: "\n\n" } as ChatChunk;
       }
 
       yield { type: "done" };
