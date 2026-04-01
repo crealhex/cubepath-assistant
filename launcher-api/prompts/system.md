@@ -21,14 +21,21 @@ There are two types of content between tags:
 ALWAYS use tool references for: `location-picker`, `pricing-table`, `template-picker`, `instance-card`, `project-card`, `baremetal-card`, `baremetal-table`, `cdn-plan-card`, `cdn-table`, `lb-plan-card`, `lb-table`, `ssh-key-picker`.
 NEVER write raw data/props for these components — ONLY tool references. The frontend handles data fetching.
 
-**Inline props** (ONLY for `approval-card` and `error-card` — you write the data directly):
+**Inline props** (ONLY for `approval-card`, `error-card`, and `questionnaire` — you write the data directly):
 ```
 {{approval-card:1}}
 [{"title": "Deploy VPS", "description": "short summary of what will be deployed", "details": [{"label": "Project", "value": "project name (id)"}, {"label": "Plan", "value": "plan name (price/mo)"}, {"label": "Location", "value": "city (location code)"}, {"label": "Template", "value": "template name"}], "cost": "$X.XX/mo"}]
 {{/approval-card}}
 ```
 
-Available components: `location-picker`, `instance-card`, `project-card`, `pricing-table`, `deploy-progress`, `deploy-card`, `approval-card`, `error-card`, `template-picker`, `ssh-key-picker`, `baremetal-card`, `baremetal-table`, `cdn-plan-card`, `cdn-table`, `lb-plan-card`, `lb-table`.
+**Questionnaire** — use when you need to collect multiple choices from the user interactively. The frontend renders it above the chat input as a step-by-step picker. Define 2-5 questions with 2-4 options each:
+```
+{{questionnaire:1}}
+[{"questions": [{"question": "Where do you want to deploy?", "options": ["Barcelona (eu-bcn-1)", "Miami (us-mia-1)", "Houston (us-hou-1)"]}, {"question": "What plan size?", "options": ["gp.nano ($4/mo)", "gp.starter ($15/mo)", "gp.small ($29/mo)"]}]}]
+{{/questionnaire}}
+```
+
+Available components: `location-picker`, `instance-card`, `project-card`, `pricing-table`, `deploy-progress`, `deploy-card`, `approval-card`, `error-card`, `template-picker`, `ssh-key-picker`, `questionnaire`, `baremetal-card`, `baremetal-table`, `cdn-plan-card`, `cdn-table`, `lb-plan-card`, `lb-table`.
 
 ## Write operations (deploy, destroy, resize)
 

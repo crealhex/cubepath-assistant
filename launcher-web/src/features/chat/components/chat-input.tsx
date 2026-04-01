@@ -6,9 +6,10 @@ import { VersionBadge } from "@/features/shared/components/version-badge";
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, children }: ChatInputProps) {
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -48,6 +49,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   return (
     <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
       <div className="mx-auto max-w-[720px] pointer-events-auto pb-7 pt-4 relative z-10">
+        {children}
         <div
           className={`rounded-2xl border bg-background transition-shadow dark:shadow-none ${
             focused
