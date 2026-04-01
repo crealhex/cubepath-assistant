@@ -1,4 +1,4 @@
-import { toJSONSchema, type Tool } from "cubepath-tools";
+import { toJSONSchema, type Tool, type ToolContext } from "cubepath-tools";
 
 const tools = new Map<string, Tool>();
 const queryTools = new Set<string>();
@@ -24,10 +24,10 @@ export function getDefinitions() {
   }));
 }
 
-export async function execute(name: string, args: Record<string, unknown>): Promise<string> {
+export async function execute(name: string, args: Record<string, unknown>, context: ToolContext): Promise<string> {
   const tool = tools.get(name);
   if (!tool) return `Unknown tool: ${name}`;
-  return tool.execute(args);
+  return tool.execute(args, context);
 }
 
 export function isQuery(name: string): boolean {

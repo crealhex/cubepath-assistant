@@ -1,8 +1,9 @@
 import { getQueryTool } from "../services/tools";
+import type { Queries } from "../db/queries";
 
-export function toolRoutes() {
+export function toolRoutes(queries: Queries) {
   return {
-    "GET /api/tools/:name": async (req: Request, params: { name: string }) => {
+    "GET /api/tools/:name": async (req: Request, params: { name: string; _userId: string }) => {
       const tool = getQueryTool(params.name);
       if (!tool) {
         return Response.json({ error: `Tool '${params.name}' not found` }, { status: 404 });
@@ -14,8 +15,10 @@ export function toolRoutes() {
         args[key] = value;
       }
 
+      const settings = queries.getSettings(params._userId);
+
       try {
-        const result = await tool.execute(args);
+        const result = await tool.execute(args, { apiKey: settings.cubepath_api_key });
         return new Response(result, {
           headers: { "Content-Type": "application/json" },
         });

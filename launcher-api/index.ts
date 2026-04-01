@@ -17,7 +17,7 @@ const routes = {
   ...chatRoutes(queries),
   ...aiRoutes(chatService),
   ...settingsRoutes(queries),
-  ...toolRoutes(),
+  ...toolRoutes(queries),
 };
 
 type RouteKey = keyof typeof routes;

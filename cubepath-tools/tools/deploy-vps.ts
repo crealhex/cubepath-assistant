@@ -19,8 +19,8 @@ export const deployVps: Tool = {
     enableBackups: z.boolean().optional().describe("Enable automatic backups"),
     customCloudInit: z.string().optional().describe("Cloud-init script for first-boot automation"),
   }),
-  async execute(args) {
-    const client = getCubePathClient();
+  async execute(args, context) {
+    const client = getCubePathClient(context.apiKey);
     const task = await client.vps.create(args.projectId as string, {
       name: args.name as string,
       label: args.label as string,

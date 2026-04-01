@@ -47,10 +47,10 @@ function splitToolCalls(calls: ToolCallChunk[]): { displayCalls: ToolCallChunk[]
   return { displayCalls, regularCalls };
 }
 
-async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[]) {
+async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[], apiKey: string) {
   for (const tc of calls) {
     const args = parseToolArgs(tc);
-    const result = await execute(tc.name, args);
+    const result = await execute(tc.name, args, { apiKey });
     debug("tool result: %s", result);
     conversation.push({ role: "tool", tool_call_id: tc.id, content: result });
   }
@@ -113,7 +113,7 @@ async function* streamRound(
       }
 
       // Execute regular tool calls
-      await executeRegularCalls(conversation, regularCalls);
+      await executeRegularCalls(conversation, regularCalls, apiKey);
       continue;
     }
 

@@ -1,3 +1,3 @@
-export { toJSONSchema, type Tool } from "./types";
-export { getCubePathClient, resetClient } from "./sdk";
+export { toJSONSchema, type Tool, type ToolContext } from "./types";
+export { getCubePathClient } from "./sdk";
 export * from "./tools";

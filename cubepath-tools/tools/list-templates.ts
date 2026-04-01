@@ -40,8 +40,8 @@ export const listTemplates: Tool = {
   name: "list-templates",
   description: "List all available OS templates and application templates for VPS deployment. Use when the user asks what they can deploy, which operating systems are available, or about 1-click apps.",
   schema: z.object({}),
-  async execute() {
-    const client = getCubePathClient();
+  async execute(_args, context) {
+    const client = getCubePathClient(context.apiKey);
     const templates = await client.vps.templates();
 
     const operating_systems = templates.operating_systems.map((t) => {

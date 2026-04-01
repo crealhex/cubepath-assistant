@@ -11,8 +11,8 @@ export const listProjects: Tool = {
   name: "list-projects",
   description: "List all CubePath projects in the account. Returns project ID, name, description, and VPS count.",
   schema: z.object({}),
-  async execute() {
-    const client = getCubePathClient();
+  async execute(_args, context) {
+    const client = getCubePathClient(context.apiKey);
     const projects = await client.projects.list() as unknown as ProjectEntry[];
 
     if (projects.length === 0) return JSON.stringify([]);
