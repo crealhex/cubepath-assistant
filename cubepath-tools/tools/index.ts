@@ -5,3 +5,4 @@ export { listLocations } from "./list-locations";
 export { listProjects } from "./list-projects";
 export { listTemplates } from "./list-templates";
 export { listVpsPlans } from "./list-vps-plans";
+export { listInstances } from "./list-instances";

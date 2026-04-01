@@ -45,6 +45,24 @@ const mappers: Record<string, Mapper> = {
     }));
   },
 
+  "instance-card": (data) => {
+    const statusMap: Record<string, string> = { active: "running" };
+    const instances = data as Array<Record<string, unknown>>;
+    return instances.map((v) => {
+      const raw = v.status as string;
+      return {
+        id: v.id,
+        name: v.name,
+        status: statusMap[raw] ?? raw,
+        project: v.project,
+        ip: v.ip,
+        plan: v.plan,
+        location: v.location,
+        template: v.template,
+      };
+    });
+  },
+
   "pricing-table": (data) => {
     const locations = data as Array<{ clusters: Array<{ plans: Array<Record<string, unknown>> }> }>;
     const plans = locations.flatMap((loc) =>

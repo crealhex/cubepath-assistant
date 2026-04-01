@@ -6,12 +6,14 @@ import { tool as listLocations } from "./queries/list-locations";
 import { tool as listProjects } from "./queries/list-projects";
 import { tool as listTemplates } from "./queries/list-templates";
 import { tool as listVpsPlans } from "./queries/list-vps-plans";
+import { tool as listInstances } from "./queries/list-instances";
 
 registerQuery(calculate);
 registerQuery(listLocations);
 registerQuery(listProjects);
 registerQuery(listTemplates);
 registerQuery(listVpsPlans);
+registerQuery(listInstances);
 
 // Commands — AI-only, behind approval flow
 import { tool as deployVps } from "./commands/deploy-vps";
