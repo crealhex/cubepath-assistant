@@ -8,7 +8,7 @@ const MAX_TOOL_ROUNDS = 5;
 const DISPLAY_TOOL = "display";
 
 function buildRequest(url: string, apiKey: string, model: string, tools: unknown[], messages: Array<Record<string, unknown>>) {
-  const body: Record<string, unknown> = { model, stream: true, messages };
+  const body: Record<string, unknown> = { model, stream: true, messages, temperature: 0.3, top_p: 0.9 };
   if (tools.length > 0) body.tools = tools;
 
   return fetch(url, {

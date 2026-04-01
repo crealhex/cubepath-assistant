@@ -47,7 +47,7 @@ const mappers: Record<string, Mapper> = {
 
   "instance-card": (data) => {
     const statusMap: Record<string, string> = { active: "running" };
-    const instances = data as Array<Record<string, unknown>>;
+    const instances = Array.isArray(data) ? data as Array<Record<string, unknown>> : [data as Record<string, unknown>];
     return instances.map((v) => {
       const raw = v.status as string;
       return {
