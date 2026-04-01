@@ -112,17 +112,17 @@ function AssembleScatter() {
   );
 }
 
-// --- 5. Explode & Reform (loop) ---
-const EXPLODE_OFFSETS = [
-  { x: 0, y: -300, r: -15 },
-  { x: -250, y: -100, r: 20 },
-  { x: 0, y: -200, r: -10 },
-  { x: 280, y: -80, r: -25 },
-  { x: -260, y: 150, r: 15 },
-  { x: 300, y: 200, r: -20 },
+// --- 4b. Assemble Scatter Loop ---
+const SCATTER_LOOP_OFFSETS = [
+  { x: 20, y: -60 },
+  { x: -50, y: -20 },
+  { x: 0, y: -40 },
+  { x: 50, y: -15 },
+  { x: -50, y: 25 },
+  { x: 50, y: 50 },
 ];
 
-function ExplodeReform() {
+function AssembleScatterLoop() {
   return (
     <CubeSvg>
       {(paths) =>
@@ -131,12 +131,37 @@ function ExplodeReform() {
             key={i}
             d={d}
             style={{
-              transformOrigin: "center",
-              transformBox: "fill-box",
-              animation: `explode-reform-${i} 3.5s cubic-bezier(0.22,1,0.36,1) infinite`,
+              animation: `scatter-loop-${i} 2.5s cubic-bezier(0.4,0,0.2,1) infinite`,
             }}
           />
         ))
+      }
+    </CubeSvg>
+  );
+}
+
+// --- 5. Elastic Snap V2 (loop) ---
+// Outer faces take turns in a shared cycle: 0 → 1 → 5
+const OUTER_KEYFRAME: Record<number, string> = { 0: "snap-v2-face-0", 1: "snap-v2-face-1", 5: "snap-v2-face-2" };
+
+function ElasticSnapV2() {
+  return (
+    <CubeSvg>
+      {(paths) =>
+        paths.map((d, i) => {
+          const isOuter = OUTER_FACES.has(i);
+          return (
+            <path
+              key={i}
+              d={d}
+              style={{
+                transformOrigin: "center",
+                transformBox: "fill-box",
+                animation: `${isOuter ? OUTER_KEYFRAME[i] : "elastic-snap-v2"} .9s ease-in-out infinite`,
+              }}
+            />
+          );
+        })
       }
     </CubeSvg>
   );
@@ -207,7 +232,7 @@ function ElasticSnap() {
             style={{
               transformOrigin: "center",
               transformBox: "fill-box",
-              animation: `${OUTER_FACES.has(i) ? "elastic-snap-outer" : "elastic-snap"} 2.8s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.12}s infinite`,
+              animation: `${OUTER_FACES.has(i) ? "elastic-snap-outer" : "elastic-snap"} 1.8s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.12}s infinite`,
             }}
           />
         ))
@@ -259,9 +284,9 @@ export default function LogoShowcase() {
         </div>
 
         <div className="flex flex-col items-center gap-4">
-          <ExplodeReform />
-          <span className="text-sm text-muted-foreground font-medium">5. Explode & Reform</span>
-          <span className="text-2xs text-muted-foreground/60 max-w-48 text-center">Faces scatter outward with rotation then snap back together</span>
+          <ElasticSnapV2 />
+          <span className="text-sm text-muted-foreground font-medium">5. Elastic Snap (clone)</span>
+          <span className="text-2xs text-muted-foreground/60 max-w-48 text-center">Same as 8 — playground copy for tweaking</span>
         </div>
 
         <div className="flex flex-col items-center gap-4">
@@ -280,6 +305,12 @@ export default function LogoShowcase() {
           <ElasticSnap />
           <span className="text-sm text-muted-foreground font-medium">8. Elastic Snap</span>
           <span className="text-2xs text-muted-foreground/60 max-w-48 text-center">Faces stretch outward and snap back with elastic overshoot</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-4">
+          <AssembleScatterLoop />
+          <span className="text-sm text-muted-foreground font-medium">9. Scatter Loop</span>
+          <span className="text-2xs text-muted-foreground/60 max-w-48 text-center">Faces scatter outward then reassemble, continuous</span>
         </div>
       </div>
 
@@ -329,13 +360,11 @@ export default function LogoShowcase() {
         }`
         ).join("\n")}
 
-        ${EXPLODE_OFFSETS.map(
+        ${SCATTER_LOOP_OFFSETS.map(
           (offset, i) => `
-        @keyframes explode-reform-${i} {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          35% { transform: translate(${offset.x}px, ${offset.y}px) rotate(${offset.r}deg); }
-          55% { transform: translate(${offset.x}px, ${offset.y}px) rotate(${offset.r}deg); }
-          90% { transform: translate(0, 0) rotate(0deg); }
+        @keyframes scatter-loop-${i} {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(${offset.x}px, ${offset.y}px); }
         }`
         ).join("\n")}
 
@@ -362,12 +391,35 @@ export default function LogoShowcase() {
           85% { transform: scale(0.99) translate(0, 1px); }
         }
 
+        @keyframes elastic-snap-v2 {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(0.93); }
+        }
+
+        @keyframes snap-v2-face-0 {
+          0% { transform: scale(1); }
+          33.33% { transform: scale(0.75); }
+          66.67%, 100% { transform: scale(1); }
+        }
+
+        @keyframes snap-v2-face-1 {
+          0%, 33.33% { transform: scale(1); }
+          66.67% { transform: scale(0.75); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes snap-v2-face-2 {
+          0% { transform: scale(0.75); }
+          33.33%, 66.67% { transform: scale(1); }
+          100% { transform: scale(0.75); }
+        }
+
         @keyframes elastic-snap-outer {
           0%, 100% { transform: scale(1) translate(0, 0); }
           30% { transform: scale(1.08) translate(0, -12px); }
-          50% { transform: scale(0.82) translate(0, 8px); }
+          50% { transform: scale(0.75) translate(0, 10px); }
           70% { transform: scale(1.03) translate(0, -3px); }
-          85% { transform: scale(0.95) translate(0, 2px); }
+          85% { transform: scale(0.9) translate(0, 2px); }
         }
       `}</style>
     </div>
