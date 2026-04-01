@@ -3,7 +3,7 @@ import type { Components } from "react-markdown";
 import { highlight } from "sugar-high";
 
 export const PROSE_CLASSES =
-  "prose max-w-none break-words " +
+  "prose dark:prose-invert max-w-none break-words " +
   "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 " +
   "prose-pre:bg-transparent prose-pre:m-0 " +
   "prose-code:bg-transparent prose-code:p-0 " +

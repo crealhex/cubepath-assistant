@@ -76,7 +76,8 @@ export function BlockRenderer({ segment }: { segment: RenderSegment & { type: "c
       );
     }
 
-    const blocks = parsed.map((props) => ({ component: segment.component, props }));
+    const items = mapToolResult(segment.component, parsed);
+    const blocks = items.map((props) => ({ component: segment.component, props }));
     return <ComponentRenderer blocks={blocks} />;
   } catch {
     return <FailedBlock />;

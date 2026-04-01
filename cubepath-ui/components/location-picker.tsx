@@ -10,9 +10,8 @@ export interface LocationOption {
   region: string;
   services: string[];
   tier?: string;
-  test_ipv4?: string;
   latency?: number | null;
-  skipPingUrl?: boolean;
+  skipPing?: boolean;
 }
 
 export interface LocationPickerProps {
@@ -39,25 +38,30 @@ const serviceBadgeVariant: Record<string, "operational" | "brand" | "secondary">
   network: "secondary",
 };
 
-async function measurePing(url: string, noCors = false): Promise<number> {
-  const start = performance.now();
-  try {
-    await fetch(url, {
-      cache: "no-cache",
-      signal: AbortSignal.timeout(3000),
-      ...(noCors && { mode: "no-cors" as const }),
-    });
-  } catch {
-    if (noCors) return Math.round(performance.now() - start);
-    return -1;
+async function measureBurstPing(url: string, count = 5): Promise<number> {
+  const times: number[] = [];
+  const ts = Date.now();
+  for (let i = 0; i < count; i++) {
+    const start = performance.now();
+    try {
+      await fetch(`${url}?_=${ts}-${i}`, {
+        cache: "no-cache",
+        signal: AbortSignal.timeout(3000),
+      });
+      times.push(Math.round(performance.now() - start));
+    } catch {
+      // skip failed pings
+    }
   }
-  return Math.round(performance.now() - start);
+  if (times.length === 0) return -1;
+  times.sort((a, b) => a - b);
+  return times[Math.floor(times.length / 2)]!;
 }
 
 function useInternalPing(
   locations: LocationOption[],
   pingUrl?: string,
-  intervalMs = 5000,
+  intervalMs = 8000,
 ): Record<string, number> {
   const [latencies, setLatencies] = React.useState<Record<string, number>>({});
   const locRef = React.useRef(locations);
@@ -74,14 +78,11 @@ function useInternalPing(
       const results = await Promise.all(
         locRef.current.map(async (loc) => {
           let ms: number;
-          if (loc.skipPingUrl && loc.test_ipv4) {
-            ms = await measurePing(`http://${loc.test_ipv4}:80`, true);
+          if (loc.skipPing) {
+            ms = -1;
           } else {
             const url = pingUrl!.replace("{code}", loc.code.toLowerCase());
-            ms = await measurePing(url);
-            if (ms < 0 && loc.test_ipv4) {
-              ms = await measurePing(`http://${loc.test_ipv4}:80`, true);
-            }
+            ms = await measureBurstPing(url);
           }
           return [loc.location_name, ms] as const;
         }),
