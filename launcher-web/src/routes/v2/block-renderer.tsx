@@ -41,7 +41,9 @@ function ToolBlock({ component, reference }: { component: string; reference: Too
 
   useEffect(() => {
     const params = new URLSearchParams(reference.args ?? {});
-    fetch(`${API_BASE_URL_V1}/api/tools/${reference.tool}?${params}`)
+    fetch(`${API_BASE_URL_V1}/api/tools/${reference.tool}?${params}`, {
+      headers: { "X-User-Id": localStorage.getItem("cubepath_user_id") || "" },
+    })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status}`);
         return res.json();
