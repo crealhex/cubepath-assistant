@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { InlineError } from "cubepath-ui";
-import { ComponentRenderer } from "../registry-raw";
+import { renderBlock, type ComponentData } from "../registry";
 import { mapToolResult } from "../mappers";
-import type { RenderSegment } from "../parser";
-
+import { GroupSkeleton } from "../primitives/skeleton";
+import { FailedBlock } from "../primitives/error";
+import { registerAdapter, type ComponentSegment } from "../port";
 import { API_BASE_URL_V1 } from "@/core/api-client";
+
+// --- Tool reference detection ---
 
 interface ToolReference {
   tool: string;
@@ -15,28 +17,48 @@ function isToolReference(data: unknown[]): data is ToolReference[] {
   return data.length > 0 && typeof data[0] === "object" && data[0] !== null && "tool" in data[0];
 }
 
-export function GroupSkeleton({ count }: { count: number }) {
+// --- Chat-specific layout ---
+
+function ChatLayout({ blocks }: { blocks: ComponentData[] }) {
+  if (blocks.length === 0) return null;
+
+  if (blocks.length === 1) {
+    return (
+      <div className="flex justify-center">
+        {renderBlock(blocks[0], 0)}
+      </div>
+    );
+  }
+
+  if (blocks.length <= 3) {
+    const cols = blocks.length === 2
+      ? "grid grid-cols-1 sm:grid-cols-2 gap-3"
+      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3";
+
+    return (
+      <div className={cols}>
+        {blocks.map((block, i) => renderBlock(block, i))}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-2">
-      {Array.from({ length: Math.max(1, count) }, (_, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-xl border border-border/60 px-4 py-4 animate-pulse">
-          <div className="h-4 w-4 rounded-full bg-muted" />
-          <div className="flex flex-col gap-1.5 flex-1">
-            <div className="h-3 w-32 rounded bg-muted" />
-            <div className="h-2.5 w-20 rounded bg-muted" />
+    <div className="relative w-full overflow-hidden">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory">
+        {blocks.map((block, i) => (
+          <div key={i} className="snap-start shrink-0 w-[280px]">
+            {renderBlock(block, i)}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
-export function FailedBlock() {
-  return <InlineError />;
-}
+// --- Tool reference hydration ---
 
 function ToolBlock({ component, reference }: { component: string; reference: ToolReference }) {
-  const [blocks, setBlocks] = useState<Array<{ component: string; props: Record<string, unknown> }> | null>(null);
+  const [blocks, setBlocks] = useState<ComponentData[] | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -57,10 +79,12 @@ function ToolBlock({ component, reference }: { component: string; reference: Too
 
   if (error) return <FailedBlock />;
   if (!blocks) return <GroupSkeleton count={1} />;
-  return <ComponentRenderer blocks={blocks} />;
+  return <ChatLayout blocks={blocks} />;
 }
 
-export function BlockRenderer({ segment }: { segment: RenderSegment & { type: "component-block" } }) {
+// --- Adapter entry point ---
+
+function InlineChatBlock({ segment }: { segment: ComponentSegment }) {
   if (segment.failed) return <FailedBlock />;
   if (!segment.closed) return <GroupSkeleton count={segment.count} />;
 
@@ -80,8 +104,13 @@ export function BlockRenderer({ segment }: { segment: RenderSegment & { type: "c
 
     const items = mapToolResult(segment.component, parsed);
     const blocks = items.map((props) => ({ component: segment.component, props }));
-    return <ComponentRenderer blocks={blocks} />;
+    return <ChatLayout blocks={blocks} />;
   } catch {
     return <FailedBlock />;
   }
 }
+
+// --- Register this adapter ---
+registerAdapter("inline-chat", InlineChatBlock);
+
+export { InlineChatBlock };

@@ -6,7 +6,9 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { PROSE_CLASSES, markdownComponents } from "./markdown";
 import { parseSegments } from "@/features/rendering/parser";
-import { BlockRenderer, FailedBlock } from "@/features/rendering/adapters/inline-chat-raw";
+import { dispatch } from "@/features/rendering/port";
+import "@/features/rendering/adapters/inline-chat"; // register adapter
+import { FailedBlock } from "@/features/rendering/primitives/error";
 import { BlockErrorBoundary } from "@/features/rendering/primitives/error-boundary";
 import "katex/dist/katex.min.css";
 
@@ -29,7 +31,7 @@ function AssistantMessage({ msg }: { msg: ChatMessage }) {
           return (
             <BlockErrorBoundary key={i} fallback={<FailedBlock />}>
               <div className="my-4">
-                <BlockRenderer segment={segment} />
+                {dispatch(segment)}
               </div>
             </BlockErrorBoundary>
           );
