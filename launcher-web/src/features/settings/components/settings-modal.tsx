@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import {
   Button,
   Input,
@@ -106,10 +107,11 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium">AI Model</label>
+            <div className="relative">
             <select
               value={model}
               onChange={(e) => { setModel(e.target.value); setSaved(false); }}
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring"
+              className="flex h-9 w-full appearance-none rounded-md border border-input bg-transparent pl-3 pr-8 py-1 text-sm shadow-xs focus-visible:outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring"
             >
               {sortedProviders.map((provider) => (
                 <optgroup key={provider} label={provider.charAt(0).toUpperCase() + provider.slice(1)}>
@@ -124,6 +126,8 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                 <option value={model}>{model}</option>
               )}
             </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+            </div>
             <p className="text-xs text-muted-foreground">
               All models support tool calling. Prices shown as input/output per million tokens.
             </p>

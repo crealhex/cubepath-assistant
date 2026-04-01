@@ -21,6 +21,11 @@ export default function ChatScreen() {
 
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [questionnaire, setQuestionnaire] = useState<Question[] | null>(null);
+
+  useEffect(() => {
+    setShowScrollBtn(false);
+    setQuestionnaire(null);
+  }, [chatId]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const lastUserRef = useRef<HTMLDivElement>(null);
 
