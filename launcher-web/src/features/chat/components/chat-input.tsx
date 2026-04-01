@@ -46,8 +46,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 pb-7 pt-4 pointer-events-none">
-      <div className="mx-auto max-w-[720px] pointer-events-auto">
+    <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+      <div className="mx-auto max-w-[720px] pointer-events-auto pb-7 pt-4 relative z-10">
         <div
           className={`rounded-2xl border bg-background transition-shadow dark:shadow-none ${
             focused
@@ -81,6 +81,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           </div>
         </div>
       </div>
+      <div className="absolute bottom-0 left-0 right-0 h-15 mx-auto max-w-[720px] bg-background" />
       <VersionBadge className="absolute right-4 bottom-5" />
     </div>
   );
