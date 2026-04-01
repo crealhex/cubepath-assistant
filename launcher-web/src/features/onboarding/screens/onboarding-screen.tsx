@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, Input } from "cubepath-ui";
 import { KeyRound, Sun, Moon } from "lucide-react";
-import { VersionBadge } from "@/components/version-badge";
-import { api } from "@/services/api-client";
+import { VersionBadge } from "@/features/shared/components/version-badge";
+import { api } from "@/core/api-client";
 
 const TITLES = [
   "Let's deploy your next server",

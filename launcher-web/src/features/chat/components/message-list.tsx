@@ -5,9 +5,9 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { PROSE_CLASSES, markdownComponents } from "./markdown";
-import { parseSegments } from "./block-parser";
-import { BlockRenderer, FailedBlock } from "./block-renderer";
-import { BlockErrorBoundary } from "./error-boundary";
+import { parseSegments } from "@/features/rendering/parser";
+import { BlockRenderer, FailedBlock } from "@/features/rendering/adapters/inline-chat-raw";
+import { BlockErrorBoundary } from "@/features/rendering/primitives/error-boundary";
 import "katex/dist/katex.min.css";
 
 export interface ChatMessage {

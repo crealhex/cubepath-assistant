@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { InlineError } from "cubepath-ui";
-import { ComponentRenderer } from "./component-renderer";
-import { mapToolResult } from "./tool-mappers";
-import type { RenderSegment } from "./block-parser";
+import { ComponentRenderer } from "../registry-raw";
+import { mapToolResult } from "../mappers";
+import type { RenderSegment } from "../parser";
 
-import { API_BASE_URL_V1 } from "@/services/api-client";
+import { API_BASE_URL_V1 } from "@/core/api-client";
 
 interface ToolReference {
   tool: string;

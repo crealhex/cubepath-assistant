@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Outlet, useParams, useNavigate } from "react-router";
 import { TooltipProvider } from "cubepath-ui";
 import { Sidebar } from "./sidebar";
-import { SettingsModal } from "./settings-modal";
-import { Onboarding } from "./onboarding";
-import { api, type Chat } from "@/services/api-client";
+import { SettingsModal } from "@/features/settings/components/settings-modal";
+import { Onboarding } from "@/features/onboarding/screens/onboarding-screen";
+import { api, type Chat } from "@/core/api-client";
 
 export interface V2Context {
   activeChatId: string | null;

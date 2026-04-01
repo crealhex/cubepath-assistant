@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "cubepath-ui";
-import { api, API_BASE_URL_V1 } from "@/services/api-client";
+import { api, API_BASE_URL_V1 } from "@/core/api-client";
 
 function getUserId(): string {
   return localStorage.getItem("cubepath_user_id") ?? "";

@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Button } from "cubepath-ui";
 import { ArrowUp } from "lucide-react";
-import { VersionBadge } from "@/components/version-badge";
+import { VersionBadge } from "@/features/shared/components/version-badge";
 
 interface ChatInputV2Props {
   onSend: (message: string) => void;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle } from "cubepath-ui";
-import { API_BASE_URL_V1 } from "@/services/api-client";
+import { API_BASE_URL_V1 } from "@/core/api-client";
 
 function getUserId(): string {
   return localStorage.getItem("cubepath_user_id") ?? "";
