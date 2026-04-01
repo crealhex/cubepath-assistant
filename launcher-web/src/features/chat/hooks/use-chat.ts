@@ -15,6 +15,7 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatMeta, setChatMeta] = useState<Chat | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
+  const [notFound, setNotFound] = useState(false);
 
   const chatIdRef = useRef(chatId);
   chatIdRef.current = chatId;
@@ -22,13 +23,14 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
   const streamingRef = useRef(false);
 
   useEffect(() => {
-    if (!chatId) { setChatMeta(null); setMessages([]); return; }
+    if (!chatId) { setChatMeta(null); setMessages([]); setNotFound(false); return; }
     if (streamingRef.current) return;
 
-    api.getChat(chatId).then(setChatMeta).catch(() => setChatMeta(null));
+    setNotFound(false);
+    api.getChat(chatId).then(setChatMeta).catch(() => setNotFound(true));
     api.listMessages(chatId).then((msgs) =>
       setMessages(msgs.map((m) => ({ id: m.id, role: m.role, content: m.content }))),
-    );
+    ).catch(() => setNotFound(true));
   }, [chatId]);
 
   useEffect(() => {
@@ -92,5 +94,5 @@ export function useChat({ chatId, onChatCreated }: UseChatOptions) {
     [onChatCreated],
   );
 
-  return { messages, isStreaming, chatMeta, scrollTrigger, handleSend };
+  return { messages, isStreaming, chatMeta, scrollTrigger, handleSend, notFound };
 }

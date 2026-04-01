@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useOutletContext } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { useOutletContext, useNavigate } from "react-router";
 import { Button } from "cubepath-ui";
 import { ArrowDown } from "lucide-react";
 import { ChatInput } from "../components/chat-input";
@@ -10,7 +10,12 @@ import type { AppContext } from "@/core/layout/app-layout";
 
 export default function ChatScreen() {
   const { activeChatId: chatId, setActiveChatId: onChatCreated } = useOutletContext<AppContext>();
-  const { messages, isStreaming, chatMeta, scrollTrigger, handleSend } = useChat({ chatId, onChatCreated });
+  const navigate = useNavigate();
+  const { messages, isStreaming, chatMeta, scrollTrigger, handleSend, notFound } = useChat({ chatId, onChatCreated });
+
+  useEffect(() => {
+    if (notFound) navigate("/", { replace: true });
+  }, [notFound, navigate]);
 
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
