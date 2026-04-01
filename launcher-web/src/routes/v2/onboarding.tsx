@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, Input } from "cubepath-ui";
 import { KeyRound, Sun, Moon } from "lucide-react";
+import { VersionBadge } from "@/components/version-badge";
 import { api } from "@/services/api-client";
 
 const TITLES = [
@@ -92,6 +93,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
         </p>
       </div>
       <ThemeToggle />
+      <VersionBadge className="absolute right-4 bottom-4" />
     </div>
   );
 }

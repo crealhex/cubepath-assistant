@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Input, Button } from "cubepath-ui";
 import { ArrowUp } from "lucide-react";
+import { VersionBadge } from "@/components/version-badge";
 
 interface ChatInputV2Props {
   onSend: (message: string) => void;
@@ -34,7 +35,7 @@ export function ChatInputV2({ onSend, disabled }: ChatInputV2Props) {
           <ArrowUp className="size-4" />
         </Button>
       </form>
-      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xs text-muted-foreground/30 font-mono">{__APP_VERSION__}</span>
+      <VersionBadge className="absolute right-4 top-1/2 -translate-y-1/2" />
     </div>
   );
 }

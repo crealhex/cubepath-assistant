@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Button, Tooltip, TooltipTrigger, TooltipContent, Skeleton } from "cubepath-ui";
-import { Plus, FolderOpen, Settings } from "lucide-react";
+import { Plus, FolderOpen, Settings, Sun, Moon } from "lucide-react";
 import { api, type Project, type Chat } from "@/services/api-client";
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dark, setDark] = useState(document.documentElement.classList.contains("dark"));
 
   function loadProjects() {
     api.listProjects().then((p) => {
@@ -143,8 +144,30 @@ export function Sidebar({ activeChatId = null, onSelectChat, onNewChat, onOpenSe
         </div>
       )}
 
-      {/* Bottom: settings */}
-      <div className="mt-auto p-2">
+      {/* Bottom: theme + settings */}
+      <div className="mt-auto flex flex-col gap-1 p-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={expanded ? "justify-start gap-2 w-full h-9 px-3" : "size-9"}
+              onClick={() => {
+                const next = !dark;
+                setDark(next);
+                document.documentElement.classList.toggle("dark", next);
+                localStorage.setItem("cubepath_theme", next ? "dark" : "light");
+              }}
+            >
+              {dark
+                ? <Sun className="size-4 shrink-0" />
+                : <Moon className="size-4 shrink-0" />
+              }
+              {expanded && <span className="truncate text-sm">Theme</span>}
+            </Button>
+          </TooltipTrigger>
+          {!expanded && <TooltipContent side="right">Toggle Theme</TooltipContent>}
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
