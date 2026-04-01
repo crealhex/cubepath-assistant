@@ -9,6 +9,7 @@ import Home from "./routes/v1/page";
 import PageV2 from "./routes/v2/page";
 import Showcase from "./routes/showcase/page";
 import ComponentsPage from "./routes/components/page";
+import LogoShowcase from "./routes/v2/logo-showcase";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
             </Route>
             <Route path="/showcase" element={<Showcase />} />
             <Route path="/components" element={<ComponentsPage />} />
+            <Route path="/logo-showcase" element={<LogoShowcase />} />
           </Routes>
         </TooltipProvider>
       </AppProvider>
