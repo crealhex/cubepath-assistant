@@ -6,13 +6,13 @@ const tools = new Map<string, Tool>();
 const toolTiers = new Map<string, PermissionTier>();
 const queryTools = new Set<string>();
 
-export function registerQuery(tool: Tool) {
+export function registerSafe(tool: Tool) {
   tools.set(tool.name, tool);
   toolTiers.set(tool.name, "safe");
   queryTools.add(tool.name);
 }
 
-export function registerCommand(tool: Tool) {
+export function registerWrite(tool: Tool) {
   tools.set(tool.name, tool);
   toolTiers.set(tool.name, "write");
 }

@@ -1,4 +1,4 @@
-import { registerQuery, registerCommand, registerDestructive, getDefinitions, execute, getQueryTool } from "./registry";
+import { registerSafe, registerWrite, registerDestructive, getDefinitions, execute, getQueryTool } from "./registry";
 export type { PermissionTier } from "./registry";
 
 // Queries — safe for frontend exposure
@@ -11,20 +11,20 @@ import { tool as listInstances } from "./queries/list-instances";
 import { tool as getInstanceStatus } from "./queries/get-instance-status";
 import { tool as listSshKeys } from "./queries/list-ssh-keys";
 
-registerQuery(calculate);
-registerQuery(listLocations);
-registerQuery(listProjects);
-registerQuery(listTemplates);
-registerQuery(listVpsPlans);
-registerQuery(listInstances);
-registerQuery(getInstanceStatus);
-registerQuery(listSshKeys);
+registerSafe(calculate);
+registerSafe(listLocations);
+registerSafe(listProjects);
+registerSafe(listTemplates);
+registerSafe(listVpsPlans);
+registerSafe(listInstances);
+registerSafe(getInstanceStatus);
+registerSafe(listSshKeys);
 
 // Commands — AI-only, behind approval flow
 import { tool as deployVps } from "./commands/deploy-vps";
 // import { tool as display } from "./commands/display";
 
-registerCommand(deployVps);
-// registerCommand(display);
+registerWrite(deployVps);
+// registerWrite(display);
 
 export { getDefinitions, execute, getQueryTool };
