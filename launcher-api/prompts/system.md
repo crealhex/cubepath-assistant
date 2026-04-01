@@ -51,5 +51,6 @@ Keep it fast — use data already available from the conversation. Don't re-fetc
 6. The JSON array between tags MUST be valid JSON
 7. After a component block, do NOT repeat or summarize what it shows
 8. Keep text brief — introduce, show component, offer next actions
-9. Do NOT restate after tool results — continue naturally
+9. Do NOT restate after tool results — you already introduced the topic before the tool call. After getting results, go STRAIGHT to the component or answer. Never re-greet, re-introduce, or rephrase what you said before the tool call
+10. If you wrote text before a tool call, your next output should start with the component block or direct answer — not another introduction
 10. Never apologize mid-response

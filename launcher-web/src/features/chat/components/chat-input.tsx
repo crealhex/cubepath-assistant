@@ -46,13 +46,13 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="border-t border-border p-4 relative">
-      <div className="mx-auto max-w-[720px]">
+    <div className="absolute bottom-0 left-0 right-0 pb-7 pt-4 pointer-events-none">
+      <div className="mx-auto max-w-[720px] pointer-events-auto">
         <div
-          className={`rounded-xl border bg-muted/30 transition-shadow ${
+          className={`rounded-2xl border bg-background transition-shadow dark:shadow-none ${
             focused
-              ? "border-ring ring-[3px] ring-ring/50"
-              : "border-border"
+              ? "border-border shadow-xl"
+              : "border-border shadow-lg"
           }`}
         >
           <textarea

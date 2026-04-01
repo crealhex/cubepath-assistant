@@ -1,4 +1,5 @@
 /** Maps raw tool output to component-ready props, per component type */
+import { getTemplateIcon } from "@/assets/icons";
 
 type Mapper = (data: unknown) => Array<Record<string, unknown>>;
 
@@ -20,6 +21,8 @@ const mappers: Record<string, Mapper> = {
         name: t.template_name,
         os: t.os_name,
         version: t.version,
+        description: t.description,
+        icon: getTemplateIcon(t.template_name as string),
       })),
       ...result.applications.map((a) => ({
         name: a.template_name,
@@ -27,9 +30,10 @@ const mappers: Record<string, Mapper> = {
         version: a.version,
         description: a.description,
         recommended_plan: a.recommended_plan,
+        icon: getTemplateIcon(a.template_name as string) ?? getTemplateIcon(a.app_name as string),
       })),
     ];
-    return [{ templates }];
+    return [{ templates, title: "1-click apps & operating systems" }];
   },
 
   "project-card": (data) => {
