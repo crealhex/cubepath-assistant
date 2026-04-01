@@ -8,6 +8,7 @@ import { tool as listTemplates } from "./queries/list-templates";
 import { tool as listVpsPlans } from "./queries/list-vps-plans";
 import { tool as listInstances } from "./queries/list-instances";
 import { tool as getInstanceStatus } from "./queries/get-instance-status";
+import { tool as listSshKeys } from "./queries/list-ssh-keys";
 
 registerQuery(calculate);
 registerQuery(listLocations);
@@ -16,6 +17,7 @@ registerQuery(listTemplates);
 registerQuery(listVpsPlans);
 registerQuery(listInstances);
 registerQuery(getInstanceStatus);
+registerQuery(listSshKeys);
 
 // Commands — AI-only, behind approval flow
 import { tool as deployVps } from "./commands/deploy-vps";

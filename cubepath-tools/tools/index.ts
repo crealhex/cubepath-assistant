@@ -7,3 +7,4 @@ export { listTemplates } from "./list-templates";
 export { listVpsPlans } from "./list-vps-plans";
 export { listInstances } from "./list-instances";
 export { getInstanceStatus } from "./get-instance-status";
+export { listSshKeys } from "./list-ssh-keys";

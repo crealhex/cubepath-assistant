@@ -63,6 +63,11 @@ const mappers: Record<string, Mapper> = {
     });
   },
 
+  "ssh-key-picker": (data) => {
+    const keys = data as Array<Record<string, unknown>>;
+    return [{ keys: keys.map((k) => ({ id: k.id, name: k.name, fingerprint: k.fingerprint })), selected: [] }];
+  },
+
   "pricing-table": (data) => {
     const locations = data as Array<{ clusters: Array<{ plans: Array<Record<string, unknown>> }> }>;
     const plans = locations.flatMap((loc) =>
