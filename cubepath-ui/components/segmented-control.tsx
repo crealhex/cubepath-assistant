@@ -23,7 +23,7 @@ function SegmentedControl<T extends string = string>({
           type="button"
           onClick={() => onValueChange(option.value)}
           className={cn(
-            "px-2 py-1.5 text-xs font-medium rounded transition-all",
+            "flex-1 px-2 py-1.5 text-xs font-medium rounded transition-all",
             value === option.value
               ? "bg-primary text-primary-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground hover:bg-background/50",

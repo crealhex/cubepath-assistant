@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  SegmentedControl,
 } from "cubepath-ui";
 import { api, API_BASE_URL_V1 } from "@/core/api-client";
 import allModels from "../models.json";
@@ -27,6 +28,7 @@ const models = (allModels as ModelEntry[]).filter((m) => m.capabilities.tools);
 export function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("");
+  const [tier, setTier] = useState<"safe" | "write" | "destructive">("safe");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -35,6 +37,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
       api.getSettings().then((s) => {
         setApiKey(s.cubepath_api_key ?? "");
         setModel(s.ai_model ?? "deepseek/deepseek-chat");
+        setTier((s.permission_tier as "safe" | "write" | "destructive") ?? "safe");
         setSaved(false);
       });
     }
@@ -52,6 +55,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
         body: JSON.stringify({
           ...(apiKey.trim() && { cubepath_api_key: apiKey.trim() }),
           ai_model: model,
+          permission_tier: tier,
         }),
       });
       setSaved(true);
@@ -122,6 +126,24 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
             </select>
             <p className="text-xs text-muted-foreground">
               All models support tool calling. Prices shown as input/output per million tokens.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium">Permission Level</label>
+            <SegmentedControl
+              value={tier}
+              onValueChange={(v) => { setTier(v as "safe" | "write" | "destructive"); setSaved(false); }}
+              options={[
+                { value: "safe", label: "Safe" },
+                { value: "write", label: "Write" },
+                { value: "destructive", label: "Full" },
+              ]}
+            />
+            <p className="text-xs text-muted-foreground">
+              {tier === "safe" && "Read-only — browse resources, check status, view plans."}
+              {tier === "write" && "Create resources — deploy VPS, add SSH keys. Requires approval."}
+              {tier === "destructive" && "Full access — includes destroy, delete, and resize operations."}
             </p>
           </div>
 

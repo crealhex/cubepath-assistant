@@ -1,6 +1,6 @@
 import createDebug from "debug";
 import type { AiGateway, ChatChunk, Message } from "../../../types";
-import { getDefinitions, execute } from "../../tools";
+import { getDefinitions, execute, type PermissionTier } from "../../tools";
 import { parseOpenAiStream, type ToolCallChunk } from "./stream";
 
 const debug = createDebug("launcher:openai");
@@ -47,10 +47,10 @@ function splitToolCalls(calls: ToolCallChunk[]): { displayCalls: ToolCallChunk[]
   return { displayCalls, regularCalls };
 }
 
-async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[], apiKey: string) {
+async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[], apiKey: string, permissionTier: PermissionTier) {
   for (const tc of calls) {
     const args = parseToolArgs(tc);
-    const result = await execute(tc.name, args, { apiKey });
+    const result = await execute(tc.name, args, { apiKey }, permissionTier);
     debug("tool result: %s", result);
     conversation.push({ role: "tool", tool_call_id: tc.id, content: result });
   }
@@ -79,6 +79,7 @@ async function* streamRound(
   model: string,
   tools: unknown[],
   conversation: Array<Record<string, unknown>>,
+  permissionTier: PermissionTier,
 ): AsyncIterable<ChatChunk> {
   const res = await buildRequest(url, apiKey, model, tools, conversation);
 
@@ -113,7 +114,7 @@ async function* streamRound(
       }
 
       // Execute regular tool calls
-      await executeRegularCalls(conversation, regularCalls, apiKey);
+      await executeRegularCalls(conversation, regularCalls, apiKey, permissionTier);
       continue;
     }
 
@@ -124,9 +125,9 @@ async function* streamRound(
   }
 }
 
-export function createCubePathGateway(apiKey: string, model: string, baseUrl?: string): AiGateway {
+export function createCubePathGateway(apiKey: string, model: string, baseUrl?: string, permissionTier: PermissionTier = "safe"): AiGateway {
   const url = `${baseUrl || "https://ai-gateway.cubepath.com"}/chat/completions`;
-  const tools = getDefinitions();
+  const tools = getDefinitions(permissionTier);
 
   return {
     async *stream(messages: Message[]): AsyncIterable<ChatChunk> {
@@ -137,7 +138,7 @@ export function createCubePathGateway(apiKey: string, model: string, baseUrl?: s
         debug("round %d, messages: %d", round, conversation.length);
         const prevLength = conversation.length;
 
-        for await (const chunk of streamRound(url, apiKey, model, tools, conversation)) {
+        for await (const chunk of streamRound(url, apiKey, model, tools, conversation, permissionTier)) {
           yield chunk;
           if (chunk.type === "done") return;
         }

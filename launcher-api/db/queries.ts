@@ -7,6 +7,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   cubepath_api_key: "",
   cubepath_gateway_url: "https://ai-gateway.cubepath.com",
   claude_cli_path: "claude",
+  permission_tier: "safe",
 };
 
 export function createQueries(db: Database) {

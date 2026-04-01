@@ -1,4 +1,5 @@
-import { registerQuery, registerCommand, getDefinitions, execute, getQueryTool } from "./registry";
+import { registerQuery, registerCommand, registerDestructive, getDefinitions, execute, getQueryTool } from "./registry";
+export type { PermissionTier } from "./registry";
 
 // Queries — safe for frontend exposure
 import { tool as calculate } from "./queries/calculate";

@@ -2,6 +2,7 @@ import { z, type z as Z } from "zod/v4";
 
 export interface ToolContext {
   apiKey: string;
+  confirmed?: boolean;
 }
 
 export interface Tool {
