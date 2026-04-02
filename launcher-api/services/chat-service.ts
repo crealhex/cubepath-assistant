@@ -1,10 +1,8 @@
 import type { Queries } from "../db/queries";
 import type { AiProvider, ChatChunk } from "../types";
 import { resolveGateway } from "./ai-gateway";
-
-const systemPrompt = await Bun.file(
-  new URL("../prompts/system.md", import.meta.url).pathname,
-).text();
+import { basePrompt } from "../prompts/base";
+import { getTierPrompt } from "../prompts/tiers";
 
 export function createChatService(queries: Queries) {
   return {
@@ -25,6 +23,10 @@ export function createChatService(queries: Queries) {
       const settings = queries.getSettings(userId);
       const provider = (settings.ai_provider || "mock") as AiProvider;
       const gateway = resolveGateway(provider, settings);
+
+      // Compose system prompt from base + tier
+      const tier = settings.permission_tier || "safe";
+      const systemPrompt = `${basePrompt}\n\n${getTierPrompt(tier)}`;
 
       // Prepend system prompt to conversation
       const messagesWithSystem = [

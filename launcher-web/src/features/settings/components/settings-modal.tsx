@@ -28,6 +28,7 @@ const models = (allModels as ModelEntry[]).filter((m) => m.capabilities.tools);
 
 export function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [apiKey, setApiKey] = useState("");
+  const [keyDirty, setKeyDirty] = useState(false);
   const [model, setModel] = useState("");
   const [tier, setTier] = useState<"safe" | "write" | "destructive">("safe");
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
     if (open) {
       api.getSettings().then((s) => {
         setApiKey(s.cubepath_api_key ?? "");
+        setKeyDirty(false);
         setModel(s.ai_model ?? "deepseek/deepseek-chat");
         setTier((s.permission_tier as "safe" | "write" | "destructive") ?? "safe");
         setSaved(false);
@@ -54,7 +56,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
           "X-User-Id": getUserId(),
         },
         body: JSON.stringify({
-          ...(apiKey.trim() && { cubepath_api_key: apiKey.trim() }),
+          ...(keyDirty && apiKey.trim() && { cubepath_api_key: apiKey.trim() }),
           ai_model: model,
           permission_tier: tier,
         }),
@@ -95,7 +97,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
               type="password"
               placeholder="Paste your API key"
               value={apiKey}
-              onChange={(e) => { setApiKey(e.target.value); setSaved(false); }}
+              onChange={(e) => { setApiKey(e.target.value); setKeyDirty(true); setSaved(false); }}
             />
             <p className="text-xs text-muted-foreground">
               Get it from the{" "}

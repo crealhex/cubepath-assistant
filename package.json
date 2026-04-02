@@ -7,5 +7,9 @@
     "launcher-web",
     "launcher-api",
     "mcp-server"
-  ]
+  ],
+  "devDependencies": {
+    "@types/bun": "^1.3.11",
+    "@types/node": "^25.5.0"
+  }
 }

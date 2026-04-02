@@ -3,7 +3,7 @@ import type { Project, Chat, Message } from "../types";
 
 const DEFAULT_SETTINGS: Record<string, string> = {
   ai_provider: "cubepath",
-  ai_model: "deepseek/deepseek-chat",
+  ai_model: "deepseek/deepseek-reasoner",
   cubepath_api_key: "",
   cubepath_gateway_url: "https://ai-gateway.cubepath.com",
   claude_cli_path: "claude",

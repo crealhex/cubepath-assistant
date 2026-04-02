@@ -1,0 +1,1 @@
+Available components: `location-picker`, `instance-card`, `project-card`, `pricing-table`, `error-card`, `template-picker`, `ssh-key-picker`, `questionnaire`, `baremetal-table`, `cdn-table`, `lb-table`.
