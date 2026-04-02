@@ -47,7 +47,7 @@ export function ChatInput({ onSend, disabled, children }: ChatInputProps) {
   }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+    <div className="absolute bottom-0 left-0 right-0 pointer-events-none pr-[var(--scrollbar-size)]">
       <div className="mx-auto max-w-[720px] pointer-events-auto pb-10 pt-4 relative z-10">
         {children}
         <div
@@ -83,7 +83,8 @@ export function ChatInput({ onSend, disabled, children }: ChatInputProps) {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-15 mx-auto max-w-[720px] bg-background" />
+      {/* Content mask — covers the gap below the input so scrolling content doesn't bleed through */}
+      <div className="absolute bottom-0 left-0 right-[var(--scrollbar-size)] h-15 mx-auto max-w-[720px] bg-background" />
       <VersionBadge className="absolute right-4 bottom-5" />
     </div>
   );

@@ -82,7 +82,7 @@ export function ScrollContainer({
   useEffect(trackScrollPosition, [isStreaming, scrollTrigger]);
 
   return (
-    <div ref={containerRef} className="flex flex-1 flex-col overflow-y-auto">
+    <div ref={containerRef} className="flex flex-1 flex-col overflow-y-auto" style={{ scrollbarGutter: "stable" }}>
       <div className="flex-1" />
       <div ref={contentRef} className="mx-auto flex w-full max-w-[720px] flex-col gap-6 px-4 pt-6 pb-45 md:px-0">
         {children}
