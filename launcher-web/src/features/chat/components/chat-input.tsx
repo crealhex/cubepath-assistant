@@ -48,10 +48,10 @@ export function ChatInput({ onSend, disabled, children }: ChatInputProps) {
 
   return (
     <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-      <div className="mx-auto max-w-[720px] pointer-events-auto pb-7 pt-4 relative z-10">
+      <div className="mx-auto max-w-[720px] pointer-events-auto pb-10 pt-4 relative z-10">
         {children}
         <div
-          className={`rounded-2xl border bg-background transition-shadow dark:shadow-none ${
+          className={`rounded-2xl border bg-background dark:bg-card transition-shadow dark:shadow-none ${
             focused
               ? "border-border shadow-xl"
               : "border-border shadow-lg"
