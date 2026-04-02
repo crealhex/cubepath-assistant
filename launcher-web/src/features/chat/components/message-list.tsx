@@ -66,7 +66,7 @@ function AssistantMessage({ msg, onQuestionnaire }: { msg: ChatMessage; onQuesti
         return (
           <div key={i} className={PROSE_CLASSES}>
             <Markdown
-              remarkPlugins={[remarkGfm, remarkMath]}
+              remarkPlugins={[remarkGfm, [remarkMath, { singleDollarTextMath: false }]]}
               rehypePlugins={[rehypeKatex]}
               components={markdownComponents}
             >

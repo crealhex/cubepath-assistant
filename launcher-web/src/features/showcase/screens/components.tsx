@@ -5,7 +5,6 @@ import {
   ErrorCard,
   LocationPicker,
   PricingTable,
-  PricingTableGrouped,
   ProjectCard,
   TemplatePicker,
   SshKeyPicker,
@@ -200,7 +199,7 @@ export default function ComponentsPage() {
           />
         </Section>
 
-        <Section title="Pricing Table (Tabbed)">
+        <Section title="Pricing Table">
           <PricingTable
             plans={plans}
             recommended="gp.starter"
@@ -209,14 +208,6 @@ export default function ComponentsPage() {
           />
         </Section>
 
-        <Section title="Pricing Table (Grouped)">
-          <PricingTableGrouped
-            plans={plans}
-            recommended="gp.starter"
-            selected={selectedPlan}
-            onSelect={setSelectedPlan}
-          />
-        </Section>
 
         <Section title="Template Picker">
           <TemplatePicker
