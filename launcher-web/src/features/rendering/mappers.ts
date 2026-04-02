@@ -1,5 +1,6 @@
 /** Maps raw tool output to component-ready props, per component type */
 import { getTemplateIcon } from "@/assets/icons";
+import type { BaremetalRow, CdnRow, LbRow } from "cubepath-ui";
 
 type Mapper = (data: unknown) => Array<Record<string, unknown>>;
 
@@ -84,6 +85,23 @@ const mappers: Record<string, Mapper> = {
         })),
       ),
     );
+    return [{ plans }];
+  },
+
+  "baremetal-table": (data) => {
+    const locations = data as Array<{ location_name: string; baremetal_models: BaremetalRow[] }>;
+    const models = locations.flatMap((loc) => loc.baremetal_models);
+    return [{ models }];
+  },
+
+  "cdn-table": (data) => {
+    const plans = data as CdnRow[];
+    return [{ plans }];
+  },
+
+  "lb-table": (data) => {
+    const locations = data as Array<{ location_name: string; plans: LbRow[] }>;
+    const plans = locations.flatMap((loc) => loc.plans);
     return [{ plans }];
   },
 };
