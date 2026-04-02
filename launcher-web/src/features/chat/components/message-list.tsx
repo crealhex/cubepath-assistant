@@ -24,7 +24,9 @@ export interface ChatMessage {
 function AssistantMessage({ msg, onQuestionnaire }: { msg: ChatMessage; onQuestionnaire?: (q: Question[]) => void }) {
   const firedRef = useRef(false);
 
-  const segments = (msg.isStreaming && msg.content === "")
+  const isThinking = msg.isStreaming && msg.content === "";
+
+  const segments = isThinking
     ? []
     : parseSegments(msg.content, msg.isStreaming ?? false);
 
@@ -43,6 +45,19 @@ function AssistantMessage({ msg, onQuestionnaire }: { msg: ChatMessage; onQuesti
       }
     } catch { /* ignore */ }
   }, [questionnaireData, onQuestionnaire]);
+
+  if (isThinking) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
+        <span>Thinking</span>
+        <span className="flex gap-0.5">
+          <span className="size-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+          <span className="size-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+          <span className="size-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
+        </span>
+      </div>
+    );
+  }
 
   if (segments.length === 0) return null;
 
