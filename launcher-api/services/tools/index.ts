@@ -27,4 +27,9 @@ import { tool as deployVps } from "./commands/deploy-vps";
 registerWrite(deployVps);
 // registerWrite(display);
 
+// Destructive — requires full mode + user confirmation
+import { tool as destroyInstance } from "./commands/destroy-instance";
+
+registerDestructive(destroyInstance);
+
 export { getDefinitions, execute, getQueryTool };

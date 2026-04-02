@@ -69,7 +69,7 @@ const mappers: Record<string, Mapper> = {
   },
 
   "pricing-table": (data) => {
-    const locations = data as Array<{ clusters: Array<{ plans: Array<Record<string, unknown>> }> }>;
+    const locations = data as Array<{ clusters: Array<{ cluster_name: string; plans: Array<Record<string, unknown>> }> }>;
     const plans = locations.flatMap((loc) =>
       loc.clusters.flatMap((c) =>
         c.plans.map((p) => ({
@@ -80,6 +80,7 @@ const mappers: Record<string, Mapper> = {
           bandwidth_tb: p.bandwidth,
           price_monthly: Math.round(Number(p.price_per_hour) * 730 * 100) / 100,
           price_hourly: Number(p.price_per_hour),
+          cluster: c.cluster_name,
         })),
       ),
     );

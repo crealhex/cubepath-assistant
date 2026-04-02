@@ -119,6 +119,7 @@ export {
 } from "./components/location-picker";
 export {
   PricingTable,
+  PricingTableGrouped,
   type PricingTableProps,
   type PlanRow,
 } from "./components/pricing-table";

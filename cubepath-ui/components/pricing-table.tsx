@@ -2,6 +2,8 @@ import * as React from "react";
 import { cn } from "../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Badge } from "./badge";
+import { SegmentedControl } from "./segmented-control";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export interface PlanRow {
   plan: string;
@@ -11,6 +13,7 @@ export interface PlanRow {
   bandwidth_tb: number;
   price_monthly: number;
   price_hourly: number;
+  cluster?: string;
 }
 
 export interface PricingTableProps {
@@ -19,67 +22,200 @@ export interface PricingTableProps {
   recommended?: string;
   selected?: string;
   onSelect?: (plan: string) => void;
+  initialRows?: number;
   className?: string;
 }
 
+function PlanRows({ plans, recommended, selected, onSelect }: { plans: PlanRow[]; recommended?: string; selected?: string; onSelect?: (plan: string) => void }) {
+  return (
+    <>
+      {plans.map((p) => {
+        const isRec = p.plan === recommended;
+        const isSel = p.plan === selected;
+        return (
+          <tr
+            key={p.plan}
+            onClick={() => onSelect?.(p.plan)}
+            className={cn(
+              "border-b border-border last:border-0 transition-colors",
+              onSelect && "cursor-pointer hover:bg-primary/10",
+              isSel && "bg-primary/5",
+            )}
+          >
+            <td className="px-4 py-2.5 font-mono font-medium">
+              <span className="flex items-center gap-2">
+                {p.plan}
+                {isRec && <Badge variant="brand" className="text-2xs px-1.5 py-0">rec</Badge>}
+              </span>
+            </td>
+            <td className="px-3 py-2.5 text-right">{p.vcpu}</td>
+            <td className="px-3 py-2.5 text-right">{p.ram_gb} GB</td>
+            <td className="px-3 py-2.5 text-right">{p.storage_gb} GB</td>
+            <td className="px-4 py-2.5 text-right font-medium">
+              ${p.price_monthly.toFixed(2)}<span className="text-muted-foreground font-normal">/mo</span>
+            </td>
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
+function TableHead() {
+  return (
+    <thead>
+      <tr className="border-b border-border bg-muted/50">
+        <th className="px-4 py-2 text-left font-medium text-muted-foreground">Plan</th>
+        <th className="px-3 py-2 text-right font-medium text-muted-foreground">vCPU</th>
+        <th className="px-3 py-2 text-right font-medium text-muted-foreground">RAM</th>
+        <th className="px-3 py-2 text-right font-medium text-muted-foreground">Storage</th>
+        <th className="px-4 py-2 text-right font-medium text-muted-foreground">Price</th>
+      </tr>
+    </thead>
+  );
+}
+
+function ShowMoreButton({ expanded, remaining, onClick }: { expanded: boolean; remaining: number; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full items-center justify-center gap-1.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors border-t border-border"
+    >
+      {expanded ? (
+        <>Show less <ChevronUp className="size-3.5" /></>
+      ) : (
+        <>Show {remaining} more <ChevronDown className="size-3.5" /></>
+      )}
+    </button>
+  );
+}
+
+/** Tabbed pricing table — one tab per cluster */
 function PricingTable({
   title = "Available Plans",
   plans,
   recommended,
   selected,
   onSelect,
+  initialRows = 6,
   className,
 }: PricingTableProps) {
+  const [expandedTabs, setExpandedTabs] = React.useState<Set<string>>(new Set());
+
+  const clusters = React.useMemo(() => {
+    const map = new Map<string, PlanRow[]>();
+    for (const p of plans) {
+      const key = p.cluster ?? "All";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(p);
+    }
+    return map;
+  }, [plans]);
+
+  const clusterNames = [...clusters.keys()];
+  const hasClusters = clusterNames.length > 1;
+  const [activeCluster, setActiveCluster] = React.useState(clusterNames[0] ?? "All");
+
+  const expanded = expandedTabs.has(activeCluster);
+  const allPlans = hasClusters ? (clusters.get(activeCluster) ?? []) : plans;
+  const needsExpand = allPlans.length > initialRows;
+  const visiblePlans = expanded || !needsExpand ? allPlans : allPlans.slice(0, initialRows);
+
   return (
-    <Card className={cn("w-full max-w-lg overflow-hidden", className)}>
+    <Card className={cn("w-full overflow-hidden", className)}>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+        {hasClusters && (
+          <div className="pt-2">
+            <SegmentedControl
+              value={activeCluster}
+              onValueChange={setActiveCluster}
+              options={clusterNames.map((c) => ({ value: c, label: c }))}
+            />
+          </div>
+        )}
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-auto max-h-[250px]">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">Plan</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">vCPU</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">RAM</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Storage</th>
-                <th className="px-4 py-2 text-right font-medium text-muted-foreground">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map((p) => {
-                const isRec = p.plan === recommended;
-                const isSel = p.plan === selected;
-                return (
-                  <tr
-                    key={p.plan}
-                    onClick={() => onSelect?.(p.plan)}
-                    className={cn(
-                      "border-b border-border last:border-0 transition-colors",
-                      onSelect && "cursor-pointer hover:bg-primary/10",
-                      isSel && "bg-primary/5",
-                    )}
-                  >
-                    <td className="px-4 py-2.5 font-mono font-medium flex items-center gap-2">
-                      {p.plan}
-                      {isRec && <Badge variant="brand" className="text-2xs px-1.5 py-0">rec</Badge>}
-                    </td>
-                    <td className="px-3 py-2.5 text-right">{p.vcpu}</td>
-                    <td className="px-3 py-2.5 text-right">{p.ram_gb} GB</td>
-                    <td className="px-3 py-2.5 text-right">{p.storage_gb} GB</td>
-                    <td className="px-4 py-2.5 text-right font-medium">
-                      ${p.price_monthly.toFixed(2)}<span className="text-muted-foreground font-normal">/mo</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <table className="w-full text-xs">
+          <TableHead />
+          <tbody>
+            <PlanRows plans={visiblePlans} recommended={recommended} selected={selected} onSelect={onSelect} />
+          </tbody>
+        </table>
+        {needsExpand && (
+          <ShowMoreButton expanded={expanded} remaining={allPlans.length - initialRows} onClick={() => {
+            const next = new Set(expandedTabs);
+            expanded ? next.delete(activeCluster) : next.add(activeCluster);
+            setExpandedTabs(next);
+          }} />
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export { PricingTable };
+/** Grouped pricing table — cluster headers inline */
+function PricingTableGrouped({
+  title = "Available Plans",
+  plans,
+  recommended,
+  selected,
+  onSelect,
+  initialRows = 6,
+  className,
+}: PricingTableProps) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const clusters = React.useMemo(() => {
+    const map = new Map<string, PlanRow[]>();
+    for (const p of plans) {
+      const key = p.cluster ?? "All";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(p);
+    }
+    return map;
+  }, [plans]);
+
+  const totalRows = plans.length;
+  const needsExpand = totalRows > initialRows;
+
+  // Slice across clusters respecting the limit
+  let remaining = expanded ? Infinity : initialRows;
+
+  return (
+    <Card className={cn("w-full overflow-hidden", className)}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <table className="w-full text-xs">
+          <TableHead />
+          <tbody>
+            {[...clusters.entries()].map(([cluster, clusterPlans]) => {
+              if (remaining <= 0) return null;
+              const visible = clusterPlans.slice(0, remaining);
+              remaining -= visible.length;
+              return (
+                <React.Fragment key={cluster}>
+                  {clusters.size > 1 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-2 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        {cluster}
+                      </td>
+                    </tr>
+                  )}
+                  <PlanRows plans={visible} recommended={recommended} selected={selected} onSelect={onSelect} />
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+        {needsExpand && (
+          <ShowMoreButton expanded={expanded} remaining={totalRows - initialRows} onClick={() => setExpanded(!expanded)} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export { PricingTable, PricingTableGrouped };

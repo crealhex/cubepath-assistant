@@ -5,6 +5,7 @@ import {
   ErrorCard,
   LocationPicker,
   PricingTable,
+  PricingTableGrouped,
   ProjectCard,
   TemplatePicker,
   SshKeyPicker,
@@ -34,11 +35,15 @@ const locations: LocationOption[] = [
 ];
 
 const plans: PlanRow[] = [
-  { plan: "gp.nano", vcpu: 1, ram_gb: 2, storage_gb: 40, bandwidth_tb: 3, price_monthly: 5.56, price_hourly: 0.0076 },
-  { plan: "gp.micro", vcpu: 2, ram_gb: 4, storage_gb: 80, bandwidth_tb: 5, price_monthly: 9.61, price_hourly: 0.0132 },
-  { plan: "gp.starter", vcpu: 4, ram_gb: 8, storage_gb: 100, bandwidth_tb: 10, price_monthly: 16.71, price_hourly: 0.0229 },
-  { plan: "gp.small", vcpu: 8, ram_gb: 16, storage_gb: 200, bandwidth_tb: 20, price_monthly: 30.90, price_hourly: 0.0423 },
-  { plan: "gp.medium", vcpu: 12, ram_gb: 32, storage_gb: 300, bandwidth_tb: 40, price_monthly: 57.26, price_hourly: 0.0784 },
+  { plan: "gp.nano", vcpu: 1, ram_gb: 2, storage_gb: 40, bandwidth_tb: 3, price_monthly: 4.06, price_hourly: 0.00556, cluster: "General Purpose" },
+  { plan: "gp.micro", vcpu: 2, ram_gb: 4, storage_gb: 80, bandwidth_tb: 5, price_monthly: 8.11, price_hourly: 0.01111, cluster: "General Purpose" },
+  { plan: "gp.starter", vcpu: 4, ram_gb: 8, storage_gb: 100, bandwidth_tb: 10, price_monthly: 15.21, price_hourly: 0.02083, cluster: "General Purpose" },
+  { plan: "gp.small", vcpu: 8, ram_gb: 16, storage_gb: 200, bandwidth_tb: 20, price_monthly: 29.40, price_hourly: 0.04028, cluster: "General Purpose" },
+  { plan: "gp.medium", vcpu: 12, ram_gb: 32, storage_gb: 300, bandwidth_tb: 40, price_monthly: 55.76, price_hourly: 0.07639, cluster: "General Purpose" },
+  { plan: "rz.nano", vcpu: 1, ram_gb: 1, storage_gb: 25, bandwidth_tb: 3, price_monthly: 4.06, price_hourly: 0.00556, cluster: "Ryzen" },
+  { plan: "rz.micro", vcpu: 1, ram_gb: 2, storage_gb: 40, bandwidth_tb: 5, price_monthly: 8.11, price_hourly: 0.01111, cluster: "Ryzen" },
+  { plan: "rz.starter", vcpu: 2, ram_gb: 4, storage_gb: 60, bandwidth_tb: 10, price_monthly: 15.21, price_hourly: 0.02083, cluster: "Ryzen" },
+  { plan: "rz.small", vcpu: 4, ram_gb: 8, storage_gb: 120, bandwidth_tb: 20, price_monthly: 29.40, price_hourly: 0.04028, cluster: "Ryzen" },
 ];
 
 const templates: TemplateOption[] = [
@@ -195,8 +200,17 @@ export default function ComponentsPage() {
           />
         </Section>
 
-        <Section title="Pricing Table">
+        <Section title="Pricing Table (Tabbed)">
           <PricingTable
+            plans={plans}
+            recommended="gp.starter"
+            selected={selectedPlan}
+            onSelect={setSelectedPlan}
+          />
+        </Section>
+
+        <Section title="Pricing Table (Grouped)">
+          <PricingTableGrouped
             plans={plans}
             recommended="gp.starter"
             selected={selectedPlan}
