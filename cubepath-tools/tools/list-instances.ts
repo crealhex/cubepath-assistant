@@ -1,27 +1,34 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthReadTool } from "../types";
 
 interface VpsInstance {
   id: number;
   name: string;
+  label?: string;
+  project_id: string;
   status: string;
+  user: string;
   ipv4: string;
   ipv6: string;
-  plan: { plan_name: string; cpu: number; ram: number; storage: number; bandwidth: number; price_per_hour: string };
-  location: { location_name: string; description: string };
-  template: { template_name: string; os_name: string };
+  floating_ips?: string;
+  plan: { id: string; plan_name: string; cpu: number; ram: number; storage: number; bandwidth: number; price_per_hour: number };
+  location: { id: string; location_name: string; description: string };
+  template: { id: string; template_name: string; os_name: string; version: string };
+  network?: { id: string; name: string; assigned_ip: string };
+  ssh_keys?: string[];
   created_at: string;
 }
 
 interface ProjectEntry {
-  project: { id: number; name: string };
+  project: { id: number; name: string; description: string };
   vps: VpsInstance[];
 }
 
-export const listInstances: Tool = {
+export const listInstances: AuthReadTool = {
   name: "list-instances",
-  description: "List all VPS instances across all projects. Returns ID, name, status, IP, plan details, location, template, and creation date. Use when the user asks about their servers, instances, or deployments.",
+  kind: "auth-read",
+  description: "List all VPS instances across all projects. Returns full instance details including plan, location, template, network, and SSH keys.",
   schema: z.object({}),
   async execute(_args, context) {
     const client = getCubePathClient(context.apiKey);
@@ -31,13 +38,19 @@ export const listInstances: Tool = {
       p.vps.map((v) => ({
         id: v.id,
         name: v.name,
+        label: v.label,
         status: v.status,
-        project: p.project.name,
+        user: v.user,
+        project: { id: p.project.id, name: p.project.name },
         ip: v.ipv4 || v.ipv6 || null,
+        ipv4: v.ipv4,
+        ipv6: v.ipv6,
+        floating_ips: v.floating_ips,
         plan: v.plan,
-        location: v.location.location_name,
-        template: v.template.template_name,
-        os: v.template.os_name,
+        location: v.location,
+        template: v.template,
+        network: v.network,
+        ssh_keys: v.ssh_keys,
         created_at: v.created_at,
       })),
     );

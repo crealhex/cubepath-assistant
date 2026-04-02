@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthReadTool } from "../types";
 
 interface SshKeysResponse {
   sshkeys: Array<{
@@ -13,8 +13,9 @@ interface SshKeysResponse {
   }>;
 }
 
-export const listSshKeys: Tool = {
+export const listSshKeys: AuthReadTool = {
   name: "list-ssh-keys",
+  kind: "auth-read",
   description: "List all SSH keys in the user's CubePath account. Use when the user asks about their keys or during deploy setup.",
   schema: z.object({}),
   async execute(_args, context) {

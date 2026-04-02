@@ -1,9 +1,10 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthWriteTool } from "../types";
 
-export const destroyInstance: Tool = {
+export const destroyInstance: AuthWriteTool = {
   name: "destroy-instance",
+  kind: "auth-write",
   description: "Permanently destroy a VPS instance. IRREVERSIBLE. Cannot destroy instances still deploying — wait until active or stopped. Always show an approval card and get explicit user confirmation before calling.",
   schema: z.object({
     instanceId: z.string().describe("The VPS instance ID to destroy"),

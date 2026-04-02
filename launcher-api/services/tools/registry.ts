@@ -1,4 +1,5 @@
-import { toJSONSchema, type Tool, type ToolContext } from "cubepath-tools";
+import { toJSONSchema, type Tool } from "cubepath-tools";
+import { dispatch } from "./dispatch";
 
 export type PermissionTier = "safe" | "write" | "destructive";
 
@@ -39,7 +40,7 @@ export function getDefinitions(maxTier: PermissionTier = "destructive") {
     }));
 }
 
-export async function execute(name: string, args: Record<string, unknown>, context: ToolContext, maxTier: PermissionTier = "destructive"): Promise<string> {
+export async function execute(name: string, args: Record<string, unknown>, apiKey?: string, maxTier: PermissionTier = "destructive", confirmed = false): Promise<string> {
   const tool = tools.get(name);
   if (!tool) return `Unknown tool: ${name}`;
 
@@ -48,11 +49,11 @@ export async function execute(name: string, args: Record<string, unknown>, conte
     return `Permission denied: "${name}" requires "${tier}" mode but current mode is "${maxTier}".`;
   }
 
-  if (tier !== "safe" && !context.confirmed) {
+  if (tier !== "safe" && !confirmed) {
     return `Action "${name}" requires user approval. Show an approval card and wait for explicit confirmation.`;
   }
 
-  return tool.execute(args, context);
+  return dispatch(tool, args, apiKey ? { apiKey } : undefined);
 }
 
 export function getToolTier(name: string): PermissionTier {

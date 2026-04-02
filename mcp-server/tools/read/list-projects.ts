@@ -10,7 +10,7 @@ export function registerListProjects(server: McpServer) {
       inputSchema: listProjects.schema,
     },
     async () => {
-      const result = await listProjects.execute({});
+      const result = await listProjects.execute({}, { apiKey: process.env.CUBEPATH_API_KEY! });
       return {
         content: [{ type: "text" as const, text: result }],
       };

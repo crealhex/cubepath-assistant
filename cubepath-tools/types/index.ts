@@ -1,1 +1,9 @@
-export { toJSONSchema, type Tool, type ToolContext } from "./tool";
+export {
+  toJSONSchema,
+  type Tool,
+  type ComputationTool,
+  type ReadTool,
+  type AuthReadTool,
+  type AuthWriteTool,
+  type AuthContext,
+} from "./tool";

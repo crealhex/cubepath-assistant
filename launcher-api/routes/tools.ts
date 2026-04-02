@@ -1,4 +1,4 @@
-import { getQueryTool } from "../services/tools";
+import { getQueryTool, execute } from "../services/tools";
 import type { Queries } from "../db/queries";
 
 export function toolRoutes(queries: Queries) {
@@ -18,7 +18,7 @@ export function toolRoutes(queries: Queries) {
       const settings = queries.getSettings(params._userId);
 
       try {
-        const result = await tool.execute(args, { apiKey: settings.cubepath_api_key });
+        const result = await execute(params.name, args, settings.cubepath_api_key);
         return new Response(result, {
           headers: { "Content-Type": "application/json" },
         });

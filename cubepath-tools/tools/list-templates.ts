@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthReadTool } from "../types";
 
 const PricingOs = z.object({
   template_name: z.string(),
@@ -36,8 +36,9 @@ const pricingAppList = z.array(PricingApp).parse(pricing.vps?.apps ?? []);
 const pricingOsMap = new Map(pricingOsList.map((t) => [t.template_name, t]));
 const pricingAppMap = new Map(pricingAppList.map((a) => [a.app_name.toLowerCase(), a]));
 
-export const listTemplates: Tool = {
+export const listTemplates: AuthReadTool = {
   name: "list-templates",
+  kind: "auth-read",
   description: "List all available OS templates and application templates for VPS deployment. Use when the user asks what they can deploy, which operating systems are available, or about 1-click apps.",
   schema: z.object({}),
   async execute(_args, context) {

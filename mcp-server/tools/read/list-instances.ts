@@ -1,40 +1,18 @@
-import { z } from "zod/v4";
-import { getCubePathClient } from "cubepath-tools";
+import { listInstances } from "cubepath-tools";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { ProjectEntry } from "../../types/api";
 
 export function registerListInstances(server: McpServer) {
   server.registerTool(
-    "list-instances",
+    listInstances.name,
     {
       title: "List All Instances",
-      description: "List all VPS instances and baremetal servers across all projects",
-      inputSchema: z.object({}),
+      description: listInstances.description,
+      inputSchema: listInstances.schema,
     },
     async () => {
-      const client = getCubePathClient();
-      const projects = await client.vps.list() as unknown as ProjectEntry[];
-
-      const instances = projects.flatMap((p) =>
-        p.vps.map((v) => ({
-          id: v.id,
-          name: v.name,
-          status: v.status,
-          project: p.project.name,
-          ip: v.ipv4,
-          plan: v.plan.plan_name,
-          location: v.location.location_name,
-          template: v.template.template_name,
-        })),
-      );
-
+      const result = await listInstances.execute({}, { apiKey: process.env.CUBEPATH_API_KEY! });
       return {
-        content: [{
-          type: "text" as const,
-          text: instances.length === 0
-            ? "No instances found."
-            : JSON.stringify(instances, null, 2),
-        }],
+        content: [{ type: "text" as const, text: result }],
       };
     },
   );

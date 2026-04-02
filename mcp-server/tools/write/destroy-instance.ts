@@ -1,27 +1,19 @@
-import { z } from "zod/v4";
-import { getCubePathClient } from "cubepath-tools";
+import { destroyInstance } from "cubepath-tools";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export function registerDestroyInstance(server: McpServer) {
   server.registerTool(
-    "destroy-instance",
+    destroyInstance.name,
     {
       title: "Destroy Instance",
-      description: "Destroy a VPS instance permanently. This action is irreversible. Cannot destroy instances that are still deploying — wait until status is 'active' or 'stopped' first.",
-      inputSchema: z.object({
-        instanceId: z.string().describe("The VPS instance ID to destroy"),
-        releaseIPs: z.boolean().optional().describe("Release associated floating IPs (default: false)"),
-      }),
+      description: destroyInstance.description,
+      inputSchema: destroyInstance.schema,
+      annotations: { destructiveHint: true },
     },
-    async ({ instanceId, releaseIPs }) => {
-      const client = getCubePathClient();
-      await client.vps.destroy(instanceId, releaseIPs);
-
+    async (args) => {
+      const result = await destroyInstance.execute(args, { apiKey: process.env.CUBEPATH_API_KEY! });
       return {
-        content: [{
-          type: "text" as const,
-          text: `Instance ${instanceId} has been destroyed.`,
-        }],
+        content: [{ type: "text" as const, text: result }],
       };
     },
   );

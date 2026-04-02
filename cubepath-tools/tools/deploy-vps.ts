@@ -1,9 +1,10 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthWriteTool } from "../types";
 
-export const deployVps: Tool = {
+export const deployVps: AuthWriteTool = {
   name: "deploy-vps",
+  kind: "auth-write",
   description: "Deploy a new VPS instance on CubePath. Returns deployment status with VPS ID and IP addresses. Show a deployment summary with plan, location, template, and estimated cost, and get explicit user approval before calling this tool.",
   schema: z.object({
     projectId: z.string().describe("The project ID to deploy into"),

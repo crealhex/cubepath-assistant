@@ -50,7 +50,7 @@ function splitToolCalls(calls: ToolCallChunk[]): { displayCalls: ToolCallChunk[]
 async function executeRegularCalls(conversation: Array<Record<string, unknown>>, calls: ToolCallChunk[], apiKey: string, permissionTier: PermissionTier) {
   for (const tc of calls) {
     const args = parseToolArgs(tc);
-    const result = await execute(tc.name, args, { apiKey }, permissionTier);
+    const result = await execute(tc.name, args, apiKey, permissionTier);
     debug("tool result: %s", result);
     conversation.push({ role: "tool", tool_call_id: tc.id, content: result });
   }

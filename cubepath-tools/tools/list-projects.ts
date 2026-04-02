@@ -1,14 +1,15 @@
 import { z } from "zod/v4";
 import { getCubePathClient } from "../sdk";
-import type { Tool } from "../types";
+import type { AuthReadTool } from "../types";
 
 interface ProjectEntry {
   project: { id: number; name: string; description: string; created_at: string };
   vps: unknown[];
 }
 
-export const listProjects: Tool = {
+export const listProjects: AuthReadTool = {
   name: "list-projects",
+  kind: "auth-read",
   description: "List all CubePath projects in the account. Returns project ID, name, description, and VPS count.",
   schema: z.object({}),
   async execute(_args, context) {

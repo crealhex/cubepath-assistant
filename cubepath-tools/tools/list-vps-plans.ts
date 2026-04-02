@@ -1,15 +1,16 @@
 import { z } from "zod/v4";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { Tool } from "../types";
+import type { ReadTool } from "../types";
 
 const pricing = JSON.parse(
   readFileSync(resolve(import.meta.dirname, "../data/pricing.json"), "utf-8"),
 );
 const vpsLocations = pricing.vps?.locations ?? [];
 
-export const listVpsPlans: Tool = {
+export const listVpsPlans: ReadTool = {
   name: "list-vps-plans",
+  kind: "read",
   description: "List available VPS plans with specs and pricing, grouped by location and cluster. Use when the user asks about pricing, plans, or costs.",
   schema: z.object({
     location: z.string().describe("Location name to filter by (e.g. 'eu-bcn-1'). Required — call list-locations first to see available locations."),

@@ -26,6 +26,12 @@ import { registerPowerAction } from "./tools/write/power-action";
 // import { registerManagedDestroyInstance } from "./tools/managed/destroy-instance";
 // import { registerManagedShowState } from "./tools/managed/show-state";
 
+// Startup validation — crash immediately if API key is missing
+const CUBEPATH_API_KEY = process.env.CUBEPATH_API_KEY;
+if (!CUBEPATH_API_KEY) {
+  throw new Error("CUBEPATH_API_KEY environment variable is required");
+}
+
 const server = new McpServer({
   name: "cubepath-mcp",
   version: "0.1.0",

@@ -25,6 +25,8 @@ import { tool as deployVps } from "./commands/deploy-vps";
 // import { tool as display } from "./commands/display";
 
 registerWrite(deployVps);
+import { tool as powerAction } from "./commands/power-action";
+registerWrite(powerAction);
 // registerWrite(display);
 
 // Destructive — requires full mode + user confirmation

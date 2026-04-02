@@ -10,7 +10,7 @@ export function registerDeployVps(server: McpServer) {
       inputSchema: deployVps.schema,
     },
     async (args) => {
-      const result = await deployVps.execute(args);
+      const result = await deployVps.execute(args, { apiKey: process.env.CUBEPATH_API_KEY! });
       return {
         content: [{ type: "text" as const, text: result }],
       };
