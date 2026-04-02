@@ -19,6 +19,12 @@ registerSafe(listVpsPlans);
 registerSafe(listInstances);
 registerSafe(getInstanceStatus);
 registerSafe(listSshKeys);
+import { tool as listBaremetalModels } from "./queries/list-baremetal-models";
+import { tool as listCdnPlans } from "./queries/list-cdn-plans";
+import { tool as listLbPlans } from "./queries/list-lb-plans";
+registerSafe(listBaremetalModels);
+registerSafe(listCdnPlans);
+registerSafe(listLbPlans);
 
 // Commands — AI-only, behind approval flow
 import { tool as deployVps } from "./commands/deploy-vps";

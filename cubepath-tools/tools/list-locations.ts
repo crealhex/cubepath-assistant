@@ -3,8 +3,20 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { ReadTool } from "../types";
 
-const locations = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, "../data/locations.json"), "utf-8"),
+const LocationSchema = z.object({
+  location_name: z.string(),
+  code: z.string(),
+  city: z.string(),
+  country: z.string(),
+  region: z.string(),
+  facility: z.string(),
+  tier: z.string(),
+  services: z.array(z.string()),
+  test_ipv4: z.string(),
+});
+
+const locations = z.array(LocationSchema).parse(
+  JSON.parse(readFileSync(resolve(import.meta.dirname, "../data/locations.json"), "utf-8")),
 );
 
 export const listLocations: ReadTool = {

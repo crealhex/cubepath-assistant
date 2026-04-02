@@ -3,10 +3,32 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { ReadTool } from "../types";
 
+const VpsPlan = z.object({
+  plan_name: z.string(),
+  ram: z.number(),
+  cpu: z.number(),
+  storage: z.number(),
+  bandwidth: z.number(),
+  price_per_hour: z.string(),
+  status: z.number(),
+});
+
+const Cluster = z.object({
+  cluster_name: z.string(),
+  type: z.string(),
+  plans: z.array(VpsPlan),
+});
+
+const VpsLocation = z.object({
+  location_name: z.string(),
+  description: z.string(),
+  clusters: z.array(Cluster),
+});
+
 const pricing = JSON.parse(
   readFileSync(resolve(import.meta.dirname, "../data/pricing.json"), "utf-8"),
 );
-const vpsLocations = pricing.vps?.locations ?? [];
+const vpsLocations = z.array(VpsLocation).parse(pricing.vps?.locations ?? []);
 
 export const listVpsPlans: ReadTool = {
   name: "list-vps-plans",
@@ -17,7 +39,7 @@ export const listVpsPlans: ReadTool = {
   }),
   async execute(args) {
     const location = args.location as string;
-    const filtered = vpsLocations.filter((l: Record<string, unknown>) => l.location_name === location);
+    const filtered = vpsLocations.filter((l) => l.location_name === location);
     if (filtered.length === 0) return JSON.stringify([]);
     return JSON.stringify(filtered, null, 2);
   },

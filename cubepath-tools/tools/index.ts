@@ -10,3 +10,6 @@ export { getInstanceStatus } from "./get-instance-status";
 export { listSshKeys } from "./list-ssh-keys";
 export { destroyInstance } from "./destroy-instance";
 export { powerAction } from "./power-action";
+export { listBaremetalModels } from "./list-baremetal-models";
+export { listCdnPlans } from "./list-cdn-plans";
+export { listLbPlans } from "./list-lb-plans";
