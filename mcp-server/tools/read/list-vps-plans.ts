@@ -9,8 +9,8 @@ export function registerListVpsPlans(server: McpServer) {
       description: listVpsPlans.description,
       inputSchema: listVpsPlans.schema,
     },
-    async () => {
-      const result = await listVpsPlans.execute({});
+    async (args) => {
+      const result = await listVpsPlans.execute(args);
       return {
         content: [{ type: "text" as const, text: result }],
       };
