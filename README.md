@@ -8,27 +8,29 @@ CubePath Assistant is an AI-powered chat interface that lets you manage your Cub
 
 **Ask it anything:**
 - "Where are your datacenters?" → Interactive location picker with live latency pings
-- "What plans do you have in Barcelona?" → Pricing table rendered inline
-- "Deploy a WordPress site" → Approval card with full details, executes on confirmation
+- "What plans do you have in Barcelona?" → Clustered pricing table with tabbed navigation
+- "Deploy a WordPress site" → Step-by-step questionnaire + approval card, executes on confirmation
+- "Show me my servers" → Instance cards with full plan details and status badges
+- "What SSH keys do I have?" → SSH key list with fingerprints
 
 ## Architecture
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌──────────────────┐
 │ launcher-web │────▶│ launcher-api │────▶│ CubePath AI      │
-│ React + Vite │     │ Bun.serve    │     │ Gateway (DeepSeek)│
+│ React + Vite │     │ Bun.serve    │     │ Gateway (26 models)
 └─────────────┘     └──────┬───────┘     └──────────────────┘
                            │
                     ┌──────┴───────┐
                     │cubepath-tools│
-                    │ Shared tools │
+                    │ Typed tools  │
                     │ + SDK        │
-                    └──────┬───────┘
-                           │
-                    ┌──────┴───────┐
-                    │ @cubepath/sdk│
-                    │ CubePath API │
-                    └──────────────┘
+                    └──────┬───────┐
+                           │       │
+                    ┌──────┴──┐ ┌──┴──────────┐
+                    │@cubepath│ │  mcp-server  │
+                    │  /sdk   │ │ 12+ tools    │
+                    └─────────┘ └──────────────┘
 ```
 
 ### Packages
@@ -36,38 +38,49 @@ CubePath Assistant is an AI-powered chat interface that lets you manage your Cub
 | Package | Purpose |
 |---------|---------|
 | **cubepath-ui** | Design system matching CubePath's visual identity. Tailwind v4, Radix UI, CVA. 20+ components. |
-| **cubepath-tools** | Shared AI-ready tool definitions with Zod schemas and execution logic. Used by both MCP server and launcher-api. |
-| **launcher-web** | React frontend with inline component rendering protocol. Components spawn in chat via tagged blocks. |
-| **launcher-api** | Bun.serve backend with CubePath AI Gateway integration, tool registry (CQRS), SSE streaming, and per-user isolation. |
-| **mcp-server** | MCP server with 15+ tools for CubePath infrastructure management. Works with Claude Desktop, VS Code, and any MCP client. |
+| **cubepath-tools** | Type-safe tool definitions with 4 discriminated kinds (ComputationTool, ReadTool, AuthReadTool, AuthWriteTool). Shared by MCP server and launcher-api. |
+| **launcher-web** | React frontend with feature-based architecture, inline component rendering, rendering port/adapter pattern, and above-input questionnaire. |
+| **launcher-api** | Bun.serve backend with type-safe tool dispatcher, three-tier permission system (safe/write/destructive), SSE streaming, and per-user isolation. |
+| **mcp-server** | MCP server with 12+ tools for CubePath infrastructure management. Works with Claude Desktop, VS Code, and any MCP client. |
 
 ## Key Features
 
 ### Inline Component Rendering
-The AI writes tagged blocks in its responses. The frontend parses them and renders interactive React components inline in the chat — location pickers, pricing tables, instance cards, approval cards.
+The AI writes tagged blocks in its responses (`{{component:count}}...{{/component}}`). A rendering port dispatches to adapters — currently an inline chat adapter that hydrates components via tool references or inline props. The architecture supports future adapters (popups, sidebars, input stacks).
+
+### Type-Safe Tool System
+Tools declare their kind via discriminated unions — `ComputationTool`, `ReadTool`, `AuthReadTool`, `AuthWriteTool`. The compiler enforces correct execute signatures: computation/read tools take `(args)`, auth tools take `(args, { apiKey })`. A centralized dispatcher with exhaustive switch ensures every kind is handled.
+
+### Three-Tier Permission System
+Users choose their permission level in settings: **Safe** (read-only), **Write** (create resources with approval), or **Full** (includes destructive operations). Tools above the user's tier are invisible to the AI — it can't call what it can't see.
+
+### Interactive Questionnaire
+The AI triggers a step-by-step questionnaire that renders above the chat input. Users click through options, and answers are collected and sent as context with the next message. Supports custom text input and skip.
 
 ### Reference Hydration
-For large datasets, the AI writes a lightweight tool reference instead of dumping raw data. The frontend fetches from the backend and renders. The AI stays fast, the data stays complete.
+For data-heavy components, the AI writes a lightweight tool reference instead of dumping raw data. The frontend fetches from the backend and renders. The AI stays fast, the data stays complete.
 
 ### Approval Flow
-Write operations (deploy, destroy, resize) always show an approval card first. The user reviews the details and confirms before anything executes.
+Write operations (deploy, destroy, power actions) require user confirmation. The permission tier gate + confirmed flag ensures the AI cannot execute mutations without explicit user approval.
 
 ### Live Latency Pings
-The location picker pings CubePath datacenters in real-time, showing color-coded latency for each region. Uses CubePath's ping endpoints with IP fallback.
+The location picker pings CubePath datacenters in real-time using burst-median measurement (5 pings, take the median). Color-coded latency badges per region.
 
 ### Per-User Isolation
-Anonymous UUID stored in localStorage. Each user gets their own projects, chats, and settings. No login required.
+Anonymous UUID stored in localStorage. Each user gets their own projects, chats, settings, and API key (BYOK). No login required.
 
-### Dual-Mode Architecture
-- **Local mode**: Claude Agent SDK + MCP server for developers using their Claude account
-- **Hosted mode**: CubePath AI Gateway for multi-user deployment
+### Onboarding
+First-time visitors see a full-screen onboarding page with animated CubePath logo (scatter-assemble entrance + typewriter titles), API key input, and theme toggle.
+
+### Multi-Model Support
+Settings modal lets users choose from 26 AI models across DeepSeek, OpenAI, Anthropic, Google, and xAI — all through CubePath's AI Gateway with one API key.
 
 ## Tech Stack
 
 - **Runtime**: Bun
 - **Frontend**: React 19, Vite 8, Tailwind CSS v4, Radix UI
 - **Backend**: Bun.serve, SQLite, SSE streaming
-- **AI**: CubePath AI Gateway (OpenAI-compatible), DeepSeek
+- **AI**: CubePath AI Gateway (OpenAI-compatible), 26 models
 - **Infrastructure SDK**: @cubepath/sdk
 - **Validation**: Zod v4
 - **Component Protocol**: Custom tagged block parser with skeleton loading
@@ -91,14 +104,14 @@ bun install
 ```bash
 # Terminal 1 — API server
 cd launcher-api
-CUBEPATH_API_KEY=your_key bun --watch index.ts
+DEBUG=launcher:* bun --watch index.ts
 
 # Terminal 2 — Frontend
 cd launcher-web
 bun run dev -- --host
 ```
 
-Open the app, click the gear icon, paste your CubePath API key, and start chatting.
+Open the app, enter your CubePath API key in the onboarding screen, and start chatting.
 
 ### Run (MCP Server)
 
@@ -109,10 +122,27 @@ CUBEPATH_API_KEY=your_key bun run index.ts
 
 Add to your Claude Desktop or VS Code MCP config to use CubePath tools directly.
 
+## Tool Inventory
+
+| Tool | Kind | Description |
+|------|------|-------------|
+| `calculate` | Computation | Safe math evaluation via mathjs |
+| `display` | Computation | UI component hydration signal |
+| `list-locations` | Read | Datacenter locations from static data |
+| `list-vps-plans` | Read | VPS pricing from static data |
+| `list-instances` | AuthRead | All VPS instances across projects |
+| `get-instance-status` | AuthRead | Single instance detail |
+| `list-projects` | AuthRead | CubePath projects |
+| `list-templates` | AuthRead | OS and 1-click app templates |
+| `list-ssh-keys` | AuthRead | SSH keys in account |
+| `deploy-vps` | AuthWrite | Deploy a new VPS instance |
+| `destroy-instance` | AuthWrite | Permanently destroy a VPS |
+| `power-action` | AuthWrite | Start/stop/restart a VPS |
+
 ## CubePath Services Used
 
-- **CubePath VPS** — Server deployment and management
-- **CubePath AI Gateway** — Multi-model AI proxy (DeepSeek, GPT-4, Claude, Gemini)
+- **CubePath VPS** — Server deployment, management, and monitoring
+- **CubePath AI Gateway** — Multi-model AI proxy (DeepSeek, GPT-4, Claude, Gemini, Grok)
 - **@cubepath/sdk** — Official SDK for infrastructure operations
 - **CubePath Ping Endpoints** — Real-time datacenter latency measurement
 
