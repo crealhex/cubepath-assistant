@@ -1,6 +1,7 @@
 import { Database } from "bun:sqlite";
+import { join } from "path";
 
-export function initDb(path = "launcher.db"): Database {
+export function initDb(path = join(import.meta.dir, "launcher.db")): Database {
   const db = new Database(path, { create: true });
 
   db.run("PRAGMA journal_mode = WAL");

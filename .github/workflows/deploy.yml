@@ -23,10 +23,10 @@ jobs:
             git pull origin main
             bun install
             cd launcher-web && bunx vite build && cd ..
-            kill $(cat /tmp/api.pid 2>/dev/null) 2>/dev/null || true
-            kill $(cat /tmp/web.pid 2>/dev/null) 2>/dev/null || true
+            kill $(ps aux | grep 'bun.*launcher-api' | grep -v grep | awk '{print $2}') 2>/dev/null || true
+            kill $(ps aux | grep 'bun.*serve.ts' | grep -v grep | awk '{print $2}') 2>/dev/null || true
             sleep 1
-            nohup /root/.bun/bin/bun run launcher-api/index.ts > /tmp/api.log 2>&1 & echo $! > /tmp/api.pid
-            nohup /root/.bun/bin/bun serve.ts > /tmp/web.log 2>&1 & echo $! > /tmp/web.pid
+            nohup /root/.bun/bin/bun run launcher-api/index.ts > /tmp/api.log 2>&1 &
+            nohup /root/.bun/bin/bun serve.ts > /tmp/web.log 2>&1 &
             sleep 1
             echo "Deploy complete"
