@@ -1,5 +1,7 @@
 import { cn } from "../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { ShowMoreButton } from "./show-more-button";
+import { useTableExpand } from "../hooks/use-table-expand";
 
 export interface CdnRow {
   name: string;
@@ -17,6 +19,7 @@ export interface CdnTableProps {
   plans: CdnRow[];
   selected?: string;
   onSelect?: (plan: string) => void;
+  initialRows?: number;
   className?: string;
 }
 
@@ -25,8 +28,10 @@ function CdnTable({
   plans,
   selected,
   onSelect,
+  initialRows = 5,
   className,
 }: CdnTableProps) {
+  const { visible, expanded, needsExpand, remaining, toggle } = useTableExpand(plans, initialRows);
   return (
     <Card className={cn("w-full overflow-hidden", className)}>
       <CardHeader className="pb-3">
@@ -47,7 +52,7 @@ function CdnTable({
               </tr>
             </thead>
             <tbody>
-              {plans.map((p) => {
+              {visible.map((p) => {
                 const isSel = p.name === selected;
                 const monthly = (p.base_price_per_hour * 730).toFixed(2);
                 const avgGb = Object.values(p.price_per_gb)[0];
@@ -79,6 +84,9 @@ function CdnTable({
             </tbody>
           </table>
         </div>
+        {needsExpand && (
+          <ShowMoreButton expanded={expanded} remaining={remaining} onClick={toggle} />
+        )}
       </CardContent>
     </Card>
   );

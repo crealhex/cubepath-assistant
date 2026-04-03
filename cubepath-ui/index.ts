@@ -168,3 +168,5 @@ export {
   type LbTableProps,
   type LbRow,
 } from "./components/lb-table";
+export { ShowMoreButton } from "./components/show-more-button";
+export { useTableExpand } from "./hooks/use-table-expand";

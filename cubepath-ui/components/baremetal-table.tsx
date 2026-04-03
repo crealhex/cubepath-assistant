@@ -1,6 +1,8 @@
 import { cn } from "../lib/utils";
 import { Badge } from "./badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { ShowMoreButton } from "./show-more-button";
+import { useTableExpand } from "../hooks/use-table-expand";
 
 export interface BaremetalRow {
   model_name: string;
@@ -21,6 +23,7 @@ export interface BaremetalTableProps {
   models: BaremetalRow[];
   selected?: string;
   onSelect?: (model: string) => void;
+  initialRows?: number;
   className?: string;
 }
 
@@ -29,8 +32,11 @@ function BaremetalTable({
   models,
   selected,
   onSelect,
+  initialRows = 6,
   className,
 }: BaremetalTableProps) {
+  const { visible, expanded, needsExpand, remaining, toggle } = useTableExpand(models, initialRows);
+
   return (
     <Card className={cn("w-full overflow-hidden", className)}>
       <CardHeader className="pb-3">
@@ -52,7 +58,7 @@ function BaremetalTable({
               </tr>
             </thead>
             <tbody>
-              {models.map((m) => {
+              {visible.map((m) => {
                 const isSel = m.model_name === selected;
                 const inStock = m.stock_available > 0;
                 return (
@@ -89,6 +95,9 @@ function BaremetalTable({
             </tbody>
           </table>
         </div>
+        {needsExpand && (
+          <ShowMoreButton expanded={expanded} remaining={remaining} onClick={toggle} />
+        )}
       </CardContent>
     </Card>
   );

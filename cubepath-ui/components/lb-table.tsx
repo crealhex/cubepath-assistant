@@ -1,5 +1,7 @@
 import { cn } from "../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { ShowMoreButton } from "./show-more-button";
+import { useTableExpand } from "../hooks/use-table-expand";
 
 export interface LbRow {
   name: string;
@@ -15,6 +17,7 @@ export interface LbTableProps {
   plans: LbRow[];
   selected?: string;
   onSelect?: (plan: string) => void;
+  initialRows?: number;
   className?: string;
 }
 
@@ -23,8 +26,11 @@ function LbTable({
   plans,
   selected,
   onSelect,
+  initialRows = 5,
   className,
 }: LbTableProps) {
+  const { visible, expanded, needsExpand, remaining, toggle } = useTableExpand(plans, initialRows);
+
   return (
     <Card className={cn("w-full overflow-hidden", className)}>
       <CardHeader className="pb-3">
@@ -43,7 +49,7 @@ function LbTable({
               </tr>
             </thead>
             <tbody>
-              {plans.map((p) => {
+              {visible.map((p) => {
                 const isSel = p.name === selected;
                 const monthly = (p.price_per_hour * 730).toFixed(2);
                 return (
@@ -72,6 +78,9 @@ function LbTable({
             </tbody>
           </table>
         </div>
+        {needsExpand && (
+          <ShowMoreButton expanded={expanded} remaining={remaining} onClick={toggle} />
+        )}
       </CardContent>
     </Card>
   );

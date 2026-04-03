@@ -3,7 +3,8 @@ import { cn } from "../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Badge } from "./badge";
 import { SegmentedControl } from "./segmented-control";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ShowMoreButton } from "./show-more-button";
+import { useTableExpand } from "../hooks/use-table-expand";
 
 export interface PlanRow {
   plan: string;
@@ -75,21 +76,6 @@ function TableHead() {
   );
 }
 
-function ShowMoreButton({ expanded, remaining, onClick }: { expanded: boolean; remaining: number; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center justify-center gap-1.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors border-t border-border"
-    >
-      {expanded ? (
-        <>Show less <ChevronUp className="size-3.5" /></>
-      ) : (
-        <>Show {remaining} more <ChevronDown className="size-3.5" /></>
-      )}
-    </button>
-  );
-}
-
 /** Tabbed pricing table — one tab per cluster */
 function PricingTable({
   title = "Available Plans",
@@ -97,7 +83,7 @@ function PricingTable({
   recommended,
   selected,
   onSelect,
-  initialRows = 6,
+  initialRows = 5,
   className,
 }: PricingTableProps) {
   const [expandedTabs, setExpandedTabs] = React.useState<Set<string>>(new Set());
