@@ -69,7 +69,7 @@ const mappers: Record<string, Mapper> = {
     return [{ keys: keys.map((k) => ({ id: k.id, name: k.name, fingerprint: k.fingerprint })), selected: [] }];
   },
 
-  "pricing-table": (data) => {
+  "vps-table": (data) => {
     const locations = data as Array<{ clusters: Array<{ cluster_name: string; plans: Array<Record<string, unknown>> }> }>;
     const plans = locations.flatMap((loc) =>
       loc.clusters.flatMap((c) =>

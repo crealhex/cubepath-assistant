@@ -118,10 +118,10 @@ export {
   type LocationOption,
 } from "./components/location-picker";
 export {
-  PricingTable,
-  type PricingTableProps,
+  VpsTable,
+  type VpsTableProps,
   type PlanRow,
-} from "./components/pricing-table";
+} from "./components/vps-table";
 export {
   ProjectCard,
   type ProjectCardProps,

@@ -17,7 +17,7 @@ export interface PlanRow {
   cluster?: string;
 }
 
-export interface PricingTableProps {
+export interface VpsTableProps {
   title?: string;
   plans: PlanRow[];
   recommended?: string;
@@ -77,7 +77,7 @@ function TableHead() {
 }
 
 /** Tabbed pricing table — one tab per cluster */
-function PricingTable({
+function VpsTable({
   title = "Available Plans",
   plans,
   recommended,
@@ -85,7 +85,7 @@ function PricingTable({
   onSelect,
   initialRows = 5,
   className,
-}: PricingTableProps) {
+}: VpsTableProps) {
   const [expandedTabs, setExpandedTabs] = React.useState<Set<string>>(new Set());
 
   const clusters = React.useMemo(() => {
@@ -140,4 +140,4 @@ function PricingTable({
   );
 }
 
-export { PricingTable };
+export { VpsTable };

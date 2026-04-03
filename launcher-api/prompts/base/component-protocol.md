@@ -6,11 +6,11 @@ There are two types of content between tags:
 
 **Tool references** (for ALL read components — the frontend fetches the data):
 ```
-{{pricing-table:1}}
+{{vps-table:1}}
 [{"tool": "list-vps-plans", "args": {"location": "eu-bcn-1"}}]
-{{/pricing-table}}
+{{/vps-table}}
 ```
-ALWAYS use tool references for: `location-picker`, `pricing-table`, `template-picker`, `instance-card`, `project-card`, `baremetal-table`, `cdn-table`, `lb-table`, `ssh-key-picker`.
+ALWAYS use tool references for: `location-picker`, `vps-table`, `template-picker`, `instance-card`, `project-card`, `baremetal-table`, `cdn-table`, `lb-table`, `ssh-key-picker`.
 NEVER write raw data/props for these components — ONLY tool references. The frontend handles data fetching.
 
 **Inline props** — for components where you write the data directly (e.g. `error-card`, `questionnaire`).

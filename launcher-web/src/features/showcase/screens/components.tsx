@@ -4,7 +4,7 @@ import {
   DeployProgress,
   ErrorCard,
   LocationPicker,
-  PricingTable,
+  VpsTable,
   ProjectCard,
   TemplatePicker,
   SshKeyPicker,
@@ -200,7 +200,7 @@ export default function ComponentsPage() {
         </Section>
 
         <Section title="Pricing Table">
-          <PricingTable
+          <VpsTable
             plans={plans}
             recommended="gp.starter"
             selected={selectedPlan}
